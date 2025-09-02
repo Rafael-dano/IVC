@@ -1,0 +1,42 @@
+/* src/styles/legacy.css */
+.page-faq a { text-decoration: underline; }
+.page-help section { box-shadow: 0 0 10px rgba(0,240,255,.2); }
+/* …whatever old styles you want, but always prefix with .page-XXX */
+body {
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background: #aa8dbe;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  main {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  .faq-item {
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .faq-item h3 {
+    margin-top: 0;
+    color: #2c2f48;
+  }

@@ -1,0 +1,20 @@
+.navbar a {
+    text-decoration: none;
+  }
+  .navbar .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .5rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,.15);
+    transition: transform .15s ease, background .15s ease;
+  }
+  .navbar .pill.primary { background: #22d3ee; color: #000; }
+  .navbar .pill.primary:hover { background: #67e8f9; transform: translateY(-2px); }
+  .navbar .pill.base { background: #374151; color: #fff; }
+  .navbar .pill.base:hover { background: #4b5563; transform: translateY(-2px); }
+  .navbar .pill.accent { background: #ec4899; color: #000; }
+  .navbar .pill.accent:hover { background: #f472b6; transform: translateY(-2px); }
+  

@@ -1,0 +1,58 @@
+/* Tailwind first */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Minimal globals — keep these light so Tailwind stays in control */
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  color-scheme: light dark;
+}
+
+/* IMPORTANT: do NOT center the whole app via body like Vite demo does */
+html, body, #root {
+  height: 100%;
+}
+/* Optional link look (keep super light so Tailwind variants can override) */
+a {
+  text-decoration: none;
+}
+
+/* Utility-ish custom classes you already use */
+.output-textarea {
+  white-space: pre-wrap;
+}
+
+.pinterest-output {
+  background-color: #fff8f5;
+  border-left: 5px solid #e60023; /* Pinterest red */
+  padding: 1rem;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  white-space: pre-line;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+footer {
+  margin-top:0 0 2rem;
+  padding: 1rem;
+  background: #ffffff;
+  color: rgb(12, 6, 6);
+  font-size: 0.9rem;
+  border-radius: 8px;
+  text-align: center;
+}

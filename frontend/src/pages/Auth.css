@@ -1,0 +1,136 @@
+/* ✅ Scoped to .auth-page so styles don't bleed elsewhere */
+.auth-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(24rem 24rem at 10% 10%, rgba(34,211,238,.10), transparent),
+      radial-gradient(20rem 20rem at 90% 20%, rgba(236,72,153,.10), transparent),
+      #37173f;
+    padding: 2rem;
+    color: #eaeaea;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+  }
+  
+  /* header area on top of card (optional) */
+  .auth-header {
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+  .auth-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: .2px;
+  }
+  .auth-subtitle {
+    opacity: .8;
+    font-size: .95rem;
+  }
+  
+  /* the card */
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow:
+      0 10px 25px rgba(0,0,0,.35),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  
+  /* form layout */
+  .auth-form {
+    display: grid;
+    gap: .75rem;
+    margin-top: .75rem;
+  }
+  
+  /* input */
+  .auth-input {
+    width: 100%;
+    height: 44px;
+    padding: 0.6rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(14,14,14,.8);
+    color: #f5f5f5;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    outline: none;
+  }
+  .auth-input::placeholder { color: #9aa1a6; }
+  .auth-input:focus {
+    border-color: rgba(34,211,238,.65);
+    box-shadow: 0 0 0 4px rgba(34,211,238,.12);
+    background: rgba(18,18,18,.95);
+  }
+  
+  /* buttons */
+  .auth-btn {
+    height: 44px;
+    border: 0;
+    border-radius: 999px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #22d3ee, #60a5fa);
+    color: #0b0b0b;
+    cursor: pointer;
+    transition: transform .1s ease, box-shadow .15s ease, opacity .15s ease;
+    box-shadow: 0 10px 18px rgba(34,211,238,.18);
+  }
+  .auth-btn:hover { transform: translateY(-1px); }
+  .auth-btn:active { transform: translateY(0); opacity: .95; }
+  .auth-btn:disabled { opacity: .6; cursor: not-allowed; }
+  
+  /* secondary button/link row */
+  .auth-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: .5rem;
+    gap: .5rem;
+    font-size: .9rem;
+  }
+  .auth-link {
+    color: #67e8f9;
+    text-decoration: none;
+  }
+  .auth-link:hover { text-decoration: underline; }
+  
+  /* helper text */
+  .auth-help {
+    margin-top: .75rem;
+    font-size: .85rem;
+    text-align: center;
+    color: #c9cdd1;
+  }
+  
+  /* messages */
+  .auth-msg {
+    font-size: .9rem;
+    padding: .6rem .75rem;
+    border-radius: 10px;
+    margin-bottom: .5rem;
+    border: 1px solid transparent;
+  }
+  .auth-msg.success {
+    color: #052e2b;
+    background: #99f6e4;
+    border-color: #5eead4;
+  }
+  .auth-msg.error {
+    color: #3b0a0a;
+    background: #fecaca;
+    border-color: #fda4af;
+  }
+  
+  /* small footer text under card */
+  .auth-footer {
+    margin-top: .85rem;
+    text-align: center;
+    font-size: .85rem;
+    color: #b8bcc2;
+  }
+  
