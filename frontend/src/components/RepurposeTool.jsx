@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { generateContent } from '../api/textGeneration.js';
 import { supabase } from '../api/supabaseClient.js';
+import { jsPDF } from "jspdf";
 import "./Repurpose.css";
 
 export default function RepurposeTool() {
@@ -8,34 +9,64 @@ export default function RepurposeTool() {
   const [repurposedText, setRepurposedText] = useState('');
   const [loading, setLoading] = useState(false);
   const [format, setFormat] = useState('blog-post');
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode] = useState(true);
   const [isCarousel, setIsCarousel] = useState(false);
   const outputRef = useRef(null);
 
+  // Formats that do not require input
   const NO_INPUT_REQUIRED = ['carousel-generator'];
+
+  // Formats that are not implemented yet
+  const COMING_SOON = new Set(['idea-generator', 'calendar-generator', 'script-to-vocal']);
+
+  // Pretty label for the “chip”
+  const FORMAT_LABEL = {
+    'blog-post': '📝 Blog Post',
+    'social-post': '💬 Social Post',
+    'summary': '📚 Summary',
+    'tweet-to-linkedin': '🐦→💼 Tweet to LinkedIn',
+    'blog-to-caption': '📝→📸 Blog to Instagram Caption',
+    'video-to-email': '📹→✉️ Video to Email',
+    'youtube-summary': '🎥 YouTube Summary',
+    'shorts-script': '🎬 Shorts Script',
+    'pinterest-caption': '📌 Pinterest Caption',
+    'blog-tldr': '🧠 Blog TL;DR',
+    'thread-expander': '🧵 Tweet → Blog Expansion',
+    'blog-to-email': '✉️ Blog → Email Expander',
+    'carousel-generator': '🖼️ Carousel Generator',
+    'idea-generator': '💡 Idea Generator (Coming Soon)',
+    'calendar-generator': '📅 Content Calendar (Coming Soon)',
+    'script-to-vocal': '🎤 AI Vocals (Coming Soon)',
+  };
 
   async function handleRepurpose() {
     setLoading(true);
     setRepurposedText("");
     setIsCarousel(false);
-  
+
     try {
-      // Check for required input
+      // Guard: Coming Soon
+      if (COMING_SOON.has(format)) {
+        setRepurposedText('🚧 This feature is coming soon. Stay tuned!');
+        return;
+      }
+
+      // Guard: required input
       if (!inputText.trim() && !NO_INPUT_REQUIRED.includes(format)) {
         setRepurposedText('⚠️ Please enter some content first.');
-        return;// finally will turn loading off
+        return; // finally will turn loading off
       }
-  
-      // ✅ Get the logged-in user
+
+      // Require login
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setRepurposedText('⚠️ You must be logged in to use this feature.');
         return;
       }
-  
+
       let prompt = "";
-  
-      // Build prompt based on format
+
+      // Carousel branch
       if (format === 'carousel-generator') {
         prompt = `Create a carousel with 5 slides about: ${inputText || 'any engaging topic'}`;
         const aiResponse = await generateContent(user.id, prompt);
@@ -47,34 +78,32 @@ export default function RepurposeTool() {
         setIsCarousel(true);
         return;
       }
-  
+
+      // Other formats -> prompt
       if (format === 'blog-to-email') {
         prompt = `Repurpose the following text into an email:\n\n${inputText}`;
       } else if (format === 'pinterest-caption') {
         prompt = `Repurpose the following text into a Pinterest caption:\n\n${inputText}`;
       } else {
-        // Default generic transformation
         prompt = `Repurpose this text into ${format} format:\n\n${inputText}`;
       }
-  
-      // ✅ Call your text generation function
+
       const aiResponse = await generateContent(user.id, prompt);
       setRepurposedText(aiResponse);
-  
+
     } catch (err) {
       console.error(err);
-      if (err.message.includes("Usage limit reached")) {
+      if (String(err.message || '').includes("Usage limit reached")) {
         setRepurposedText("⚠️ You’ve reached your free-tier limit. Please upgrade to continue.");
       } else {
         setRepurposedText('❌ Error generating content.');
       }
     } finally {
       setLoading(false);
-      outputRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }  
+  }
 
-  // ✅ Load saved state from localStorage
+  // Load saved state
   useEffect(() => {
     setInputText(localStorage.getItem('repurpose-input') || '');
     setRepurposedText(localStorage.getItem('repurpose-output') || '');
@@ -86,12 +115,23 @@ export default function RepurposeTool() {
   }, [inputText]);
 
   useEffect(() => {
-    localStorage.setItem('repurpose-output', repurposedText);
+    if (typeof repurposedText === "string") {
+      localStorage.setItem('repurpose-output', repurposedText);
+    } else {
+      localStorage.removeItem('repurpose-output');
+    }
   }, [repurposedText]);
 
   useEffect(() => {
     localStorage.setItem('repurpose-format', format);
   }, [format]);
+
+  // Scroll into view when output changes
+  useEffect(() => {
+    if (repurposedText && outputRef.current) {
+      outputRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [repurposedText]);
 
   function copyToClipboard() {
     if (typeof repurposedText === "string") {
@@ -99,16 +139,64 @@ export default function RepurposeTool() {
         alert("✅ Copied to clipboard!");
       });
     } else {
-      // If carousel mode (array of slides)
-      const textVersion = repurposedText.map(slide => `${slide.title}\n${slide.content}`).join("\n\n");
+      const textVersion = repurposedText
+        .map(slide => `${slide.title}\n${slide.content}`)
+        .join("\n\n");
       navigator.clipboard.writeText(textVersion).then(() => {
         alert("✅ Carousel copied to clipboard!");
       });
     }
-  }  
+  }
 
-  // ✅ Header Component
-  const Header = () => (
+  // Downloads
+  function downloadTxtInline(text, filename = "repurposed.txt") {
+    try {
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename.endsWith(".txt") ? filename : `${filename}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert("Couldn’t start the .txt download.");
+      console.error(e);
+    }
+  }
+
+  function downloadPdfFromText(text, filename = "repurposed.pdf") {
+    try {
+      const doc = new jsPDF({ unit: "pt", format: "letter" }); // 612x792 pt
+      const margin = 48;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const contentWidth = pageWidth - margin * 2;
+
+      const lines = doc.splitTextToSize(text, contentWidth);
+      const lineHeight = 16;
+      let y = margin;
+
+      lines.forEach((line) => {
+        if (y > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += lineHeight;
+      });
+
+      const out = filename.endsWith(".pdf") ? filename : `${filename}.pdf`;
+      doc.save(out);
+    } catch (e) {
+      alert("Couldn’t create the PDF.");
+      console.error(e);
+    }
+  }
+
+  // Local header (simple)
+  const LocalHeader = () => (
     <header className="w-full px-6 py-4 flex items-center justify-between bg-gray-800 text-white shadow-md">
       <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight flex items-center gap-2">
         <span className="text-3xl">♻️</span> IV <span className="text-cyan-400">Content</span>
@@ -116,46 +204,33 @@ export default function RepurposeTool() {
     </header>
   );
 
+  const chipText = FORMAT_LABEL[format] || '⚙️ Custom';
+
   return (
     <div className={`repurpose-page min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} font-sans`}>
-      <Header />
+      <LocalHeader />
       <main className="max-w-6xl mx-auto px-4 py-12">
-      <section className="repurpose-hero">
-        <h2 className="repurpose-title text-3xl sm:text-4xl font-bold mb-2">
-          Repurpose Smarter, Faster, Everywhere.
-        </h2>
-        <p className="repurpose-sub text-lg">Turn your content into summaries, scripts, captions and more — all in one place.</p>
-      </section>
+        <section className="repurpose-hero">
+          <h2 className="repurpose-title text-3xl sm:text-4xl font-bold mb-2">
+            Repurpose Smarter, Faster, Everywhere.
+          </h2>
+          <p className="repurpose-sub text-lg">
+            Turn your content into summaries, scripts, captions and more — all in one place.
+          </p>
+        </section>
 
         <div className="repurpose-panel p-4 md:p-6 flex flex-col lg:flex-row gap-6">
-        {/* Format Label */}
-        <div className="mb-2 text-sm format-chip">
-            {format === 'blog-post' && '📝 Blog Post'}
-            {format === 'social-post' && '💬 Social Post'}
-            {format === 'summary' && '📚 Summary'}
-            {format === 'tweet-to-linkedin' && '🐦→💼 Tweet to LinkedIn'}
-            {format === 'blog-to-caption' && '📝→📸 Blog to Instagram Caption'}
-            {format === 'video-to-email' && '📹→✉️ Video to Email'}
-            {format === 'youtube-summary' && '🎥 YouTube Summary'}
-            {format === 'shorts-script' && '🎬 Shorts Script'}
-            {format === 'pinterest-caption' && '📌 Pinterest Caption'}
-            {format === 'blog-tldr' && '🧠 Blog TL;DR'}
-            {format === 'thread-expander' && '🧵 Tweet → Blog Style Expansion'}
-            {format === 'carousel-generator' && '🖼️ Carousel Generator'}
-            {format === 'Text' && '🧠Idea Generator'}
-            {format === 'content' && '📅 Content Calendar'}
-            {format === 'Script' && '🎤AI Vocals'}
-          </div>
+          {/* Format Label */}
+          <div className="mb-2 text-sm format-chip">{chipText}</div>
 
           {/* Input Section */}
           <div className="w-full lg:w-1/2">
-          <textarea
-            className={`repurpose-textarea`}
-            // keep your existing props
-            placeholder="Paste or write your content here..."
-            value={inputText}
-            onChange={e => setInputText(e.target.value)}
-          />
+            <textarea
+              className="repurpose-textarea"
+              placeholder="Paste or write your content here..."
+              value={inputText}
+              onChange={e => setInputText(e.target.value)}
+            />
             <select
               className="repurpose-select"
               value={format}
@@ -173,97 +248,105 @@ export default function RepurposeTool() {
               <option value="blog-tldr">Blog → TL;DR</option>
               <option value="thread-expander">Tweet → Blog Style Expansion</option>
               <option value="blog-to-email">Blog → Email Expander</option>
-              <option value="carousel-generator">Carousel Generator "Coming Soon"</option>
-              <option value="idea-generator">Idea Generator "Coming Soon" </option>
-              <option value="calendar-generator">Content Calendar "Coming Soon"</option>
-              <option value="script-to-vocal">AI Vocals "Coming Soon"</option>
+              <option value="carousel-generator">Carousel Generator</option>
+              <option value="idea-generator">Idea Generator (Coming Soon)</option>
+              <option value="calendar-generator">Content Calendar (Coming Soon)</option>
+              <option value="script-to-vocal">AI Vocals (Coming Soon)</option>
             </select>
-            <div className="mt-4 flex flex-col sm:flex-row gap-2">
-            <button
-              className="btn-primary btn-block md:btn-block-md"
-              onClick={handleRepurpose}
-              disabled={loading || (!inputText.trim() && !NO_INPUT_REQUIRED.includes(format))}
-            >
-              Repurpose Content
-            </button>
 
-            <button
-              className="btn-secondary btn-block md:btn-block-md"
-              onClick={() => {
-                setInputText('');
-                setRepurposedText('');
-                setIsCarousel(false);
-              }}
-            >
-              Clear
-            </button>
+            <div className="mt-4 flex flex-col sm:flex-row gap-2">
+              <button
+                className="btn-primary btn-block md:btn-block-md"
+                onClick={handleRepurpose}
+                disabled={
+                  loading ||
+                  (!inputText.trim() && !NO_INPUT_REQUIRED.includes(format)) ||
+                  COMING_SOON.has(format)
+                }
+                title={COMING_SOON.has(format) ? "Coming soon" : undefined}
+              >
+                {COMING_SOON.has(format) ? "Coming Soon" : "Repurpose Content"}
+              </button>
+
+              <button
+                className="btn-secondary btn-block md:btn-block-md"
+                onClick={() => {
+                  setInputText('');
+                  setRepurposedText('');
+                  setIsCarousel(false);
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          {/* Output Section */}
+          <div className="w-full lg:w-1/2" ref={outputRef}>
+            {loading && (
+              <p className="status-line text-xl font-semibold animate-pulse">
+                Repurposing your content...
+              </p>
+            )}
+
+            {!loading && repurposedText && (
+              <>
+                {isCarousel ? (
+                  <>
+                    <div className="carousel-row">
+                      {repurposedText.map((slide, index) => (
+                        <div key={index} className="carousel-card">
+                          <h3>{slide.title}</h3>
+                          <p>{slide.content}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 flex gap-3 justify-end">
+                      <button
+                        className="btn-green"
+                        onClick={() => alert('Mock download started — images would be generated here!')}
+                      >
+                        📥 Download Carousel as Images
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <pre className="repurpose-output">{repurposedText}</pre>
+                    <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-end">
+                      <button
+                        className="btn-primary"
+                        onClick={() => {
+                          const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g, "-");
+                          downloadTxtInline(repurposedText, `ivcontent-${ts}.txt`);
+                        }}
+                      >
+                        📄 Download .txt
+                      </button>
+
+                      <button
+                        className="btn-green"
+                        onClick={() => {
+                          const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g, "-");
+                          downloadPdfFromText(repurposedText, `ivcontent-${ts}.pdf`);
+                        }}
+                      >
+                        🧾 Download .pdf
+                      </button>
+
+                      <button onClick={copyToClipboard} className="btn-neutral">
+                        📋 Copy to Clipboard
+                      </button>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
 
-          {/* Output Section */}
-        <div className="w-full lg:w-1/2" ref={outputRef}>
-          {loading && (
-            <p className="status-line text-xl font-semibold animate-pulse">
-              Repurposing your content...
-            </p>
-          )}
-
-          {!loading && repurposedText && (
-            <>
-              {isCarousel ? (
-                <>
-                  <div className="carousel-row">
-                    {repurposedText.map((slide, index) => (
-                      <div key={index} className="carousel-card">
-                        <h3>{slide.title}</h3>
-                        <p>{slide.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex gap-3 justify-end">
-                    <button
-                      className="btn-green"
-                      onClick={() => alert('Mock download started — images would be generated here!')}
-                    >
-                      📥 Download Carousel as Images
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <pre className="repurpose-output">{repurposedText}</pre>
-                  <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-end">
-                    <button
-                      className="btn-primary"
-                      onClick={() => {
-                        const blob = new Blob([repurposedText], { type: 'text/plain' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'repurposed.txt';
-                        a.click();
-                        URL.revokeObjectURL(url);
-                      }}
-                    >
-                      Download .txt
-                    </button>
-                    <button
-                      onClick={copyToClipboard}
-                      className="btn-neutral"
-                    >
-                      📋 Copy to Clipboard
-                    </button>
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-      <div className="h-12" />
-    </main>
-  </div>
-);
+        <div className="h-12" />
+      </main>
+    </div>
+  );
 }
-
-

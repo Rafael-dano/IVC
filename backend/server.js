@@ -205,13 +205,6 @@ app.use(cors({
   credentials: false
 }));
 
-app.use((err, _req, res, next) => {
-  if (err && err.message === "CORS blocked") {
-    return res.status(403).json({ error: "CORS blocked" });
-  }
-  next(err);
-});
-
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -270,6 +263,12 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
 ----------------------------- */
 app.get("/", (_req, res) => res.send("✅ Backend is working!"));
 app.post("/api/echo", (req, res) => res.json({ ok: true, received: req.body }));
+
+// --- Healthcheck (simple) ---
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true, env: process.env.NODE_ENV || "development", time: new Date().toISOString() });
+});
+
 
 /* ----------------------------
    4) Read LTD spots
@@ -448,6 +447,40 @@ app.get("/__routes", (_req, res) => {
         path: l.route.path,
       })) || [];
   res.json(routes);
+});
+
+/* ----------------------------
+   8.5) JSON 404 + error handler
+   (place ABOVE app.listen)
+----------------------------- */
+
+// 404 for anything not matched above
+app.use((req, res, _next) => {
+  res.status(404).json({
+    error: "Not Found",
+    method: req.method,
+    path: req.path,
+  });
+});
+
+// Central error handler (JSON)
+app.use((err, req, res, _next) => {
+  // Respect CORS for errors too
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+
+  // Avoid leaking internals in production
+  const isProd = (process.env.NODE_ENV || "development") === "production";
+  const payload = {
+    error: "Internal Server Error",
+  };
+  if (!isProd) {
+    payload.details = err?.message || String(err);
+    payload.stack = err?.stack;
+    payload.path = req.path;
+  }
+
+  console.error("❌ Unhandled error:", err);
+  res.status(err.status || 500).json(payload);
 });
 
 /* ----------------------------
