@@ -109,7 +109,7 @@ export default function LTD() {
 
         <section>
           <button className="ltd-button" onClick={onSubscribe}>
-            Go Pro — $15 / month
+            Go Pro — $13 / month
           </button>
         </section>
 

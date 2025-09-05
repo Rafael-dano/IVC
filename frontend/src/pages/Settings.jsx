@@ -1,59 +1,66 @@
 // src/pages/Settings.jsx
 import { useEffect, useState } from "react";
-import { supabase } from "../api/supabaseClient.js"; // <-- correct path
+import { supabase } from "../api/supabaseClient.js";
 import "./Settings.css";
+import { fetchMe, openBillingPortal } from "../api/account.js";
 
 export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [hasAuth, setHasAuth] = useState(true);
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
+  const [account, setAccount] = useState(null);     // { user: {...}, usage: {...} }
+  const [portalBusy, setPortalBusy] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       try {
-        // If your frontend supabaseClient is a shim (no env),
-        // getUser() will return { user: null } and that's fine.
+        // 1) Ensure user session exists
         const { data, error } = await supabase.auth.getUser();
         if (error) throw error;
 
         const user = data?.user || null;
         if (!user) {
-          setHasAuth(false);
-          setLoading(false);
+          if (!cancelled) {
+            setHasAuth(false);
+            setLoading(false);
+          }
           return;
         }
 
         setEmail(user.email || "");
 
-        // Fetch profile (if none, not an error—just empty state)
+        // 2) Load profile display_name (optional)
         const { data: profile, error: profErr } = await supabase
           .from("profiles")
           .select("display_name")
           .eq("id", user.id)
           .maybeSingle();
 
-        if (profErr) {
-          // If table/policies misconfigured, surface minimal info:
-          console.warn("profiles select error:", profErr.message);
+        if (profErr) console.warn("profiles select error:", profErr.message);
+        setDisplayName(profile?.display_name || "");
+
+        // 3) Load account (plan + usage) from backend
+        try {
+          const me = await fetchMe(); // uses supabase token under the hood
+          if (!cancelled) setAccount(me);
+        } catch (e) {
+          console.warn("fetchMe failed (maybe user has no plan yet):", e.message);
         }
 
-        if (!cancelled) {
-          setDisplayName(profile?.display_name || "");
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       } catch (e) {
         console.error("Settings init error:", e);
-        setHasAuth(false);
-        setLoading(false);
+        if (!cancelled) {
+          setHasAuth(false);
+          setLoading(false);
+        }
       }
     })();
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   async function saveDisplayName() {
@@ -65,7 +72,11 @@ export default function Settings() {
 
       const { error } = await supabase
         .from("profiles")
-        .upsert({ id: user.id, display_name: displayName, updated_at: new Date().toISOString() });
+        .upsert({
+          id: user.id,
+          display_name: displayName,
+          updated_at: new Date().toISOString(),
+        });
       if (error) return alert(error.message);
 
       alert("✅ Display name saved.");
@@ -95,6 +106,18 @@ export default function Settings() {
     }
   }
 
+  async function handleOpenPortal() {
+    try {
+      setPortalBusy(true);
+      await openBillingPortal(); // uses token internally
+      // will redirect if successful
+    } catch (e) {
+      alert(e.message || "Could not open billing portal");
+    } finally {
+      setPortalBusy(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="max-w-xl mx-auto py-10">
@@ -118,10 +141,49 @@ export default function Settings() {
     );
   }
 
+  const planKey = (account?.user?.plan || "FREE").toLowerCase();
+  const hasStripeCustomer = !!account?.user?.stripe_customer_id;
+
   return (
     <div className="settings-page">
       <div className="settings-container">
         <h1 className="settings-title">Settings</h1>
+
+        {/* Account card: plan + usage + portal button */}
+        {account && (
+          <div className="settings-card">
+            <div className="settings-card__row">
+              <span className={`badge badge--${planKey}`}>{account.user.plan}</span>
+
+              {/* Show Manage Billing if we know the Stripe customer (PRO or anyone who checked out before) */}
+              {hasStripeCustomer && (
+                <button
+                  className="btn btn--ghost"
+                  onClick={handleOpenPortal}
+                  disabled={portalBusy}
+                  title="Manage your subscription in Stripe"
+                >
+                  {portalBusy ? "Opening…" : "Manage Billing"}
+                </button>
+              )}
+            </div>
+
+            <div className="settings-card__row">
+              <div className="settings-meta">
+                <div>
+                  <strong>Monthly usage:</strong>{" "}
+                  {account.usage.remaining} / {account.usage.month_tokens_limit} tokens left
+                </div>
+                {account.user.renews_at && (
+                  <div>
+                    <strong>Renews:</strong>{" "}
+                    {new Date(account.user.renews_at).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <section className="settings-section">
           <label>Display Name</label>
@@ -135,7 +197,7 @@ export default function Settings() {
             Save
           </button>
         </section>
-  
+
         <section className="settings-section">
           <label>Email</label>
           <input
@@ -152,7 +214,7 @@ export default function Settings() {
             You’ll receive a confirmation email to verify the change.
           </p>
         </section>
-  
+
         <section className="settings-section flex gap-3">
           <button onClick={logout} className="settings-btn secondary">
             Log Out
@@ -161,18 +223,14 @@ export default function Settings() {
             Delete Account (coming soon)
           </button>
         </section>
-        
       </div>
+
       <a
-          href="/help"
-          className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        ><strong>
-          ← Back to Help</strong>
-        </a>
+        href="/help"
+        className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        <strong>← Back to Help</strong>
+      </a>
     </div>
   );
 }
-
-
-
-

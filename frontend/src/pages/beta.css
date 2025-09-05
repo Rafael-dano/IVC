@@ -1,0 +1,67 @@
+/* Card look for the form & success box */
+main .rounded-xl.shadow {
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08);
+  border: 1px solid rgba(2, 6, 23, 0.06);
+}
+
+/* Hero spacing & subtle text treatment */
+.beta-hero {
+  margin-bottom: 1.5rem;
+}
+.beta-hero h1 {
+  letter-spacing: -0.02em;
+}
+.beta-hero p {
+  color: #475569; /* slate-600 */
+}
+
+/* Inputs */
+.beta-hero + form input[type="text"],
+.beta-hero + form input[type="email"],
+main form input[type="text"],
+main form input[type="email"] {
+  background: #fff;
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+main form input:focus {
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.18); /* purple focus ring */
+  border-color: rgb(168, 85, 247);
+}
+
+/* Submit button */
+main form button[type="submit"] {
+  font-weight: 600;
+}
+
+/* Small helper text beneath the form */
+main form .text-xs {
+  color: #64748b; /* slate-500 */
+}
+
+/* Success panel emoji sizing */
+main .text-center .text-2xl {
+  line-height: 1;
+}
+
+/* Back link */
+a.beta-back,
+main a[href="/ltd"] {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #2563eb;      /* blue-600 */
+  color: #fff;
+  border-radius: 0.5rem;
+  transition: background 120ms ease;
+}
+a.beta-back:hover,
+main a[href="/ltd"]:hover {
+  background: #1d4ed8;      /* blue-700 */
+}
+
+/* Constrain iFrame if you re-add it later */
+.beta-card iframe {
+  border: 0;
+  width: 100%;
+  max-height: 900px;
+  border-radius: 0.75rem;
+}

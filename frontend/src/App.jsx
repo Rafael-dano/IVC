@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard.jsx';
-import Beta from './pages/Beta.jsx';
+import Beta from './pages/beta.jsx';
 import LTD from './pages/LTD.jsx';
 import Help from './pages/Help.jsx';
 import FAQ from './pages/FAQ.jsx';
