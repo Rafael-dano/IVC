@@ -151,40 +151,72 @@ export default function Settings() {
 
         {/* Account card: plan + usage + portal button */}
         {account && (
-          <div className="settings-card">
-            <div className="settings-card__row">
-              <span className={`badge badge--${planKey}`}>{account.user.plan}</span>
+  <div className="settings-card">
+    <div className="settings-card__row">
+      <span className={`badge badge--${planKey}`}>{account.user.plan}</span>
+      {hasStripeCustomer && (
+        <button
+          className="btn btn--ghost"
+          onClick={handleOpenPortal}
+          disabled={portalBusy}
+          title="Manage your subscription in Stripe"
+        >
+          {portalBusy ? "Opening…" : "Manage Billing"}
+        </button>
+      )}
+    </div>
 
-              {/* Show Manage Billing if we know the Stripe customer (PRO or anyone who checked out before) */}
-              {hasStripeCustomer && (
-                <button
-                  className="btn btn--ghost"
-                  onClick={handleOpenPortal}
-                  disabled={portalBusy}
-                  title="Manage your subscription in Stripe"
-                >
-                  {portalBusy ? "Opening…" : "Manage Billing"}
-                </button>
-              )}
-            </div>
-
-            <div className="settings-card__row">
-              <div className="settings-meta">
-                <div>
-                  <strong>Monthly usage:</strong>{" "}
-                  {account.usage.remaining} / {account.usage.month_tokens_limit} tokens left
-                </div>
-                {account.user.renews_at && (
-                  <div>
-                    <strong>Renews:</strong>{" "}
-                    {new Date(account.user.renews_at).toLocaleDateString()}
-                  </div>
-                )}
-              </div>
-            </div>
+    <div className="settings-card__row">
+      <div className="settings-meta">
+        <div>
+          <strong>Monthly usage:</strong>{" "}
+          {account.usage.remaining} / {account.usage.month_tokens_limit} tokens left
+        </div>
+        {account.user.renews_at && (
+          <div>
+            <strong>Renews:</strong>{" "}
+            {new Date(account.user.renews_at).toLocaleDateString()}
           </div>
         )}
+      </div>
+    </div>
+  </div>
+)}
 
+{account?.usage && (
+  <div className="settings-card">
+    <div className="settings-card__row">
+      <strong>Transcription minutes</strong>
+    </div>
+
+    {(() => {
+      const used = account.usage.transcription_minutes_used ?? 0;
+      const limit = account.usage.transcription_minutes_limit ?? 0;
+      const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+      return (
+        <div className="settings-card__row" style={{flexDirection: "column", gap: "8px"}}>
+          <div style={{display: "flex", justifyContent: "space-between", width: "100%"}}>
+            <span>{used} / {limit} min used</span>
+            <span>{pct}%</span>
+          </div>
+          <div style={{width: "100%", height: 10, background: "rgba(255,255,255,0.1)", borderRadius: 6}}>
+            <div style={{
+              width: `${pct}%`,
+              height: "100%",
+              background: pct > 90 ? "#ef4444" : pct > 70 ? "#f59e0b" : "#22c55e",
+              borderRadius: 6
+            }} />
+          </div>
+          {limit === 0 && (
+            <p className="opacity-80 text-sm">
+              Your plan currently has no transcription minutes. Upgrade to enable video/audio uploads.
+            </p>
+          )}
+        </div>
+      );
+    })()}
+  </div>
+)}
         <section className="settings-section">
           <label>Display Name</label>
           <input

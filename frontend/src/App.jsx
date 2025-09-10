@@ -10,6 +10,7 @@ import Login from "./pages/Login.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import Settings from "./pages/Settings.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
+import "./i18n.js";
 
 function App() {
   return (

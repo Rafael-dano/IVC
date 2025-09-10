@@ -5,6 +5,13 @@ import cors from "cors";
 import morgan from "morgan";
 import Stripe from "stripe";
 import rateLimit from "express-rate-limit";
+import multer from "multer";
+import fs from "fs/promises";
+import path from "path";
+import * as mm from "music-metadata";
+import ffmpegPath from "ffmpeg-static";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 
 import openai from "./api/openaiClient.js";
 import { supabaseAdmin } from "./api/supabaseClient.js";
@@ -16,6 +23,67 @@ import { sendBetaWelcomeEmail, sendPurchaseEmail } from "./email.js";
 const app = express();
 const PORT = process.env.PORT || 5051;
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const execFileAsync = promisify(execFile);
+
+async function getTranscriptSecondsUsedThisMonth(userId) {
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+  const { data, error } = await supabaseAdmin
+    .from("transcript_usage")
+    .select("seconds_used, created_at")
+    .gte("created_at", monthStart)
+    .eq("user_id", userId);
+
+  if (error) {
+    console.warn("transcript_usage read error:", error.message || error);
+    return 0;
+  }
+  return (data || []).reduce((s, r) => s + (r.seconds_used || 0), 0);
+}
+
+async function getDurationSeconds(filePath) {
+  try {
+    const meta = await mm.parseFile(filePath, { duration: true });
+    const secs = Math.max(0, Math.round(meta.format.duration || 0));
+    return secs || 60; // fallback 60s if container hides duration
+  } catch {
+    return 60;
+  }
+}
+
+async function transcodeWithFfmpeg(inputPath, outputPath, to = "mp3") {
+  if (!ffmpegPath) {
+    throw new Error("ffmpeg binary not found. Ensure `ffmpeg-static` is installed.");
+  }
+
+  // Choose args
+  let args;
+  if (to === "mp3") {
+    // Extract audio → mp3 (fast, cheap, widely supported)
+    args = [
+      "-y",
+      "-i", inputPath,
+      "-vn",                 // no video
+      "-acodec", "libmp3lame",
+      "-q:a", "2",           // VBR quality (lower is better; 2 ~ high)
+      outputPath
+    ];
+  } else {
+    // Full transcode to MP4 (larger files; only use if you truly need video)
+    args = [
+      "-y",
+      "-i", inputPath,
+      "-c:v", "libx264",
+      "-preset", "veryfast",
+      "-movflags", "+faststart",
+      "-c:a", "aac",
+      "-b:a", "128k",
+      outputPath
+    ];
+  }
+
+  await execFileAsync(ffmpegPath, args);
+  return outputPath;
+}
 
 /* ----------------------------
    1) Stripe Webhook (raw body) — must be BEFORE express.json()
@@ -186,7 +254,6 @@ app.get("/webhooks/stripe/ping", (_req, res) => {
 /* ----------------------------
    2) Standard middleware (safe AFTER webhook)
 ----------------------------- */
-// app.use(cors({ origin: "*", methods: ["GET", "POST", "OPTIONS"] }));  is this the line im supposed to replace with this code 
 const allowed = new Set(
   (process.env.SITE_URLS
     ? process.env.SITE_URLS.split(",")
@@ -218,7 +285,6 @@ const betaLimiter = rateLimit({
 app.get("/__cors", (_req, res) => {
   res.json({ allowed: Array.from(allowed) });
 });
-
 
 // --- Beta signup (public, writes via admin + optional email) ---
 app.post("/api/beta/signup", betaLimiter, async (req, res) => {
@@ -258,6 +324,196 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
   }
 });
 
+
+/* - this is where i am gonna put the video to summary route!! - */
+const upload = multer({
+  dest: path.join(process.cwd(), "uploads"),
+  limits: {
+    fileSize: 200 * 1024 * 1024, // 200 MB max; adjust if needed
+  },
+  fileFilter: (_req, file, cb) => {
+    const ok =
+      /video\/mp4/.test(file.mimetype) ||
+      /video\/quicktime/.test(file.mimetype) || // .mov
+      /audio\//.test(file.mimetype);
+    if (!ok) return cb(new Error("Only .mp4, .mov, or audio files are allowed"));
+    cb(null, true);
+  },
+});
+
+const videoLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 5, // 5 uploads/min per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// ─────────────────────────────────────────────────────────────
+// Upload & Transcribe (with plan enforcement + extension fix + MOV transcode)
+// ─────────────────────────────────────────────────────────────
+app.post(
+  "/api/video/transcribe",
+  requireUser,
+  videoLimiter,
+  upload.single("file"),
+  async (req, res) => {
+    let tmpPath = null;
+    let sendPath = null;
+    let transcodedPath = null;
+
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      const userId = req.user.id;
+      const originalName = req.file.originalname || "upload";
+      const ext = (path.extname(originalName) || "").toLowerCase();
+
+      // Save paths
+      tmpPath = req.file.path;                 // e.g. uploads/abc123 (no extension)
+      const initialExt = ext || ".mp4";        // best-guess if the name had no ext
+      const namedPath = tmpPath + initialExt;  // give the temp file an extension for probing
+
+      // Rename temp file to include the original (or default) extension
+      try {
+        await fs.rename(tmpPath, namedPath);
+      } catch {
+        await fs.copyFile(tmpPath, namedPath);
+        await fs.unlink(tmpPath).catch(() => {});
+      }
+
+      // Decide if we must transcode
+      const SUPPORTED = new Set([
+        ".flac",".m4a",".mp3",".mp4",".mpeg",".mpga",".oga",".ogg",".wav",".webm"
+      ]);
+
+      let inputForApi = namedPath;
+
+      if (ext === ".mov" || !SUPPORTED.has(ext)) {
+        // Convert anything unsupported (or .mov) to MP3 for Whisper
+        transcodedPath = namedPath.replace(/\.[^/.]+$/, "") + ".mp3";
+        await transcodeWithFfmpeg(namedPath, transcodedPath, "mp3");
+        inputForApi = transcodedPath;
+
+        // optional: if you really want MP4 instead, swap lines:
+        // transcodedPath = namedPath.replace(/\.[^/.]+$/, "") + ".mp4";
+        // await transcodeWithFfmpeg(namedPath, transcodedPath, "mp4");
+        // inputForApi = transcodedPath;
+      }
+
+      // This is the file path we’ll send to OpenAI
+      sendPath = inputForApi;
+
+      // --- PLAN ENFORCEMENT (duration + monthly minutes) ---
+      const durationSec = await getDurationSeconds(sendPath);
+
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("plan")
+        .eq("id", userId)
+        .maybeSingle();
+
+      const planKey = (profile?.plan || "FREE").toUpperCase();
+      const plan = PLANS[planKey] || PLANS.FREE;
+      const cap = Number(plan.maxTranscriptSeconds || 0);
+
+      const usedSec = await getTranscriptSecondsUsedThisMonth(userId);
+
+      if (cap > 0 && usedSec + durationSec > cap) {
+        const remaining = Math.max(0, cap - usedSec);
+        return res.status(402).json({
+          error: "Transcription limit reached",
+          detail: `You have ${Math.floor(remaining/60)} minutes left this month on ${planKey}. This upload is ~${Math.ceil(durationSec/60)} minutes.`,
+          plan: planKey,
+          remaining_seconds: remaining,
+          attempted_seconds: durationSec,
+        });
+      }
+
+      const lang = (req.body?.lang || "en").toString();
+
+      const stream = (await import("fs")).default.createReadStream(sendPath);
+
+      const transcriptResp = await openai.audio.transcriptions.create({
+        file: stream,
+        model: "whisper-1",
+        language: lang,
+        response_format: "json",
+        temperature: 0,
+      });
+
+      const form = new FormData();
+      form.append("file", file);
+      form.append("lang", i18n.language || "en");
+
+      const resp = await fetch(`${API_BASE}/api/video/transcribe`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${(await supabase.auth.getSession()).data.session.access_token}` },
+        body: form,
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(()=>({}));
+        if (resp.status === 402) {
+         // limit reached
+          const mins = Math.floor((err.remaining_seconds || 0)/60);
+          alert(`You’ve hit your monthly transcription limit.\n${mins} minutes remain.\nPlan: ${err.plan}\nThis upload length: ~${Math.ceil((err.attempted_seconds||0)/60)} min.`);
+        } else if (resp.status === 415) {
+          alert("Unsupported file. Try mp4/m4a/mp3/wav/ogg/webm — MOV is auto-converted.");
+        } else {
+          alert(err.error || "Transcription failed.");
+        }
+        return;
+      }
+
+      const data = await resp.json();
+      // data.text is your transcript
+
+      const text =
+        transcriptResp?.text ||
+        transcriptResp?.results?.text ||
+        String(transcriptResp || "").trim();
+
+      if (!text) {
+        return res.status(502).json({ error: "Transcription returned empty text" });
+      }
+
+      await supabaseAdmin.from("transcript_usage").insert({
+        user_id: userId,
+        seconds_used: durationSec,
+      });
+
+      return res.json({
+        ok: true,
+        filename: originalName,
+        lang,
+        length: text.length,
+        approxWords: Math.max(1, Math.round(text.split(/\s+/).length)),
+        approxSecondsBilled: durationSec,
+        text,
+      });
+    } catch (e) {
+      console.error("/api/video/transcribe error:", e);
+      if (
+        String(e?.message || "").includes("Unrecognized file format") ||
+        e?.status === 400
+      ) {
+        return res.status(415).json({
+          error:
+            "Unrecognized/unsupported file format. Please upload mp4/m4a/mp3/wav/ogg/webm/etc.",
+        });
+      }
+      return res.status(500).json({ error: "Failed to transcribe video" });
+    } finally {
+      // Clean up temp files
+      if (transcodedPath) await fs.unlink(transcodedPath).catch(() => {});
+      if (sendPath && sendPath !== transcodedPath) await fs.unlink(sendPath).catch(() => {});
+      else if (tmpPath) await fs.unlink(tmpPath).catch(() => {});
+    }
+  }
+);
+
 /* ----------------------------
    3) Health + Echo
 ----------------------------- */
@@ -268,7 +524,6 @@ app.post("/api/echo", (req, res) => res.json({ ok: true, received: req.body }));
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, env: process.env.NODE_ENV || "development", time: new Date().toISOString() });
 });
-
 
 /* ----------------------------
    4) Read LTD spots
@@ -310,7 +565,7 @@ app.get("/api/me", requireUser, async (req, res) => {
       console.warn("/api/me profile error:", pErr.message);
     }
 
-    // usage this month
+    // usage this month (tokens)
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
     const { data: usageRows, error: uErr } = await supabaseAdmin
@@ -325,12 +580,26 @@ app.get("/api/me", requireUser, async (req, res) => {
 
     const usedTokens = (usageRows || []).reduce((s, r) => s + (r.tokens_used || 0), 0);
 
-    // limits from shared plans.js
-    const planKey = profile?.plan || "FREE";
+    // plan limits
+    const planKey = (profile?.plan || "FREE").toUpperCase();
     const plan = PLANS[planKey] || PLANS.FREE;
 
-    const monthTokensLimit = plan.maxTokens;
+    const monthTokensLimit = Number(plan.maxTokens || 0);
     const remaining = Math.max(0, monthTokensLimit - usedTokens);
+
+    // transcription usage
+    const { data: trows, error: terr } = await supabaseAdmin
+      .from("transcript_usage")
+      .select("seconds_used, created_at")
+      .gte("created_at", monthStart)
+      .eq("user_id", userId);
+
+    if (terr) {
+      console.warn("/api/me transcript_usage error:", terr.message || terr);
+    }
+
+    const usedSeconds = (trows || []).reduce((s, r) => s + (r.seconds_used || 0), 0);
+    const capSeconds = Number(plan.maxTranscriptSeconds || 0);
 
     res.json({
       user: {
@@ -346,6 +615,12 @@ app.get("/api/me", requireUser, async (req, res) => {
         month_tokens_limit: monthTokensLimit,
         remaining,
         month_start: monthStart,
+
+        // NEW
+        transcription_seconds_used: usedSeconds,
+        transcription_seconds_limit: capSeconds,
+        transcription_minutes_used: Math.round(usedSeconds / 60),
+        transcription_minutes_limit: Math.round(capSeconds / 60),
       },
     });
   } catch (e) {
@@ -363,7 +638,7 @@ app.post("/api/billing/portal", requireUser, async (req, res) => {
       .eq("id", req.user.id)
       .maybeSingle();
 
-    if (!prof?.stripe_customer_id) {
+  if (!prof?.stripe_customer_id) {
       return res.status(400).json({ error: "No Stripe customer found." });
     }
 
