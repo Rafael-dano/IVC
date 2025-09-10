@@ -443,16 +443,6 @@ app.post(
         temperature: 0,
       });
 
-      const form = new FormData();
-      form.append("file", file);
-      form.append("lang", i18n.language || "en");
-
-      const resp = await fetch(`${API_BASE}/api/video/transcribe`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${(await supabase.auth.getSession()).data.session.access_token}` },
-        body: form,
-      });
-
       if (!resp.ok) {
         const err = await resp.json().catch(()=>({}));
         if (resp.status === 402) {
@@ -467,9 +457,6 @@ app.post(
         return;
       }
 
-      const data = await resp.json();
-      // data.text is your transcript
-
       const text =
         transcriptResp?.text ||
         transcriptResp?.results?.text ||
@@ -479,11 +466,22 @@ app.post(
         return res.status(502).json({ error: "Transcription returned empty text" });
       }
 
+      // 5) record usage
       await supabaseAdmin.from("transcript_usage").insert({
         user_id: userId,
         seconds_used: durationSec,
       });
 
+      // 5.5) OPTIONAL: store transcript text for history
+      await supabaseAdmin.from("transcripts").insert({
+        user_id: userId,
+        filename: originalName,
+        lang,
+        seconds_billed: durationSec,
+        text,
+      });
+
+      // 6) respond
       return res.json({
         ok: true,
         filename: originalName,
@@ -493,6 +491,7 @@ app.post(
         approxSecondsBilled: durationSec,
         text,
       });
+
     } catch (e) {
       console.error("/api/video/transcribe error:", e);
       if (

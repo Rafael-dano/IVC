@@ -1,0 +1,112 @@
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .dashboard-title {
+    font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  
+  .usage-bubble {
+    margin-left: auto;
+    min-width: 320px;
+    max-width: 420px;
+    border-radius: 16px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    box-shadow:
+      0 4px 16px rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  
+  .usage-bubble__plan {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+    margin-bottom: 0.35rem;
+  }
+  
+  .usage-bubble__section-title {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    margin-bottom: 0.25rem;
+  }
+  
+  .usage-bubble__count {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  
+  .usage-bubble__meta {
+    font-size: 0.68rem;
+    opacity: 0.75;
+    margin-bottom: 0.4rem;
+  }
+  
+  .usage-bubble__bar {
+    width: 100%;
+    height: 6px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    overflow: hidden;
+  }
+  
+  .usage-bubble__bar > span {
+    display: block;
+    height: 100%;
+    border-radius: 6px;
+  }
+  
+  .usage-bubble__bar--ok > span  { background: #22c55e; } /* green */
+  .usage-bubble__bar--warn > span{ background: #f59e0b; } /* amber */
+  .usage-bubble__bar--bad > span { background: #ef4444; } /* red */
+  
+  .usage-bubble__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  
+  .usage-bubble__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  
+  .usage-bubble__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: all 120ms ease;
+    text-decoration: none;
+  }
+  
+  .usage-bubble__btn--primary {
+    background: #22d3ee; /* cyan-400 */
+    color: #000;
+    border: none;
+  }
+  
+  .usage-bubble__btn--ghost {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+  }
+  
+  .usage-bubble__btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+  

@@ -20,6 +20,7 @@ export default function RepurposeTool() {
   const [darkMode] = useState(true);
   const [isCarousel, setIsCarousel] = useState(false);
   const outputRef = useRef(null);
+  const [uploadPct, setUploadPct] = useState(0);
 
   // transcript language (for local video transcription). Default to UI language.
   const [transcriptLang, setTranscriptLang] = useState(i18n.language || "en");
@@ -54,6 +55,38 @@ export default function RepurposeTool() {
     'script-to-vocal': '🎤 AI Vocals (Coming Soon)',
   };
   const chipText = FORMAT_LABEL[format] || '⚙️ Custom';
+
+  function uploadVideoWithProgress({ file, lang = "en", token, onProgress }) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051"}/api/video/transcribe`);
+  
+      if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+  
+      xhr.upload.onprogress = (evt) => {
+        if (evt.lengthComputable && typeof onProgress === "function") {
+          onProgress(Math.round((evt.loaded / evt.total) * 100));
+        }
+      };
+  
+      xhr.onload = () => {
+        try {
+          const json = JSON.parse(xhr.responseText || "{}");
+          if (xhr.status >= 200 && xhr.status < 300) resolve(json);
+          else reject({ status: xhr.status, error: json?.error || "Upload failed" });
+        } catch {
+          reject({ status: xhr.status, error: "Bad response from server" });
+        }
+      };
+  
+      xhr.onerror = () => reject({ status: xhr.status, error: "Network error" });
+  
+      const form = new FormData();
+      form.append("file", file);
+      form.append("lang", lang);
+      xhr.send(form);
+    });
+  }  
 
   // keep transcriptLang in sync with UI language if user hasn’t changed it
   useEffect(() => {
@@ -125,16 +158,45 @@ export default function RepurposeTool() {
           setRepurposedText("⚠️ Please choose a video file first (.mp4 recommended).");
           return;
         }
-
+      
         setUploading(true);
-        const { text: transcript } = await transcribeLocalVideo(videoFile, transcriptLang)
-          .finally(() => setUploading(false));
-
-        if (!transcript || !transcript.trim()) {
+        setUploadPct(0);
+      
+        let transcript = "";
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+      
+          const resp = await uploadVideoWithProgress({
+            file: videoFile,
+            lang: transcriptLang,
+            token: session?.access_token,
+            onProgress: (pct) => setUploadPct(pct),
+          });
+      
+          transcript = resp?.text || "";
+        } catch (e) {
+          console.error(e);
+          // Friendly errors
+          const status = e?.status;
+          const msg = e?.json?.error || e.message || "Upload failed.";
+          if (status === 402) {
+            alert(e?.json?.detail || "You’ve hit your monthly transcription limit.");
+          } else if (status === 415) {
+            alert("Unsupported file. Try mp4/m4a/mp3/wav/ogg/webm — MOV is auto-converted.");
+          } else {
+            alert(msg);
+          }
+          setUploading(false);
+          return;
+        } finally {
+          setUploading(false);
+        }
+      
+        if (!transcript.trim()) {
           setRepurposedText("⚠️ Transcription returned empty text.");
           return;
         }
-
+        
         let prompt;
         if (format === "video-summary") {
           prompt = `
@@ -170,6 +232,37 @@ ${transcript}
         setRepurposedText(aiResponse);
         return;
       }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      setUploading(true);
+      setUploadPct(0);
+      
+      let transcript;
+      try {
+        const resp = await uploadVideoWithProgress({
+          file: videoFile,
+          lang: transcriptLang,
+          token: session?.access_token,
+          onProgress: setUploadPct,
+        });
+        transcript = resp?.text || "";
+      } catch (e) {
+        if (e?.status === 402) {
+          alert("You’ve hit your monthly transcription limit for your plan.");
+        } else if (e?.status === 415) {
+          alert("Unsupported file. Try mp4/m4a/mp3/wav/ogg/webm — MOV is auto-converted.");
+        } else {
+          alert(e?.error || "Transcription failed.");
+        }
+        setUploading(false);
+        return;
+      }
+      setUploading(false);
+      
+      if (!transcript.trim()) {
+        setRepurposedText("⚠️ Transcription returned empty text.");
+        return;
+      }      
 
       // ---- Carousel branch ----
       if (format === "carousel-generator") {
@@ -273,6 +366,40 @@ ${transcript}
     }
   }
 
+  // Progress-aware upload helper (uses XMLHttpRequest so we get onprogress)
+async function uploadVideoWithProgress({ file, lang = "en", token, onProgress }) {
+  return new Promise((resolve, reject) => {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("lang", lang);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE}/api/video/transcribe`, true);
+    if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable && typeof onProgress === "function") {
+        const pct = Math.min(100, Math.round((e.loaded / e.total) * 100));
+        onProgress(pct);
+      }
+    };
+
+    xhr.onload = () => {
+      try {
+        const ok = xhr.status >= 200 && xhr.status < 300;
+        const json = JSON.parse(xhr.responseText || "{}");
+        if (ok) resolve(json);
+        else reject(Object.assign(new Error(json.error || "Upload failed"), { status: xhr.status, json }));
+      } catch (err) {
+        reject(err);
+      }
+    };
+
+    xhr.onerror = () => reject(new Error("Network error during upload"));
+    xhr.send(form);
+  });
+}
+
   return (
     <div className={`repurpose-page min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} font-sans`}>
       <header className="w-full px-6 py-4 flex items-center justify-between bg-gray-800 text-white shadow-md">
@@ -344,6 +471,20 @@ ${transcript}
                 )}
               </div>
             )}
+            {uploading && (
+  <div className="mt-3">
+    <div className="flex items-center justify-between text-xs opacity-80 mb-1">
+      <span>Uploading…</span>
+      <span>{uploadPct}%</span>
+    </div>
+    <div className="h-2 w-full rounded bg-white/15 overflow-hidden">
+      <div
+        className="h-2 bg-cyan-400"
+        style={{ width: `${uploadPct}%` }}
+      />
+    </div>
+  </div>
+)}
 
             <select
               className="repurpose-select mt-3"
