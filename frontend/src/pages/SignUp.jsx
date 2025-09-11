@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";
 import "./Auth.css";
+import { useTranslation } from "react-i18next";
 
 export default function SignUp() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ export default function SignUp() {
       if (error) throw error;
 
       if (!data.session) {
-        alert("Check your email to confirm your account, then log in.");
+        alert(t("auth.signup.checkEmail"));
         setLoading(false);
         navigate("/login");
         return;
@@ -41,7 +43,7 @@ export default function SignUp() {
       setLoading(false);
       navigate("/settings");
     } catch (err) {
-      alert(err.message || "Could not create your account.");
+      alert(err.message || t("auth.signup.error"));
       setLoading(false);
     }
   };
@@ -50,9 +52,9 @@ export default function SignUp() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-title">Create your account</div>
-          <div className="auth-subtitle">Join IVContent in seconds</div>
-          <Link to="/" className="auth-link">Maybe Next Time</Link>
+          <div className="auth-title">{t("auth.signup.title")}</div>
+          <div className="auth-subtitle">{t("auth.signup.subtitle")}</div>
+          <Link to="/" className="auth-link">{t("auth.common.maybeLater")}</Link>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
@@ -60,7 +62,7 @@ export default function SignUp() {
             className="auth-input"
             type="text"
             name="name"
-            placeholder="Full name"
+            placeholder={t("auth.common.fullNamePlaceholder")}
             value={form.name}
             onChange={handleChange}
             required
@@ -69,7 +71,7 @@ export default function SignUp() {
             className="auth-input"
             type="email"
             name="email"
-            placeholder="Email address"
+            placeholder={t("auth.common.emailPlaceholder")}
             value={form.email}
             onChange={handleChange}
             required
@@ -78,19 +80,19 @@ export default function SignUp() {
             className="auth-input"
             type="password"
             name="password"
-            placeholder="Password"
+            placeholder={t("auth.common.passwordPlaceholder")}
             value={form.password}
             onChange={handleChange}
             required
           />
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Creating..." : "Sign Up"}
+            {loading ? t("auth.signup.loading") : t("auth.signup.cta")}
           </button>
         </form>
 
         <div className="auth-footer">
-          Already have an account?{" "}
-          <Link to="/login" className="auth-link">Log in</Link>
+          {t("auth.signup.haveAccount")}{" "}
+          <Link to="/login" className="auth-link">{t("auth.login.link")}</Link>
         </div>
       </div>
     </div>

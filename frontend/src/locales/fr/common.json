@@ -1,0 +1,189 @@
+{
+  "appName": "IV Content",
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "settings": "Paramètres",
+    "logout": "Se déconnecter",
+    "tool": "Outil",
+    "ltd": "Offre à vie",
+    "help": "Aide",
+    "login": "Connexion",
+    "signup": "Créer un compte"
+  },
+  "repurpose": {
+    "heroTitle": "Transformez n’importe quel contenu",
+    "heroSub": "Téléversez une vidéo ou collez un texte. Obtenez résumés, scripts et bien plus encore.",
+    "textareaPlaceholder": "Collez ou saisissez votre contenu ici...",
+    "btnRepurpose": "Réutiliser le contenu",
+    "btnClear": "Effacer",
+    "btnCopy": "Copier",
+    "btnDownloadTxt": "Télécharger .txt",
+    "btnDownloadPdf": "Télécharger .pdf",
+    "needInput": "⚠️ Veuillez d’abord saisir du contenu.",
+    "needLogin": "⚠️ Vous devez être connecté pour utiliser cette fonctionnalité.",
+    "needYT": "⚠️ Veuillez coller une URL ou un ID YouTube.",
+    "transcriptNA": "⚠️ Aucune transcription disponible pour cette vidéo.",
+    "transcriptLang": "Langue de transcription"
+  },
+  "dashboard": {
+    "title": "Votre outil de réutilisation",
+    "upgradeNudge": "Améliorez votre plan pour débloquer l’utilisation"
+  },
+  "header": {
+    "manageBilling": "Gérer la facturation"
+  },
+  "footer": {
+    "tagline": {
+      "prefix": "Créé avec 💡 par ",
+      "suffix": " · Transformez votre contenu en or."
+    },
+    "copyright": "Ivy Web Designs. Tous droits réservés."
+  },
+  "auth": {
+    "common": {
+      "backHome": "Retour à l’accueil",
+      "maybeLater": "Peut-être plus tard",
+      "emailPlaceholder": "Adresse e-mail",
+      "passwordPlaceholder": "Mot de passe",
+      "fullNamePlaceholder": "Nom complet"
+    },
+    "login": {
+      "title": "Bon retour",
+      "subtitle": "Connectez-vous pour continuer",
+      "cta": "Connexion",
+      "loading": "Connexion en cours...",
+      "link": "Se connecter",
+      "error": "Impossible de vous connecter."
+    },
+    "reset": {
+      "link": "Mot de passe oublié ?",
+      "sending": "Envoi…",
+      "promptEmailMissing": "Entrez d’abord votre e-mail.",
+      "sent": "E-mail de réinitialisation envoyé. Vérifiez votre boîte de réception.",
+      "error": "Impossible d’envoyer l’e-mail de réinitialisation."
+    },
+    "signup": {
+      "title": "Créez votre compte",
+      "subtitle": "Rejoignez IVContent en quelques secondes",
+      "cta": "Créer un compte",
+      "loading": "Création...",
+      "link": "Créer un compte",
+      "haveAccount": "Vous avez déjà un compte ?",
+      "checkEmail": "Vérifiez votre e-mail pour confirmer votre compte, puis connectez-vous.",
+      "error": "Impossible de créer votre compte."
+    }
+  },
+  "settingsPage": {
+    "title": "Paramètres",
+    "loading": "Chargement des paramètres…",
+    "notSignedIn": "Vous n’êtes pas connecté. Veuillez vous connecter pour gérer vos paramètres.",
+    "goToLogin": "Aller à la connexion",
+    "manageBillingTitle": "Gérer votre abonnement dans Stripe",
+    "manageBilling": "Gérer la facturation",
+    "opening": "Ouverture…",
+    "monthlyUsage": "Utilisation mensuelle",
+    "tokensLeft": "jetons restants",
+    "renews": "Renouvelle",
+    "transcriptionMinutes": "Minutes de transcription",
+    "minUsed": "min utilisées",
+    "noTranscriptionMinutes": "Votre plan actuel ne comprend pas de minutes de transcription. Améliorez pour activer le téléversement vidéo/audio.",
+    "displayName": "Nom affiché",
+    "displayNamePH": "Votre nom d’affichage",
+    "save": "Enregistrer",
+    "email": "E-mail",
+    "changeEmail": "Changer d’e-mail",
+    "confirmationNote": "Vous recevrez un e-mail de confirmation pour vérifier le changement.",
+    "logout": "Se déconnecter",
+    "deleteSoon": "Supprimer le compte (bientôt disponible)",
+    "backToHelp": "Retour à l’aide",
+    "needSignIn": "Veuillez vous connecter pour modifier vos paramètres.",
+    "savedName": "✅ Nom enregistré.",
+    "saveNameError": "Impossible d’enregistrer le nom.",
+    "checkInbox": "✅ Vérifiez votre boîte de réception pour confirmer le nouvel e-mail.",
+    "changeEmailError": "Impossible de changer l’e-mail.",
+    "billingPortalError": "Impossible d’ouvrir le portail de facturation"
+  },
+  "help": {
+    "getStartedTitle": "Besoin d’aide pour commencer ?",
+    "getStartedDesc": "Consultez notre",
+    "quickStart": "Guide de démarrage rapide",
+    "faqTitle": "FAQ",
+    "faqDesc": "Trouvez les réponses dans notre section",
+    "faqLink": "Foire aux questions",
+    "contactTitle": "Contactez-nous",
+    "contactDesc": "Si vous avez encore besoin d’aide, envoyez-nous un e-mail à",
+    "settingsTitle": "Paramètres",
+    "settingsDesc": "Mettez à jour votre compte dans",
+    "settingsLink": "Paramètres",
+    "backToHelp": "Retour à l’aide"
+  },
+  "faq": {
+    "title": "Foire aux questions",
+    "sub": "Réponses aux questions fréquentes sur IVContent",
+    "q1": "Qu’est-ce qu’IVContent ?",
+    "a1": "IVContent est un outil de réutilisation qui transforme un contenu en plusieurs formats adaptés aux différentes plateformes — gagnez du temps, élargissez votre audience et restez constant.",
+    "q2": "Comment commencer à l’utiliser ?",
+    "a2": "Créez un compte, choisissez un outil dans le tableau de bord, collez votre contenu et cliquez sur « Réutiliser ».",
+    "q3": "Que comprend l’Offre à vie ?",
+    "a3": "L’offre à vie vous donne un accès illimité à toutes les fonctionnalités actuelles et futures, sans frais mensuels.",
+    "q4": "Puis-je mettre à niveau plus tard ?",
+    "a4": "Oui ! Vous pouvez passer d’un plan mensuel à un plan annuel ou à vie à tout moment depuis vos paramètres.",
+    "q5": "Mes données sont-elles sécurisées ?",
+    "a5": "Absolument. Nous ne vendons jamais vos données et ne stockons que le minimum nécessaire pour faire fonctionner le service en toute sécurité."
+  },
+  "landing": {
+    "heroTitle": "IVContent — Réutilisez le contenu. Multipliez l’impact.",
+    "heroSub": "Transformez instantanément vos blogs, vidéos et posts en plusieurs formats grâce à l’IA. Gagnez du temps, atteignez plus de monde et développez votre audience.",
+    "cta": "Rejoindre la bêta",
+    "f1Title": "Sortie multi-plateforme",
+    "f1Sub": "Articles de blog, fils Twitter, carrousels LinkedIn, légendes Pinterest et plus encore — en quelques secondes.",
+    "f2Title": "Édition assistée par IA",
+    "f2Sub": "Réécriture intelligente, ajustement du ton et optimisation du format adaptés à votre audience.",
+    "f3Title": "Gain de temps",
+    "f3Sub": "Automatisez votre flux de réutilisation et concentrez-vous sur la création plutôt que la mise en forme.",
+    "testimonialsTitle": "Avis des premiers testeurs",
+    "testimonialsSoon1": "« Les avis bêta arrivent bientôt... »",
+    "testimonialsSoon2": "« Cette section présentera de vrais témoignages après le lancement. »",
+    "finalTitle": "Soyez les premiers à découvrir IVContent",
+    "footer": "IVContent — Tous droits réservés."
+  },
+  "ltd": {
+    "title": "Accès à vie 🚀",
+    "sub": "Assurez-vous une place avant qu’il ne soit trop tard ! Une fois un palier épuisé, le suivant s’ouvre.",
+    "joinBeta": "Rejoignez la bêta jusqu’au 30 septembre",
+    "spotsError": "Impossible de charger les places. Réessayez.",
+    "checkoutFailed": "Échec du paiement",
+    "soldOut": "Épuisé",
+    "loadingSpots": "Chargement des places…",
+    "spotsLeft": "{{count}} places restantes",
+    "goPro": "Passer Pro — 13 $ / mois",
+    "videoTitle": "Présentation vidéo"
+  },
+  "qs": {
+    "title": "Guide de démarrage rapide",
+    "sub": "Apprenez à utiliser IVContent en quelques minutes",
+    "videoTitle": "Présentation vidéo",
+    "stepsTitle": "Instructions étape par étape",
+    "step1": "Inscrivez-vous ou connectez-vous – Créez un compte IVContent ou utilisez le vôtre.",
+    "step2": "Entrez votre contenu – Collez votre blog, script vidéo ou texte.",
+    "step3": "Sélectionnez un format – Choisissez ce que vous voulez créer (ex : résumé de blog, script TikTok, légende Pinterest).",
+    "step4": "Cliquez sur ‘Réutiliser’ – Laissez IVContent faire sa magie.",
+    "step5": "Relisez et modifiez – Ajustez le contenu généré si besoin.",
+    "step6": "Téléchargez ou copiez – Enregistrez-le en fichier ou copiez-le pour une utilisation immédiate."
+  },
+  "beta": {
+    "title": "IVContent Bêta",
+    "sub": "Devenez bêta testeur et aidez-nous à construire un meilleur produit !",
+    "source": "Source",
+    "nameOpt": "Votre nom (facultatif)",
+    "email": "E-mail",
+    "invalidEmail": "Veuillez entrer une adresse e-mail valide.",
+    "genericError": "Une erreur s’est produite. Réessayez.",
+    "submitting": "Envoi…",
+    "joinCta": "Rejoindre la bêta",
+    "privacyNote": "Votre e-mail ne servira qu’aux mises à jour bêta. Vous pouvez vous désabonner à tout moment.",
+    "inTitle": "Bienvenue !",
+    "inDesc": "Merci d’avoir rejoint la bêta IVContent. Vous recevrez bientôt un e-mail avec les instructions.",
+    "backToLTD": "Retour à l’offre à vie"
+  }
+}

@@ -3,24 +3,23 @@ import { useEffect, useState } from "react";
 import { supabase } from "../api/supabaseClient.js";
 import "./Settings.css";
 import { fetchMe, openBillingPortal } from "../api/account.js";
+import { useTranslation } from "react-i18next";
 
 export default function Settings() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [hasAuth, setHasAuth] = useState(true);
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
-  const [account, setAccount] = useState(null);     // { user: {...}, usage: {...} }
+  const [account, setAccount] = useState(null);
   const [portalBusy, setPortalBusy] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-
     (async () => {
       try {
-        // 1) Ensure user session exists
         const { data, error } = await supabase.auth.getUser();
         if (error) throw error;
-
         const user = data?.user || null;
         if (!user) {
           if (!cancelled) {
@@ -29,25 +28,21 @@ export default function Settings() {
           }
           return;
         }
-
         setEmail(user.email || "");
 
-        // 2) Load profile display_name (optional)
         const { data: profile, error: profErr } = await supabase
           .from("profiles")
           .select("display_name")
           .eq("id", user.id)
           .maybeSingle();
-
         if (profErr) console.warn("profiles select error:", profErr.message);
         setDisplayName(profile?.display_name || "");
 
-        // 3) Load account (plan + usage) from backend
         try {
-          const me = await fetchMe(); // uses supabase token under the hood
+          const me = await fetchMe();
           if (!cancelled) setAccount(me);
         } catch (e) {
-          console.warn("fetchMe failed (maybe user has no plan yet):", e.message);
+          console.warn("fetchMe failed:", e.message);
         }
 
         if (!cancelled) setLoading(false);
@@ -59,7 +54,6 @@ export default function Settings() {
         }
       }
     })();
-
     return () => { cancelled = true; };
   }, []);
 
@@ -68,7 +62,7 @@ export default function Settings() {
       const { data, error: userErr } = await supabase.auth.getUser();
       if (userErr) throw userErr;
       const user = data?.user;
-      if (!user) return alert("Please sign in to edit your settings.");
+      if (!user) return alert(t("settings.needSignIn"));
 
       const { error } = await supabase
         .from("profiles")
@@ -78,11 +72,10 @@ export default function Settings() {
           updated_at: new Date().toISOString(),
         });
       if (error) return alert(error.message);
-
-      alert("✅ Display name saved.");
+      alert(t("settings.savedName"));
     } catch (e) {
       console.error("saveDisplayName error:", e);
-      alert("Could not save display name.");
+      alert(t("settings.saveNameError"));
     }
   }
 
@@ -90,10 +83,10 @@ export default function Settings() {
     try {
       const { error } = await supabase.auth.updateUser({ email });
       if (error) return alert(error.message);
-      alert("✅ Check your inbox to confirm the new email.");
+      alert(t("settings.checkInbox"));
     } catch (e) {
       console.error("changeEmail error:", e);
-      alert("Could not change email.");
+      alert(t("settings.changeEmailError"));
     }
   }
 
@@ -109,10 +102,9 @@ export default function Settings() {
   async function handleOpenPortal() {
     try {
       setPortalBusy(true);
-      await openBillingPortal(); // uses token internally
-      // will redirect if successful
+      await openBillingPortal();
     } catch (e) {
-      alert(e.message || "Could not open billing portal");
+      alert(e.message || t("settings.billingPortalError"));
     } finally {
       setPortalBusy(false);
     }
@@ -121,7 +113,7 @@ export default function Settings() {
   if (loading) {
     return (
       <div className="max-w-xl mx-auto py-10">
-        <p className="opacity-80">Loading settings…</p>
+        <p className="opacity-80">{t("settings.loading")}</p>
       </div>
     );
   }
@@ -129,13 +121,13 @@ export default function Settings() {
   if (!hasAuth) {
     return (
       <div className="max-w-xl mx-auto py-10 space-y-4">
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="opacity-80">You’re not signed in. Please log in to manage your settings.</p>
+        <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
+        <p className="opacity-80">{t("settings.notSignedIn")}</p>
         <a
           href="/login"
           className="inline-block px-4 py-2 bg-cyan-500 text-black rounded hover:bg-cyan-600"
         >
-          Go to Login
+          {t("settings.goToLogin")}
         </a>
       </div>
     );
@@ -147,91 +139,91 @@ export default function Settings() {
   return (
     <div className="settings-page">
       <div className="settings-container">
-        <h1 className="settings-title">Settings</h1>
+        <h1 className="settings-title">{t("settings.title")}</h1>
 
-        {/* Account card: plan + usage + portal button */}
         {account && (
-  <div className="settings-card">
-    <div className="settings-card__row">
-      <span className={`badge badge--${planKey}`}>{account.user.plan}</span>
-      {hasStripeCustomer && (
-        <button
-          className="btn btn--ghost"
-          onClick={handleOpenPortal}
-          disabled={portalBusy}
-          title="Manage your subscription in Stripe"
-        >
-          {portalBusy ? "Opening…" : "Manage Billing"}
-        </button>
-      )}
-    </div>
+          <div className="settings-card">
+            <div className="settings-card__row">
+              <span className={`badge badge--${planKey}`}>{account.user.plan}</span>
+              {hasStripeCustomer && (
+                <button
+                  className="btn btn--ghost"
+                  onClick={handleOpenPortal}
+                  disabled={portalBusy}
+                  title={t("settings.manageBillingTitle")}
+                >
+                  {portalBusy ? t("settings.opening") : t("settings.manageBilling")}
+                </button>
+              )}
+            </div>
 
-    <div className="settings-card__row">
-      <div className="settings-meta">
-        <div>
-          <strong>Monthly usage:</strong>{" "}
-          {account.usage.remaining} / {account.usage.month_tokens_limit} tokens left
-        </div>
-        {account.user.renews_at && (
-          <div>
-            <strong>Renews:</strong>{" "}
-            {new Date(account.user.renews_at).toLocaleDateString()}
+            <div className="settings-card__row">
+              <div className="settings-meta">
+                <div>
+                  <strong>{t("settings.monthlyUsage")}:</strong>{" "}
+                  {account.usage.remaining} / {account.usage.month_tokens_limit} {t("settings.tokensLeft")}
+                </div>
+                {account.user.renews_at && (
+                  <div>
+                    <strong>{t("settings.renews")}:</strong>{" "}
+                    {new Date(account.user.renews_at).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
-      </div>
-    </div>
-  </div>
-)}
 
-{account?.usage && (
-  <div className="settings-card">
-    <div className="settings-card__row">
-      <strong>Transcription minutes</strong>
-    </div>
+        {account?.usage && (
+          <div className="settings-card">
+            <div className="settings-card__row">
+              <strong>{t("settings.transcriptionMinutes")}</strong>
+            </div>
 
-    {(() => {
-      const used = account.usage.transcription_minutes_used ?? 0;
-      const limit = account.usage.transcription_minutes_limit ?? 0;
-      const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
-      return (
-        <div className="settings-card__row" style={{flexDirection: "column", gap: "8px"}}>
-          <div style={{display: "flex", justifyContent: "space-between", width: "100%"}}>
-            <span>{used} / {limit} min used</span>
-            <span>{pct}%</span>
+            {(() => {
+              const used = account.usage.transcription_minutes_used ?? 0;
+              const limit = account.usage.transcription_minutes_limit ?? 0;
+              const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+              return (
+                <div className="settings-card__row" style={{flexDirection: "column", gap: "8px"}}>
+                  <div style={{display: "flex", justifyContent: "space-between", width: "100%"}}>
+                    <span>{used} / {limit} {t("settings.minUsed")}</span>
+                    <span>{pct}%</span>
+                  </div>
+                  <div style={{width: "100%", height: 10, background: "rgba(255,255,255,0.1)", borderRadius: 6}}>
+                    <div style={{
+                      width: `${pct}%`,
+                      height: "100%",
+                      background: pct > 90 ? "#ef4444" : pct > 70 ? "#f59e0b" : "#22c55e",
+                      borderRadius: 6
+                    }} />
+                  </div>
+                  {limit === 0 && (
+                    <p className="opacity-80 text-sm">
+                      {t("settings.noTranscriptionMinutes")}
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
           </div>
-          <div style={{width: "100%", height: 10, background: "rgba(255,255,255,0.1)", borderRadius: 6}}>
-            <div style={{
-              width: `${pct}%`,
-              height: "100%",
-              background: pct > 90 ? "#ef4444" : pct > 70 ? "#f59e0b" : "#22c55e",
-              borderRadius: 6
-            }} />
-          </div>
-          {limit === 0 && (
-            <p className="opacity-80 text-sm">
-              Your plan currently has no transcription minutes. Upgrade to enable video/audio uploads.
-            </p>
-          )}
-        </div>
-      );
-    })()}
-  </div>
-)}
+        )}
+
         <section className="settings-section">
-          <label>Display Name</label>
+          <label>{t("settings.displayName")}</label>
           <input
             className="settings-input"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Your display name"
+            placeholder={t("settings.displayNamePH")}
           />
           <button onClick={saveDisplayName} className="settings-btn primary">
-            Save
+            {t("settings.save")}
           </button>
         </section>
 
         <section className="settings-section">
-          <label>Email</label>
+          <label>{t("settings.email")}</label>
           <input
             className="settings-input"
             value={email}
@@ -240,19 +232,19 @@ export default function Settings() {
             type="email"
           />
           <button onClick={changeEmail} className="settings-btn primary">
-            Change Email
+            {t("settings.changeEmail")}
           </button>
           <p className="settings-footer-note">
-            You’ll receive a confirmation email to verify the change.
+            {t("settings.confirmationNote")}
           </p>
         </section>
 
         <section className="settings-section flex gap-3">
           <button onClick={logout} className="settings-btn secondary">
-            Log Out
+            {t("settings.logout")}
           </button>
           <button disabled className="settings-btn danger">
-            Delete Account (coming soon)
+            {t("settings.deleteSoon")}
           </button>
         </section>
       </div>
@@ -261,7 +253,7 @@ export default function Settings() {
         href="/help"
         className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
-        <strong>← Back to Help</strong>
+        <strong>← {t("settings.backToHelp")}</strong>
       </a>
     </div>
   );

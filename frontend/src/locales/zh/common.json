@@ -1,0 +1,168 @@
+{
+  "appName": "IV 内容",
+  "nav": {
+    "dashboard": "控制台",
+    "settings": "设置",
+    "logout": "退出登录",
+    "tool": "工具",
+    "ltd": "终身优惠",
+    "help": "帮助",
+    "login": "登录",
+    "signup": "注册"
+  },
+  "repurpose": {
+    "heroTitle": "将任何内容转换为任何形式",
+    "heroSub": "上传视频或粘贴文本。获取摘要、脚本等。",
+    "textareaPlaceholder": "在这里粘贴或输入内容...",
+    "btnRepurpose": "内容再利用",
+    "btnClear": "清空",
+    "btnCopy": "复制",
+    "btnDownloadTxt": "下载 .txt",
+    "btnDownloadPdf": "下载 .pdf",
+    "needInput": "⚠️ 请先输入内容。",
+    "needLogin": "⚠️ 必须登录才能使用此功能。",
+    "needYT": "⚠️ 请粘贴 YouTube 链接或视频 ID。",
+    "transcriptNA": "⚠️ 此视频没有可用的字幕。",
+    "transcriptLang": "字幕语言"
+  },
+  "dashboard": {
+    "title": "你的内容再利用工具",
+    "upgradeNudge": "升级以解锁更多使用次数"
+  },
+  "settings": {
+    "title": "设置",
+    "displayName": "显示名称",
+    "email": "邮箱",
+    "save": "保存",
+    "changeEmail": "更改邮箱",
+    "manageBilling": "管理账单",
+    "notSignedIn": "您尚未登录。请先登录以管理设置。"
+  },
+  "header": {
+    "manageBilling": "管理账单"
+  },
+  "footer": {
+    "tagline": {
+      "prefix": "由 💡 打造 ",
+      "suffix": " · 让内容变成黄金。"
+    },
+    "copyright": "Ivy Web Designs. 版权所有。"
+  },
+  "auth": {
+    "common": {
+      "backHome": "返回主页",
+      "maybeLater": "以后再说",
+      "emailPlaceholder": "邮箱地址",
+      "passwordPlaceholder": "密码",
+      "fullNamePlaceholder": "全名"
+    },
+    "login": {
+      "title": "欢迎回来",
+      "subtitle": "登录以继续",
+      "cta": "登录",
+      "loading": "正在登录...",
+      "link": "登录",
+      "error": "无法登录。"
+    },
+    "reset": {
+      "link": "忘记密码？",
+      "sending": "发送中…",
+      "promptEmailMissing": "请先输入邮箱。",
+      "sent": "已发送重置密码邮件，请检查邮箱。",
+      "error": "无法发送重置邮件。"
+    },
+    "signup": {
+      "title": "创建账户",
+      "subtitle": "几秒钟即可加入 IVContent",
+      "cta": "注册",
+      "loading": "正在创建...",
+      "link": "创建账户",
+      "haveAccount": "已有账户？",
+      "checkEmail": "请检查邮箱确认账户，然后登录。",
+      "error": "无法创建账户。"
+    }
+  },
+  "help": {
+    "getStartedTitle": "需要帮助开始使用？",
+    "getStartedDesc": "查看我们的",
+    "quickStart": "快速入门指南",
+    "faqTitle": "常见问题",
+    "faqDesc": "在这里找到答案：",
+    "faqLink": "常见问题解答",
+    "contactTitle": "联系我们",
+    "contactDesc": "如果仍需要帮助，请发邮件至",
+    "settingsTitle": "设置",
+    "settingsDesc": "在此更新你的账户：",
+    "settingsLink": "设置",
+    "backToHelp": "返回帮助"
+  },
+  "faq": {
+    "title": "常见问题",
+    "sub": "关于 IVContent 的常见问题解答",
+    "q1": "什么是 IVContent？",
+    "a1": "IVContent 是一款内容再利用工具，帮助你将一篇内容快速转换成多种形式，以适配不同平台 —— 节省时间、扩大覆盖面、保持高频率发布。",
+    "q2": "我该如何开始？",
+    "a2": "注册一个账户，从控制台选择工具（例如博客 TL;DR 或 Pinterest 文案生成器），粘贴内容，然后点击“再利用”。",
+    "q3": "终身优惠包括什么？",
+    "a3": "终身优惠为你提供对当前和未来所有工具的无限访问权限 —— 永无月费。",
+    "q4": "我能之后升级吗？",
+    "a4": "当然！如果先从月度套餐开始，你可以随时在账户设置中升级到年度或终身套餐。",
+    "q5": "我的数据安全吗？",
+    "a5": "绝对安全。我们从不出售你的数据，仅存储必要的内容以安全运行服务。"
+  },
+  "landing": {
+    "heroTitle": "IVContent — 内容再利用，效果倍增。",
+    "heroSub": "用 AI 即刻将博客、视频和社交帖子转化为多种形式。节省时间，触达更多人群，扩大影响力。",
+    "cta": "加入内测",
+    "f1Title": "多平台输出",
+    "f1Sub": "从博客文章到推特长文、领英轮播、Pinterest 文案等等 —— 秒级完成。",
+    "f2Title": "AI 驱动编辑",
+    "f2Sub": "智能改写、语气调整、格式优化，贴合你的受众风格。",
+    "f3Title": "节省时间的工作流",
+    "f3Sub": "自动化内容再利用流程，把精力放在创作而不是格式转换。",
+    "testimonialsTitle": "早期用户的评价",
+    "testimonialsSoon1": "“内测用户评价即将上线...”",
+    "testimonialsSoon2": "“正式上线后将展示真实用户故事。”",
+    "finalTitle": "抢先体验 IVContent",
+    "footer": "IVContent — 版权所有。"
+  },
+  "ltd": {
+    "title": "终身优惠 🚀",
+    "sub": "在名额用完前立即抢购！一旦售罄，下一个档位解锁。",
+    "joinBeta": "加入内测，截止 9 月 30 日",
+    "spotsError": "无法加载名额，请重试。",
+    "checkoutFailed": "支付失败",
+    "soldOut": "已售罄",
+    "loadingSpots": "正在加载名额…",
+    "spotsLeft": "剩余 {{count}} 个名额",
+    "goPro": "升级到 Pro — 每月 $13",
+    "videoTitle": "演示视频"
+  },
+  "qs": {
+    "title": "快速入门指南",
+    "sub": "几分钟即可学会使用 IVContent",
+    "videoTitle": "演示视频",
+    "stepsTitle": "分步指南",
+    "step1": "注册或登录 – 创建账户或登录现有账户。",
+    "step2": "输入内容 – 粘贴博客、视频脚本或其他文本。",
+    "step3": "选择格式 – 选择要生成的内容（如博客摘要、抖音脚本、Pinterest 文案）。",
+    "step4": "点击 '再利用' – 让 IVContent 自动完成转换。",
+    "step5": "审阅和编辑 – 在输出框中做必要调整。",
+    "step6": "下载或复制 – 保存为文件或直接复制使用。"
+  },
+  "beta": {
+    "title": "IVContent 内测",
+    "sub": "立即报名成为内测用户，帮助我们打造更好的产品！",
+    "source": "来源",
+    "nameOpt": "姓名（可选）",
+    "email": "邮箱",
+    "invalidEmail": "请输入有效的邮箱地址。",
+    "genericError": "出错了，请重试。",
+    "submitting": "提交中…",
+    "joinCta": "加入内测",
+    "privacyNote": "我们只会使用你的邮箱发送内测更新。你可随时取消订阅。",
+    "inTitle": "加入成功！",
+    "inDesc": "感谢你加入 IVContent 内测。我们会尽快通过邮件发送使用说明。",
+    "backToLTD": "返回终身优惠"
+  }
+}

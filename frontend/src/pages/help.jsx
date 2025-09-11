@@ -1,36 +1,43 @@
+// src/pages/Help.jsx
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
+import { useTranslation } from "react-i18next";
 
 export default function Help() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
       <Header />
       <main className="max-w-3xl mx-auto p-6 space-y-6">
         <section className="bg-gray-800 p-5 rounded shadow">
-          <h2 className="text-2xl font-semibold text-cyan-400 mb-2">Need Help Lets Getting Started</h2>
+          <h2 className="text-2xl font-semibold text-cyan-400 mb-2">{t("help.getStartedTitle")}</h2>
           <p>
-            Check out our <a href="/quick-start" className="text-cyan-300 hover:underline"><strong>Quick Start Guide</strong></a> 
-            to learn how to make the most of IVContent’s tools in just minutes.
+            {t("help.getStartedDesc")}{" "}
+            <a href="/quick-start" className="text-cyan-300 hover:underline"><strong>{t("help.quickStart")}</strong></a>.
           </p>
         </section>
 
         <section className="bg-gray-800 p-5 rounded shadow">
-          <h2 className="text-2xl font-semibold text-orange-500 mb-2">FAQs</h2>
+          <h2 className="text-2xl font-semibold text-orange-500 mb-2">{t("help.faqTitle")}</h2>
           <p>
-            Find answers to common questions in our <a href="/faq" className="text-cyan-300 hover:underline"><strong>Frequently Asked Questions</strong></a> section.
+            {t("help.faqDesc")}{" "}
+            <a href="/faq" className="text-cyan-300 hover:underline"><strong>{t("help.faqLink")}</strong></a>.
           </p>
         </section>
 
         <section className="bg-gray-800 p-5 rounded shadow">
-          <h2 className="text-2xl font-semibold text-purple-400 mb-2">Contact Us</h2>
+          <h2 className="text-2xl font-semibold text-purple-400 mb-2">{t("help.contactTitle")}</h2>
           <p>
-            If you still need help, send us an email at <a href="mailto:IVContent.com@gmail.com" className="text-cyan-300 hover:underline"><strong>IVContent.com@gmail.com</strong></a> and we’ll get back to you within 24 hours.
+            {t("help.contactDesc")}{" "}
+            <a href="mailto:IVContent.com@gmail.com" className="text-cyan-300 hover:underline"><strong>IVContent.com@gmail.com</strong></a>.
           </p>
         </section>
+
         <section className="bg-gray-800 p-5 rounded shadow">
-          <h2 className="text-2xl font-semibold text-orange-500 mb-2">Settings</h2>
+          <h2 className="text-2xl font-semibold text-orange-500 mb-2">{t("help.settingsTitle")}</h2>
           <p>
-            need to fix your face in <a href="/settings" className="text-cyan-300 hover:underline"><strong>Settings</strong></a> section.
+            {t("help.settingsDesc")}{" "}
+            <a href="/settings" className="text-cyan-300 hover:underline"><strong>{t("help.settingsLink")}</strong></a>.
           </p>
         </section>
       </main>
@@ -38,4 +45,3 @@ export default function Help() {
     </div>
   );
 }
-

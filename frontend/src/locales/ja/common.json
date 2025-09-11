@@ -1,0 +1,189 @@
+{
+  "appName": "IV Content",
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "settings": "設定",
+    "logout": "ログアウト",
+    "tool": "ツール",
+    "ltd": "ライフタイムディール",
+    "help": "ヘルプ",
+    "login": "ログイン",
+    "signup": "新規登録"
+  },
+  "repurpose": {
+    "heroTitle": "あらゆるコンテンツを別の形に",
+    "heroSub": "動画をアップロードするかテキストを貼り付けてください。要約、スクリプトなどをすぐに取得できます。",
+    "textareaPlaceholder": "ここにコンテンツを入力または貼り付けてください...",
+    "btnRepurpose": "コンテンツを変換",
+    "btnClear": "クリア",
+    "btnCopy": "コピー",
+    "btnDownloadTxt": ".txt をダウンロード",
+    "btnDownloadPdf": ".pdf をダウンロード",
+    "needInput": "⚠️ コンテンツを入力してください。",
+    "needLogin": "⚠️ この機能を使用するにはログインが必要です。",
+    "needYT": "⚠️ YouTubeのURLまたはIDを入力してください。",
+    "transcriptNA": "⚠️ この動画には文字起こしがありません。",
+    "transcriptLang": "文字起こしの言語"
+  },
+  "dashboard": {
+    "title": "あなたの Repurpose ツール",
+    "upgradeNudge": "アップグレードして利用を解除"
+  },
+  "header": {
+    "manageBilling": "請求を管理"
+  },
+  "footer": {
+    "tagline": {
+      "prefix": "💡で作られた ",
+      "suffix": " · コンテンツをゴールドに変えよう。"
+    },
+    "copyright": "Ivy Web Designs. 無断複製を禁じます。"
+  },
+  "auth": {
+    "common": {
+      "backHome": "ホームに戻る",
+      "maybeLater": "また今度",
+      "emailPlaceholder": "メールアドレス",
+      "passwordPlaceholder": "パスワード",
+      "fullNamePlaceholder": "氏名"
+    },
+    "login": {
+      "title": "おかえりなさい",
+      "subtitle": "続けるにはログインしてください",
+      "cta": "ログイン",
+      "loading": "ログイン中...",
+      "link": "ログイン",
+      "error": "ログインできませんでした。"
+    },
+    "reset": {
+      "link": "パスワードを忘れましたか？",
+      "sending": "送信中…",
+      "promptEmailMissing": "先にメールアドレスを入力してください。",
+      "sent": "パスワードリセットメールを送信しました。受信トレイを確認してください。",
+      "error": "リセットメールを送信できませんでした。"
+    },
+    "signup": {
+      "title": "アカウントを作成",
+      "subtitle": "数秒でIVContentに参加できます",
+      "cta": "新規登録",
+      "loading": "作成中...",
+      "link": "アカウントを作成",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "checkEmail": "アカウント確認メールをチェックし、その後ログインしてください。",
+      "error": "アカウントを作成できませんでした。"
+    }
+  },
+  "settingsPage": {
+    "title": "設定",
+    "loading": "設定を読み込み中…",
+    "notSignedIn": "ログインしていません。設定を管理するにはログインしてください。",
+    "goToLogin": "ログインへ",
+    "manageBillingTitle": "Stripeでサブスクリプションを管理",
+    "manageBilling": "請求を管理",
+    "opening": "開いています…",
+    "monthlyUsage": "月間利用状況",
+    "tokensLeft": "トークン残数",
+    "renews": "更新日",
+    "transcriptionMinutes": "文字起こし分数",
+    "minUsed": "使用済み分数",
+    "noTranscriptionMinutes": "現在のプランには文字起こし分数が含まれていません。アップグレードすると利用可能です。",
+    "displayName": "表示名",
+    "displayNamePH": "あなたの表示名",
+    "save": "保存",
+    "email": "メール",
+    "changeEmail": "メールを変更",
+    "confirmationNote": "変更を確認するためのメールが届きます。",
+    "logout": "ログアウト",
+    "deleteSoon": "アカウント削除（近日公開）",
+    "backToHelp": "ヘルプに戻る",
+    "needSignIn": "設定を編集するにはログインしてください。",
+    "savedName": "✅ 表示名を保存しました。",
+    "saveNameError": "表示名を保存できませんでした。",
+    "checkInbox": "✅ 受信トレイで新しいメールを確認してください。",
+    "changeEmailError": "メールを変更できませんでした。",
+    "billingPortalError": "請求ポータルを開けませんでした。"
+  },
+  "help": {
+    "getStartedTitle": "使い方ガイド",
+    "getStartedDesc": "ぜひご覧ください",
+    "quickStart": "クイックスタートガイド",
+    "faqTitle": "よくある質問",
+    "faqDesc": "次のセクションで回答をご確認ください",
+    "faqLink": "FAQ",
+    "contactTitle": "お問い合わせ",
+    "contactDesc": "まだお困りの場合は、こちらへメールしてください",
+    "settingsTitle": "設定",
+    "settingsDesc": "アカウントを更新するには",
+    "settingsLink": "設定",
+    "backToHelp": "ヘルプに戻る"
+  },
+  "faq": {
+    "title": "よくある質問",
+    "sub": "IVContentに関する一般的な質問への回答",
+    "q1": "IVContentとは？",
+    "a1": "IVContentは、1つのコンテンツを複数のフォーマットに変換し、時間を節約し、リーチを拡大し、一貫性を保つためのツールです。",
+    "q2": "どうやって始めればいいですか？",
+    "a2": "アカウントにサインアップし、ダッシュボードからツールを選び、コンテンツを貼り付けて「変換」をクリックするだけです。",
+    "q3": "ライフタイムディールには何が含まれますか？",
+    "a3": "LTDは、現在および今後のすべての機能に無制限でアクセスできます。月額料金はかかりません。",
+    "q4": "後でアップグレードできますか？",
+    "a4": "はい！月額プランから年額またはライフタイムにいつでもアップグレードできます。",
+    "q5": "私のデータは安全ですか？",
+    "a5": "もちろんです。私たちはあなたのデータを販売せず、サービスを安全に運用するために必要な情報のみを保存します。"
+  },
+  "landing": {
+    "heroTitle": "IVContent — コンテンツを変換し、影響力を拡大",
+    "heroSub": "ブログ、動画、投稿をAIで一瞬で複数のフォーマットに変換。時間を節約し、より多くの人に届き、オーディエンスを拡大します。",
+    "cta": "ベータに参加",
+    "f1Title": "マルチプラットフォーム対応",
+    "f1Sub": "ブログ投稿からTwitterスレッド、LinkedInカルーセル、Pinterestキャプションまで — 数秒で作成。",
+    "f2Title": "AIによる編集",
+    "f2Sub": "スマートなリライト、トーン調整、フォーマット最適化でターゲットに合わせます。",
+    "f3Title": "時間を節約",
+    "f3Sub": "ワークフローを自動化して、形式変換ではなく創作に集中しましょう。",
+    "testimonialsTitle": "早期テスターの声",
+    "testimonialsSoon1": "「ベータレビューは近日公開予定…」",
+    "testimonialsSoon2": "「このセクションはローンチ後に実際の声を紹介します。」",
+    "finalTitle": "IVContentをいち早く体験してください",
+    "footer": "IVContent — 無断複製を禁じます。"
+  },
+  "ltd": {
+    "title": "ライフタイムディールアクセス 🚀",
+    "sub": "売り切れる前にあなたの席を確保してください！ 一つのティアが売り切れると、次のティアが解放されます。",
+    "joinBeta": "ベータに参加（9月30日まで）",
+    "spotsError": "残り枠を読み込めませんでした。もう一度お試しください。",
+    "checkoutFailed": "決済に失敗しました",
+    "soldOut": "売り切れ",
+    "loadingSpots": "残り枠を読み込み中…",
+    "spotsLeft": "残り{{count}}枠",
+    "goPro": "プロにアップグレード — 月額13ドル",
+    "videoTitle": "動画ウォークスルー"
+  },
+  "qs": {
+    "title": "クイックスタートガイド",
+    "sub": "数分でIVContentを使いこなす",
+    "videoTitle": "動画ウォークスルー",
+    "stepsTitle": "ステップごとの手順",
+    "step1": "サインアップまたはログイン – アカウントを作成するか既存のものにログイン。",
+    "step2": "コンテンツを入力 – ブログ、スクリプト、テキストを貼り付けます。",
+    "step3": "フォーマットを選択 – 作成したい形式を選びます（例: ブログ要約、TikTokスクリプト、Pinterestキャプション）。",
+    "step4": "「変換」をクリック – IVContentにお任せください。",
+    "step5": "確認と編集 – 必要に応じて生成されたコンテンツを修正します。",
+    "step6": "ダウンロードまたはコピー – ファイルとして保存するかクリップボードにコピーします。"
+  },
+  "beta": {
+    "title": "IVContent ベータ",
+    "sub": "ベータテスターとして参加し、より良い製品を作るためにご協力ください！",
+    "source": "ソース",
+    "nameOpt": "名前（任意）",
+    "email": "メール",
+    "invalidEmail": "有効なメールアドレスを入力してください。",
+    "genericError": "問題が発生しました。もう一度お試しください。",
+    "submitting": "送信中…",
+    "joinCta": "ベータに参加",
+    "privacyNote": "メールはベータの最新情報のみに使用します。いつでも配信停止できます。",
+    "inTitle": "参加完了！",
+    "inDesc": "IVContentベータにご参加いただきありがとうございます。後ほどメールで詳細をお送りします。",
+    "backToLTD": "ライフタイムディールに戻る"
+  }
+}

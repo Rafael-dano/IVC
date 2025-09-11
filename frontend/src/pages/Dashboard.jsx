@@ -1,13 +1,16 @@
+// src/pages/Dashboard.jsx
 import { useEffect, useState } from 'react';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import RepurposeTool from '../components/RepurposeTool.jsx';
 import { fetchMe } from '../api/account.js';
+import { useTranslation } from "react-i18next";
 import "./Dashboard.css";
 
 export default function Dashboard() {
   const [darkMode, setDarkMode] = useState(true);
   const [account, setAccount] = useState(null); // { user, usage }
+  const { t } = useTranslation();
 
   useEffect(() => {
     let mounted = true;
@@ -22,9 +25,8 @@ export default function Dashboard() {
 
   const plan = String(account?.user?.plan || "FREE").toUpperCase();
   const isProOrLTD = /^PRO|LTD/.test(plan);
-  const title = isProOrLTD && account?.user?.display_name
-    ? account.user.display_name
-    : "Your Repurpose Tool";
+  const displayName = account?.user?.display_name?.trim();
+  const titleText = isProOrLTD && displayName ? displayName : t("dashboard.title");
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} font-sans`}>
@@ -32,7 +34,9 @@ export default function Dashboard() {
 
       <main className="max-w-6xl mx-auto px-4 py-12">
         <div className="dashboard-header">
-          <h2 className="dashboard-title">{title}</h2>
+          <h2 className="text-3xl font-bold mb-6 text-center">
+            {titleText}
+          </h2>
           <UsageBubble account={account} />
         </div>
 

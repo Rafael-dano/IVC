@@ -1,0 +1,203 @@
+{
+  "appName": "IV Content",
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "logout": "Log out",
+    "tool": "Tool",
+    "ltd": "LTD",
+    "help": "Help",
+    "login": "Login",
+    "signup": "Sign Up"
+  },
+
+  "repurpose": {
+    "heroTitle": "Turn any content into anything",
+    "heroSub": "Upload a video or paste text. Get summaries, scripts, and more.",
+    "textareaPlaceholder": "Paste or write your content here...",
+    "btnRepurpose": "Repurpose Content",
+    "btnClear": "Clear",
+    "btnCopy": "Copy",
+    "btnDownloadTxt": "Download .txt",
+    "btnDownloadPdf": "Download .pdf",
+    "needInput": "⚠️ Please enter some content first.",
+    "needLogin": "⚠️ You must be logged in to use this feature.",
+    "needYT": "⚠️ Please paste a YouTube URL or ID.",
+    "transcriptNA": "⚠️ No transcript available for this video.",
+    "transcriptLang": "Transcript language"
+  },
+
+  "dashboard": {
+    "title": "Your Repurpose Tool",
+    "upgradeNudge": "Upgrade to unlock usage"
+  },
+
+  "header": {
+    "manageBilling": "Manage Billing"
+  },
+
+  "footer": {
+    "tagline": {
+      "prefix": "Built with 💡 by ",
+      "suffix": " · Turn content into gold."
+    },
+    "copyright": "Ivy Web Designs. All rights reserved."
+  },
+
+  "auth": {
+    "common": {
+      "backHome": "Take me back",
+      "maybeLater": "Maybe next time",
+      "emailPlaceholder": "Email address",
+      "passwordPlaceholder": "Password",
+      "fullNamePlaceholder": "Full name"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Log in to continue",
+      "cta": "Log In",
+      "loading": "Logging in...",
+      "link": "Log in",
+      "error": "Could not log you in."
+    },
+    "reset": {
+      "link": "Forgot password?",
+      "sending": "Sending…",
+      "promptEmailMissing": "Enter your email first.",
+      "sent": "Password reset email sent. Check your inbox.",
+      "error": "Could not send reset email."
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Join IVContent in seconds",
+      "cta": "Sign Up",
+      "loading": "Creating...",
+      "link": "Create Account",
+      "haveAccount": "Already have an account?",
+      "checkEmail": "Check your email to confirm your account, then log in.",
+      "error": "Could not create your account."
+    }
+  },
+
+  "settings": {
+    "title": "Settings",
+    "loading": "Loading settings…",
+    "notSignedIn": "You’re not signed in. Please log in to manage your settings.",
+    "goToLogin": "Go to Login",
+    "manageBillingTitle": "Manage your subscription in Stripe",
+    "manageBilling": "Manage Billing",
+    "opening": "Opening…",
+    "monthlyUsage": "Monthly usage",
+    "tokensLeft": "tokens left",
+    "renews": "Renews",
+    "transcriptionMinutes": "Transcription minutes",
+    "minUsed": "min used",
+    "noTranscriptionMinutes": "Your plan currently has no transcription minutes. Upgrade to enable video/audio uploads.",
+    "displayName": "Display Name",
+    "displayNamePH": "Your display name",
+    "save": "Save",
+    "email": "Email",
+    "changeEmail": "Change Email",
+    "confirmationNote": "You’ll receive a confirmation email to verify the change.",
+    "logout": "Log Out",
+    "deleteSoon": "Delete Account (coming soon)",
+    "backToHelp": "Back to Help",
+    "needSignIn": "Please sign in to edit your settings.",
+    "savedName": "✅ Display name saved.",
+    "saveNameError": "Could not save display name.",
+    "checkInbox": "✅ Check your inbox to confirm the new email.",
+    "changeEmailError": "Could not change email.",
+    "billingPortalError": "Could not open billing portal"
+  },
+
+  "help": {
+    "getStartedTitle": "Need Help Getting Started?",
+    "getStartedDesc": "Check out our",
+    "quickStart": "Quick Start Guide",
+    "faqTitle": "FAQs",
+    "faqDesc": "Find answers to common questions in our",
+    "faqLink": "Frequently Asked Questions",
+    "contactTitle": "Contact Us",
+    "contactDesc": "If you still need help, send us an email at",
+    "settingsTitle": "Settings",
+    "settingsDesc": "Update your account in",
+    "settingsLink": "Settings",
+    "backToHelp": "Back to Help"
+  },
+
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "sub": "Answers to common questions about IVContent",
+    "q1": "What is IVContent?",
+    "a1": "IVContent is a content repurposing tool that helps you transform one piece of content into multiple formats for different platforms — saving you time, boosting reach, and helping you stay consistent.",
+    "q2": "How do I start using it?",
+    "a2": "Simply sign up for an account, choose a tool from the dashboard, paste your content, and click “Repurpose.”",
+    "q3": "What does the Lifetime Deal include?",
+    "a3": "The LTD gives you unlimited access to all current tools and future features, forever — with no monthly fees.",
+    "q4": "Can I upgrade later?",
+    "a4": "Yes! If you start with a monthly plan, you can upgrade to yearly or lifetime at any time from your account settings.",
+    "q5": "Is my data safe?",
+    "a5": "Absolutely. We never sell your data and only store what's necessary to run the service securely."
+  },
+
+  "landing": {
+    "heroTitle": "IVContent — Repurpose Content. Multiply Impact.",
+    "heroSub": "Instantly transform your blogs, videos, and social posts into multiple formats with AI. Save hours, reach more people, and grow your audience.",
+    "cta": "Join the Beta",
+    "f1Title": "Multi-Platform Output",
+    "f1Sub": "From blog posts to Twitter threads, LinkedIn carousels, Pinterest captions and more — all in seconds.",
+    "f2Title": "AI-Powered Editing",
+    "f2Sub": "Smart rewriting, tone adjustments, and format optimization to match your audience’s style.",
+    "f3Title": "Time-Saving Workflow",
+    "f3Sub": "Automate your content repurposing pipeline and focus on creating, not reformatting.",
+    "testimonialsTitle": "What Early Testers Are Saying",
+    "testimonialsSoon1": "“Beta tester reviews coming soon...”",
+    "testimonialsSoon2": "“This section will showcase real stories after launch.”",
+    "finalTitle": "Be the First to Experience IVContent",
+    "footer": "IVContent — All rights reserved."
+  },
+
+  "ltd": {
+    "title": "Lifetime Deal Access 🚀",
+    "sub": "Secure your spot before it's gone! Once a tier sells out, the next one unlocks.",
+    "joinBeta": "Join Beta Till September 30th",
+    "spotsError": "Spots not loading. Try again.",
+    "checkoutFailed": "Checkout failed",
+    "soldOut": "Sold out",
+    "loadingSpots": "Loading spots…",
+    "spotsLeft": "{{count}} spots left",
+    "goPro": "Go Pro — $13 / month",
+    "videoTitle": "Video Walkthrough",
+    "errPrefix": ""
+  },
+
+  "qs": {
+    "title": "Quick Start Guide",
+    "sub": "Learn how to use IVContent in minutes",
+    "videoTitle": "Video Walkthrough",
+    "stepsTitle": "Step-by-Step Instructions",
+    "step1": "Sign Up or Log In – Create your IVContent account or log in to your existing one.",
+    "step2": "Enter Your Content – Paste your blog, video script, or text into the input box.",
+    "step3": "Select a Format – Choose what you want to create (e.g., Blog Summary, TikTok Script, Pinterest Caption).",
+    "step4": "Click 'Repurpose' – Let IVContent work its magic and instantly transform your content.",
+    "step5": "Review & Edit – Make any tweaks to your generated content in the output box.",
+    "step6": "Download or Copy – Save your new content as a file or copy it to your clipboard for immediate use."
+  },
+
+  "beta": {
+    "title": "IVContent Beta",
+    "sub": "Secure your spot to become a Beta Tester and help us build a better product!",
+    "source": "Source",
+    "nameOpt": "Your Name (optional)",
+    "email": "Email",
+    "invalidEmail": "Please enter a valid email address.",
+    "genericError": "Something went wrong. Please try again.",
+    "submitting": "Submitting…",
+    "joinCta": "Join the Beta",
+    "privacyNote": "We’ll use your email only for beta updates. You can unsubscribe anytime.",
+    "inTitle": "You’re in!",
+    "inDesc": "Thanks for joining the IVContent beta. We’ll email you instructions soon.",
+    "backToLTD": "Back to Lifetime Deals"
+  }
+}

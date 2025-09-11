@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";
 import "./Auth.css";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
@@ -26,13 +28,13 @@ export default function Login() {
       setLoading(false);
       navigate(from);
     } catch (err) {
-      alert(err.message || "Could not log you in.");
+      alert(err.message || t("auth.login.error"));
       setLoading(false);
     }
   };
 
   const handlePasswordReset = async () => {
-    if (!form.email) return alert("Enter your email first.");
+    if (!form.email) return alert(t("auth.reset.promptEmailMissing"));
     setSending(true);
     try {
       const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
@@ -40,9 +42,9 @@ export default function Login() {
         redirectTo: `${siteUrl}/reset-password`,
       });
       if (error) throw error;
-      alert("Password reset email sent. Check your inbox.");
+      alert(t("auth.reset.sent"));
     } catch (err) {
-      alert(err.message || "Could not send reset email.");
+      alert(err.message || t("auth.reset.error"));
     } finally {
       setSending(false);
     }
@@ -52,9 +54,9 @@ export default function Login() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-title">Welcome back</div>
-          <div className="auth-subtitle">Log in to continue</div>
-          <Link to="/" className="auth-link">NO Take me Back</Link>
+          <div className="auth-title">{t("auth.login.title")}</div>
+          <div className="auth-subtitle">{t("auth.login.subtitle")}</div>
+          <Link to="/" className="auth-link">{t("auth.common.backHome")}</Link>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
@@ -62,7 +64,7 @@ export default function Login() {
             className="auth-input"
             type="email"
             name="email"
-            placeholder="Email address"
+            placeholder={t("auth.common.emailPlaceholder")}
             value={form.email}
             onChange={handleChange}
             required
@@ -71,13 +73,13 @@ export default function Login() {
             className="auth-input"
             type="password"
             name="password"
-            placeholder="Password"
+            placeholder={t("auth.common.passwordPlaceholder")}
             value={form.password}
             onChange={handleChange}
             required
           />
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Log In"}
+            {loading ? t("auth.login.loading") : t("auth.login.cta")}
           </button>
         </form>
 
@@ -87,11 +89,12 @@ export default function Login() {
             className="auth-link"
             disabled={sending}
           >
-            {sending ? "Sending…" : "Forgot password?"}
+            {sending ? t("auth.reset.sending") : t("auth.reset.link")}
           </button>
-          <Link to="/signup" className="auth-link">Create Account</Link>
+          <Link to="/signup" className="auth-link">{t("auth.signup.link")}</Link>
         </div>
       </div>
     </div>
   );
 }
+

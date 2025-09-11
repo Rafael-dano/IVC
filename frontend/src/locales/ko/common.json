@@ -1,0 +1,189 @@
+{
+  "appName": "IV 콘텐츠",
+  "nav": {
+    "dashboard": "대시보드",
+    "settings": "설정",
+    "logout": "로그아웃",
+    "tool": "도구",
+    "ltd": "평생 혜택",
+    "help": "도움말",
+    "login": "로그인",
+    "signup": "회원가입"
+  },
+  "repurpose": {
+    "heroTitle": "어떤 콘텐츠든 원하는 형식으로",
+    "heroSub": "비디오를 업로드하거나 텍스트를 붙여넣으세요. 요약, 스크립트 등 다양한 결과를 즉시 받아보세요.",
+    "textareaPlaceholder": "여기에 콘텐츠를 입력하거나 붙여넣으세요...",
+    "btnRepurpose": "콘텐츠 재가공",
+    "btnClear": "지우기",
+    "btnCopy": "복사",
+    "btnDownloadTxt": ".txt 다운로드",
+    "btnDownloadPdf": ".pdf 다운로드",
+    "needInput": "⚠️ 먼저 콘텐츠를 입력해 주세요.",
+    "needLogin": "⚠️ 이 기능을 사용하려면 로그인해야 합니다.",
+    "needYT": "⚠️ YouTube URL 또는 ID를 입력해 주세요.",
+    "transcriptNA": "⚠️ 이 비디오에 사용할 수 있는 자막이 없습니다.",
+    "transcriptLang": "자막 언어"
+  },
+  "dashboard": {
+    "title": "나의 재가공 도구",
+    "upgradeNudge": "업그레이드하여 사용 한도를 해제하세요"
+  },
+  "header": {
+    "manageBilling": "결제 관리"
+  },
+  "footer": {
+    "tagline": {
+      "prefix": "💡 으로 만든 ",
+      "suffix": " · 콘텐츠를 황금으로 바꾸세요."
+    },
+    "copyright": "Ivy Web Designs. 모든 권리 보유."
+  },
+  "auth": {
+    "common": {
+      "backHome": "돌아가기",
+      "maybeLater": "나중에 할게요",
+      "emailPlaceholder": "이메일 주소",
+      "passwordPlaceholder": "비밀번호",
+      "fullNamePlaceholder": "이름"
+    },
+    "login": {
+      "title": "다시 만나 반가워요",
+      "subtitle": "계속하려면 로그인하세요",
+      "cta": "로그인",
+      "loading": "로그인 중...",
+      "link": "로그인",
+      "error": "로그인할 수 없습니다."
+    },
+    "reset": {
+      "link": "비밀번호를 잊으셨나요?",
+      "sending": "전송 중…",
+      "promptEmailMissing": "먼저 이메일을 입력해 주세요.",
+      "sent": "비밀번호 재설정 메일을 보냈습니다. 받은편지함을 확인하세요.",
+      "error": "재설정 메일을 보낼 수 없습니다."
+    },
+    "signup": {
+      "title": "계정 만들기",
+      "subtitle": "몇 초 만에 IVContent 합류",
+      "cta": "회원가입",
+      "loading": "생성 중...",
+      "link": "계정 만들기",
+      "haveAccount": "이미 계정이 있으신가요?",
+      "checkEmail": "계정 확인을 위해 이메일을 확인한 뒤 로그인하세요.",
+      "error": "계정을 생성할 수 없습니다."
+    }
+  },
+  "settingsPage": {
+    "title": "설정",
+    "loading": "설정을 불러오는 중…",
+    "notSignedIn": "로그인되어 있지 않습니다. 설정을 관리하려면 로그인하세요.",
+    "goToLogin": "로그인으로 이동",
+    "manageBillingTitle": "Stripe에서 구독 관리",
+    "manageBilling": "결제 관리",
+    "opening": "열리는 중…",
+    "monthlyUsage": "월간 사용량",
+    "tokensLeft": "토큰 남음",
+    "renews": "갱신일",
+    "transcriptionMinutes": "자막 변환 분",
+    "minUsed": "분 사용",
+    "noTranscriptionMinutes": "현재 요금제에는 변환 분이 없습니다. 비디오/오디오 업로드를 사용하려면 업그레이드하세요.",
+    "displayName": "표시 이름",
+    "displayNamePH": "표시할 이름",
+    "save": "저장",
+    "email": "이메일",
+    "changeEmail": "이메일 변경",
+    "confirmationNote": "변경을 확인하기 위한 이메일이 전송됩니다.",
+    "logout": "로그아웃",
+    "deleteSoon": "계정 삭제(준비 중)",
+    "backToHelp": "도움말로 돌아가기",
+    "needSignIn": "설정을 수정하려면 로그인하세요.",
+    "savedName": "✅ 표시 이름이 저장되었습니다.",
+    "saveNameError": "표시 이름을 저장할 수 없습니다.",
+    "checkInbox": "✅ 새 이메일 확인 메일을 보냈습니다.",
+    "changeEmailError": "이메일을 변경할 수 없습니다.",
+    "billingPortalError": "결제 포털을 열 수 없습니다."
+  },
+  "help": {
+    "getStartedTitle": "시작이 막막하신가요?",
+    "getStartedDesc": "다음을 확인해 보세요:",
+    "quickStart": "빠른 시작 가이드",
+    "faqTitle": "자주 묻는 질문",
+    "faqDesc": "다음 섹션에서 자주 묻는 질문의 답을 확인하세요:",
+    "faqLink": "FAQ",
+    "contactTitle": "문의하기",
+    "contactDesc": "추가 도움이 필요하면 다음 주소로 이메일을 보내주세요:",
+    "settingsTitle": "설정",
+    "settingsDesc": "계정은 여기에서 관리할 수 있어요:",
+    "settingsLink": "설정",
+    "backToHelp": "도움말로 돌아가기"
+  },
+  "faq": {
+    "title": "자주 묻는 질문",
+    "sub": "IVContent에 관한 대표적인 질문과 답변",
+    "q1": "IVContent는 무엇인가요?",
+    "a1": "IVContent는 하나의 콘텐츠를 여러 플랫폼 형식으로 빠르게 변환해 주는 재가공 도구입니다. 시간을 아끼고, 더 넓은 도달을 얻고, 꾸준한 게시를 돕습니다.",
+    "q2": "어떻게 시작하나요?",
+    "a2": "계정을 만들고 대시보드에서 도구를 선택한 다음, 콘텐츠를 붙여넣고 ‘재가공’을 클릭하세요.",
+    "q3": "평생 혜택(LTD)에는 무엇이 포함되나요?",
+    "a3": "현재와 향후 제공되는 모든 도구에 평생 접근할 수 있습니다. 월 구독료는 없습니다.",
+    "q4": "나중에 업그레이드할 수 있나요?",
+    "a4": "네. 월간으로 시작하더라도 언제든지 연간 또는 평생 요금제로 변경할 수 있습니다.",
+    "q5": "내 데이터는 안전한가요?",
+    "a5": "물론입니다. 당사는 데이터를 판매하지 않으며 서비스 운영에 필요한 최소한만 안전하게 저장합니다."
+  },
+  "landing": {
+    "heroTitle": "IVContent — 콘텐츠 재가공, 임팩트 극대화",
+    "heroSub": "AI로 블로그·비디오·소셜 글을 즉시 다양한 형식으로 변환하세요. 시간을 절약하고 더 많은 사람에게 도달해 보세요.",
+    "cta": "베타 참여",
+    "f1Title": "멀티 플랫폼 출력",
+    "f1Sub": "블로그 글, 트위터 스레드, 링크드인 캐러셀, 핀터레스트 캡션까지 — 단 몇 초면 충분합니다.",
+    "f2Title": "AI 기반 편집",
+    "f2Sub": "지능형 재작성, 톤 조정, 형식 최적화로 타깃 독자에 딱 맞게.",
+    "f3Title": "시간 절약 워크플로",
+    "f3Sub": "재가공 파이프라인을 자동화해 포맷 작업 대신 창작에 집중하세요.",
+    "testimonialsTitle": "초기 사용자 한마디",
+    "testimonialsSoon1": "“베타 후기, 곧 공개됩니다...”",
+    "testimonialsSoon2": "“출시 후 실제 사례를 소개할 예정입니다.”",
+    "finalTitle": "IVContent를 가장 먼저 경험해 보세요",
+    "footer": "IVContent — 모든 권리 보유."
+  },
+  "ltd": {
+    "title": "평생 혜택 이용권 🚀",
+    "sub": "마감 전에 자리를 확보하세요! 한 티어가 매진되면 다음 티어가 열립니다.",
+    "joinBeta": "9월 30일까지 베타 참여",
+    "spotsError": "잔여 수량을 불러올 수 없습니다. 다시 시도해 주세요.",
+    "checkoutFailed": "결제에 실패했습니다",
+    "soldOut": "매진",
+    "loadingSpots": "잔여 수량 불러오는 중…",
+    "spotsLeft": "남은 자리 {{count}}개",
+    "goPro": "Pro 가입 — 월 $13",
+    "videoTitle": "영상 안내"
+  },
+  "qs": {
+    "title": "빠른 시작 가이드",
+    "sub": "몇 분 만에 IVContent 사용법 배우기",
+    "videoTitle": "영상 안내",
+    "stepsTitle": "단계별 안내",
+    "step1": "회원가입 또는 로그인 – 새 계정을 만들거나 기존 계정으로 로그인하세요.",
+    "step2": "콘텐츠 입력 – 블로그, 영상 스크립트 또는 텍스트를 입력합니다.",
+    "step3": "형식 선택 – 만들고 싶은 형식을 고르세요(예: 블로그 요약, 틱톡 스크립트, 핀터레스트 캡션).",
+    "step4": "‘재가공’ 클릭 – IVContent가 자동으로 변환합니다.",
+    "step5": "검토 및 편집 – 생성된 결과를 확인하고 필요한 수정을 합니다.",
+    "step6": "다운로드 또는 복사 – 파일로 저장하거나 클립보드로 복사해 바로 사용하세요."
+  },
+  "beta": {
+    "title": "IVContent 베타",
+    "sub": "베타 테스터로 참여해 더 나은 제품을 함께 만들어 주세요!",
+    "source": "소스",
+    "nameOpt": "이름(선택 사항)",
+    "email": "이메일",
+    "invalidEmail": "유효한 이메일 주소를 입력해 주세요.",
+    "genericError": "문제가 발생했습니다. 다시 시도해 주세요.",
+    "submitting": "제출 중…",
+    "joinCta": "베타 참여",
+    "privacyNote": "이메일은 베타 소식에만 사용되며 언제든지 수신 거부할 수 있습니다.",
+    "inTitle": "참여 완료!",
+    "inDesc": "IVContent 베타에 참여해 주셔서 감사합니다. 곧 안내 메일을 보내드릴게요.",
+    "backToLTD": "평생 혜택으로 돌아가기"
+  }
+}

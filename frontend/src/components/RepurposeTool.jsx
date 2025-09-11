@@ -4,7 +4,8 @@ import { supabase } from '../api/supabaseClient.js';
 import { jsPDF } from "jspdf";
 import "./Repurpose.css";
 import { useTranslation } from "react-i18next";
-import i18n from "i18next";
+import i18n from "../i18n";
+import LANGS from "../i18nLangs";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 
@@ -56,37 +57,6 @@ export default function RepurposeTool() {
   };
   const chipText = FORMAT_LABEL[format] || '⚙️ Custom';
 
-  function uploadVideoWithProgress({ file, lang = "en", token, onProgress }) {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", `${import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051"}/api/video/transcribe`);
-  
-      if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-  
-      xhr.upload.onprogress = (evt) => {
-        if (evt.lengthComputable && typeof onProgress === "function") {
-          onProgress(Math.round((evt.loaded / evt.total) * 100));
-        }
-      };
-  
-      xhr.onload = () => {
-        try {
-          const json = JSON.parse(xhr.responseText || "{}");
-          if (xhr.status >= 200 && xhr.status < 300) resolve(json);
-          else reject({ status: xhr.status, error: json?.error || "Upload failed" });
-        } catch {
-          reject({ status: xhr.status, error: "Bad response from server" });
-        }
-      };
-  
-      xhr.onerror = () => reject({ status: xhr.status, error: "Network error" });
-  
-      const form = new FormData();
-      form.append("file", file);
-      form.append("lang", lang);
-      xhr.send(form);
-    });
-  }  
 
   // keep transcriptLang in sync with UI language if user hasn’t changed it
   useEffect(() => {
@@ -95,35 +65,22 @@ export default function RepurposeTool() {
 
   function languageHint() {
     const map = {
-      en: "English", es: "Spanish", fr: "French", de: "German",
-      pt: "Portuguese", it: "Italian", nl: "Dutch",
-      ja: "Japanese", ko: "Korean", hi: "Hindi"
+      en: "English",
+      es: "Spanish",
+      hi: "Hindi",
+      ar: "Arabic",
+      zh: "Chinese",
+      ko: "Korean",
+      pt: "Portuguese",
+      fr: "French",
+      de: "German",
+      it: "Italian",
+      nl: "Dutch",
+      ja: "Japanese"
     };
     const code = i18n.language || "en";
     return map[code] || "English";
-  }
-
-  async function transcribeLocalVideo(file, lang = "en") {
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("lang", lang);
-
-    // Attach Supabase auth token for requireUser middleware
-    const { data } = await supabase.auth.getSession();
-    const token = data?.session?.access_token;
-
-    const resp = await fetch(`${API_BASE}/api/video/transcribe`, {
-      method: "POST",
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      body: fd,
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.error || "Upload/transcription failed");
-    }
-    return resp.json(); // { ok, text, ... }
-  }
+  }  
 
   async function handleRepurpose() {
     setLoading(true);
@@ -451,16 +408,11 @@ async function uploadVideoWithProgress({ file, lang = "en", token, onProgress })
                     value={transcriptLang}
                     onChange={e => setTranscriptLang(e.target.value)}
                   >
-                    <option value="en">English (en)</option>
-                    <option value="es">Spanish (es)</option>
-                    <option value="fr">French (fr)</option>
-                    <option value="de">German (de)</option>
-                    <option value="pt">Portuguese (pt)</option>
-                    <option value="it">Italian (it)</option>
-                    <option value="nl">Dutch (nl)</option>
-                    <option value="ja">Japanese (ja)</option>
-                    <option value="ko">Korean (ko)</option>
-                    <option value="hi">Hindi (hi)</option>
+                    {LANGS.map(l => (
+                      <option key={l.code} value={l.code}>
+                        {l.label} ({l.code})
+                      </option>
+                    ))}
                   </select>
                 </div>
 

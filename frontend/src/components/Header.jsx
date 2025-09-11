@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import Navbar from './Navbar';
 import { useAccount } from "../hooks/useAccount.js";
 import { openBillingPortal } from "../api/account.js";
@@ -26,9 +25,9 @@ export default function Header() {
               <button
                 className="px-2 py-1 rounded border border-white/20 hover:bg-white/10 transition"
                 onClick={() => openBillingPortal().catch(err => alert(err.message))}
-                title="Manage subscription"
+                title={t("header.manageBilling")}
               >
-                Manage Billing
+                {t("header.manageBilling")}
               </button>
             )}
           </div>

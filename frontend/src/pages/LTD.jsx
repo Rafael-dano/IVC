@@ -1,8 +1,10 @@
+// src/pages/LTD.jsx
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import "./LTD.css";
 import { startCheckout } from "../api/billing.js";
+import { useTranslation } from "react-i18next";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 
@@ -13,7 +15,8 @@ const TIERS = [
 ];
 
 export default function LTD() {
-  const [spots, setSpots] = useState({});        // { LTD_99: number, ... }
+  const { t } = useTranslation();
+  const [spots, setSpots] = useState({});
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
@@ -25,7 +28,7 @@ export default function LTD() {
       const json = await res.json();
       setSpots(json.spots || {});
     } catch (e) {
-      if (e.name !== "AbortError") setErr("Spots not loading. Try again.");
+      if (e.name !== "AbortError") setErr(t("ltd.spotsError"));
     } finally {
       setLoading(false);
     }
@@ -34,8 +37,6 @@ export default function LTD() {
   useEffect(() => {
     const ac = new AbortController();
     loadSpots(ac.signal);
-
-    // Optional: auto-refresh every 30s
     const id = setInterval(() => loadSpots(ac.signal), 30000);
     return () => {
       ac.abort();
@@ -47,7 +48,7 @@ export default function LTD() {
     try {
       await startCheckout({ price: tierKey, mode: "payment" });
     } catch (e) {
-      alert(e.message || "Checkout failed");
+      alert(e.message || t("ltd.checkoutFailed"));
     }
   };
 
@@ -55,7 +56,7 @@ export default function LTD() {
     try {
       await startCheckout({ price: "PRO", mode: "subscription" });
     } catch (e) {
-      alert(e.message || "Checkout failed");
+      alert(e.message || t("ltd.checkoutFailed"));
     }
   };
 
@@ -64,40 +65,37 @@ export default function LTD() {
       <Header />
       <main className="text-center p-6 space-y-8">
         <header className="space-y-2">
-          <h1 className="text-4xl font-bold text-purple-700">Lifetime Deal Access 🚀</h1>
+          <h1 className="text-4xl font-bold text-purple-700">{t("ltd.title")}</h1>
           <p className="text-lg text-gray-700">
-            Secure your spot before it's gone! Once a tier sells out, the next one unlocks.
+            {t("ltd.sub")}
           </p>
         </header>
 
         <section>
-          <a href="/beta" className="ltd-button">Join Beta Till September 30th</a>
+          <a href="/beta" className="ltd-button">{t("ltd.joinBeta")}</a>
         </section>
 
-        {err && (
-          <p className="text-sm text-red-600">{err}</p>
-        )}
+        {err && <p className="text-sm text-red-600">{t("ltd.errPrefix")} {err}</p>}
 
         <section className="ltd-pricing-grid">
-          {TIERS.map((t) => {
-            const remaining = spots[t.key];
+          {TIERS.map((tTier) => {
+            const remaining = spots[tTier.key];
             const soldOut = typeof remaining === "number" && remaining <= 0;
 
             return (
               <button
-                key={t.key}
+                key={tTier.key}
                 className={`ltd-button ${soldOut ? "ltd-button--disabled" : ""}`}
-                onClick={() => onBuy(t.key)}
+                onClick={() => onBuy(tTier.key)}
                 disabled={soldOut || loading}
-                title={soldOut ? "Sold out" : undefined}
+                title={soldOut ? t("ltd.soldOut") : undefined}
               >
-                <div className="ltd-button-title">{t.label}</div>
-
+                <div className="ltd-button-title">{tTier.label}</div>
                 <div className="ltd-button-sub">
                   {loading ? (
-                    <span className="ltd-shimmer">Loading spots…</span>
+                    <span className="ltd-shimmer">{t("ltd.loadingSpots")}</span>
                   ) : typeof remaining === "number" ? (
-                    soldOut ? "Sold out" : `${remaining} spots left`
+                    soldOut ? t("ltd.soldOut") : t("ltd.spotsLeft", { count: remaining })
                   ) : (
                     " "
                   )}
@@ -109,12 +107,12 @@ export default function LTD() {
 
         <section>
           <button className="ltd-button" onClick={onSubscribe}>
-            Go Pro — $13 / month
+            {t("ltd.goPro")}
           </button>
         </section>
 
         <section className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-2">Video Walkthrough</h2>
+          <h2 className="text-2xl font-semibold mb-2">{t("ltd.videoTitle")}</h2>
           <div className="mb-6">
             <iframe
               className="w-full h-96 rounded-md"

@@ -1,0 +1,169 @@
+{
+  "appName": "IV Content",
+  "nav": {
+    "dashboard": "Painel",
+    "settings": "Configurações",
+    "logout": "Sair",
+    "tool": "Ferramenta",
+    "ltd": "Oferta Vitalícia",
+    "help": "Ajuda",
+    "login": "Entrar",
+    "signup": "Cadastrar"
+  },
+  "repurpose": {
+    "heroTitle": "Transforme qualquer conteúdo em qualquer formato",
+    "heroSub": "Envie um vídeo ou cole um texto. Obtenha resumos, roteiros e muito mais.",
+    "textareaPlaceholder": "Cole ou escreva seu conteúdo aqui...",
+    "btnRepurpose": "Reaproveitar Conteúdo",
+    "btnClear": "Limpar",
+    "btnCopy": "Copiar",
+    "btnDownloadTxt": "Baixar .txt",
+    "btnDownloadPdf": "Baixar .pdf",
+    "needInput": "⚠️ Por favor, insira algum conteúdo primeiro.",
+    "needLogin": "⚠️ Você precisa estar logado para usar esta função.",
+    "needYT": "⚠️ Cole uma URL ou ID do YouTube.",
+    "transcriptNA": "⚠️ Nenhuma transcrição disponível para este vídeo.",
+    "transcriptLang": "Idioma da transcrição"
+  },
+  "dashboard": {
+    "title": "Sua Ferramenta de Reaproveitamento",
+    "upgradeNudge": "Atualize para desbloquear o uso"
+  },
+  "settings": {
+    "title": "Configurações",
+    "displayName": "Nome de Exibição",
+    "email": "Email",
+    "save": "Salvar",
+    "changeEmail": "Alterar Email",
+    "manageBilling": "Gerenciar Cobrança",
+    "notSignedIn": "Você não está logado. Faça login para gerenciar suas configurações."
+  },
+  "header": {
+    "manageBilling": "Gerenciar Cobrança"
+  },
+  "footer": {
+    "tagline": {
+      "prefix": "Criado com 💡 por ",
+      "suffix": " · Transforme conteúdo em ouro."
+    },
+    "copyright": "Ivy Web Designs. Todos os direitos reservados."
+  },
+  "auth": {
+    "common": {
+      "backHome": "Voltar",
+      "maybeLater": "Talvez mais tarde",
+      "emailPlaceholder": "Endereço de email",
+      "passwordPlaceholder": "Senha",
+      "fullNamePlaceholder": "Nome completo"
+    },
+    "login": {
+      "title": "Bem-vindo de volta",
+      "subtitle": "Entre para continuar",
+      "cta": "Entrar",
+      "loading": "Entrando...",
+      "link": "Entrar",
+      "error": "Não foi possível fazer login."
+    },
+    "reset": {
+      "link": "Esqueceu a senha?",
+      "sending": "Enviando…",
+      "promptEmailMissing": "Digite seu email primeiro.",
+      "sent": "Email de redefinição enviado. Verifique sua caixa de entrada.",
+      "error": "Não foi possível enviar o email de redefinição."
+    },
+    "signup": {
+      "title": "Crie sua conta",
+      "subtitle": "Junte-se ao IVContent em segundos",
+      "cta": "Cadastrar",
+      "loading": "Criando...",
+      "link": "Criar Conta",
+      "haveAccount": "Já tem uma conta?",
+      "checkEmail": "Verifique seu email para confirmar a conta e depois faça login.",
+      "error": "Não foi possível criar sua conta."
+    }
+  },
+  "help": {
+    "getStartedTitle": "Precisa de ajuda para começar?",
+    "getStartedDesc": "Confira nosso",
+    "quickStart": "Guia Rápido",
+    "faqTitle": "Perguntas Frequentes",
+    "faqDesc": "Encontre respostas em nossa seção",
+    "faqLink": "Perguntas Frequentes",
+    "contactTitle": "Fale Conosco",
+    "contactDesc": "Se ainda precisar de ajuda, envie um email para",
+    "settingsTitle": "Configurações",
+    "settingsDesc": "Atualize sua conta em",
+    "settingsLink": "Configurações",
+    "backToHelp": "Voltar para Ajuda"
+  },
+  "faq": {
+    "title": "Perguntas Frequentes",
+    "sub": "Respostas para dúvidas comuns sobre o IVContent",
+    "q1": "O que é IVContent?",
+    "a1": "IVContent é uma ferramenta de reaproveitamento de conteúdo que ajuda você a transformar um único material em múltiplos formatos para diferentes plataformas — economizando tempo, ampliando alcance e mantendo consistência.",
+    "q2": "Como começo a usar?",
+    "a2": "Basta criar uma conta, escolher uma ferramenta no painel, colar seu conteúdo e clicar em “Reaproveitar”.",
+    "q3": "O que a Oferta Vitalícia inclui?",
+    "a3": "A oferta vitalícia garante acesso ilimitado a todas as ferramentas atuais e futuras, para sempre — sem mensalidades.",
+    "q4": "Posso fazer upgrade depois?",
+    "a4": "Sim! Se começar com um plano mensal, pode mudar para anual ou vitalício a qualquer momento nas configurações.",
+    "q5": "Meus dados estão seguros?",
+    "a5": "Com certeza. Nunca vendemos seus dados e armazenamos apenas o necessário para operar o serviço com segurança."
+  },
+  "landing": {
+    "heroTitle": "IVContent — Reaproveite Conteúdo. Multiplique o Impacto.",
+    "heroSub": "Transforme instantaneamente blogs, vídeos e posts sociais em múltiplos formatos com IA. Economize horas, alcance mais pessoas e expanda sua audiência.",
+    "cta": "Participe do Beta",
+    "f1Title": "Saída Multi-Plataforma",
+    "f1Sub": "De posts de blog a threads no Twitter, carrosséis no LinkedIn, legendas para Pinterest e muito mais — em segundos.",
+    "f2Title": "Edição com IA",
+    "f2Sub": "Reescrita inteligente, ajustes de tom e otimização de formato para se adequar ao seu público.",
+    "f3Title": "Fluxo de Trabalho que Economiza Tempo",
+    "f3Sub": "Automatize sua linha de reaproveitamento de conteúdo e concentre-se em criar, não em formatar.",
+    "testimonialsTitle": "O que dizem os primeiros usuários",
+    "testimonialsSoon1": "“Avaliações dos testadores beta em breve...”",
+    "testimonialsSoon2": "“Histórias reais serão mostradas após o lançamento.”",
+    "finalTitle": "Seja o Primeiro a Experimentar o IVContent",
+    "footer": "IVContent — Todos os direitos reservados."
+  },
+  "ltd": {
+    "title": "Oferta Vitalícia 🚀",
+    "sub": "Garanta sua vaga antes que acabe! Assim que um lote esgota, o próximo é liberado.",
+    "joinBeta": "Participe do Beta até 30 de setembro",
+    "spotsError": "Não foi possível carregar as vagas. Tente novamente.",
+    "checkoutFailed": "Falha no checkout",
+    "soldOut": "Esgotado",
+    "loadingSpots": "Carregando vagas…",
+    "spotsLeft": "{{count}} vagas restantes",
+    "goPro": "Assine Pro — $13 / mês",
+    "videoTitle": "Vídeo Explicativo"
+  },
+  "qs": {
+    "title": "Guia Rápido",
+    "sub": "Aprenda a usar o IVContent em minutos",
+    "videoTitle": "Vídeo Explicativo",
+    "stepsTitle": "Instruções Passo a Passo",
+    "step1": "Cadastre-se ou Entre – Crie sua conta IVContent ou acesse a existente.",
+    "step2": "Insira seu Conteúdo – Cole seu blog, roteiro de vídeo ou texto.",
+    "step3": "Escolha um Formato – Selecione o que deseja gerar (ex.: Resumo de Blog, Script TikTok, Legenda Pinterest).",
+    "step4": "Clique em 'Reaproveitar' – Deixe o IVContent fazer a mágica.",
+    "step5": "Revise e Edite – Faça ajustes no conteúdo gerado.",
+    "step6": "Baixe ou Copie – Salve como arquivo ou copie para uso imediato."
+  },
+  "beta": {
+    "title": "Beta do IVContent",
+    "sub": "Garanta sua vaga como Testador Beta e nos ajude a construir um produto melhor!",
+    "source": "Fonte",
+    "nameOpt": "Seu Nome (opcional)",
+    "email": "Email",
+    "invalidEmail": "Digite um endereço de email válido.",
+    "genericError": "Algo deu errado. Tente novamente.",
+    "submitting": "Enviando…",
+    "joinCta": "Participar do Beta",
+    "privacyNote": "Usaremos seu email apenas para atualizações do beta. Você pode cancelar a qualquer momento.",
+    "inTitle": "Você entrou!",
+    "inDesc": "Obrigado por se juntar ao beta do IVContent. Em breve enviaremos instruções por email.",
+    "backToLTD": "Voltar à Oferta Vitalícia"
+  }
+}
+

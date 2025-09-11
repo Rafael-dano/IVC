@@ -1,0 +1,189 @@
+{
+  "appName": "IV Content",
+  "nav": {
+    "dashboard": "Dashboard",
+    "settings": "Instellingen",
+    "logout": "Uitloggen",
+    "tool": "Tool",
+    "ltd": "Lifetime Deal",
+    "help": "Help",
+    "login": "Inloggen",
+    "signup": "Registreren"
+  },
+  "repurpose": {
+    "heroTitle": "Maak van elke content alles",
+    "heroSub": "Upload een video of plak tekst. Ontvang samenvattingen, scripts en meer.",
+    "textareaPlaceholder": "Plak of schrijf je content hier...",
+    "btnRepurpose": "Content hergebruiken",
+    "btnClear": "Wissen",
+    "btnCopy": "Kopiëren",
+    "btnDownloadTxt": ".txt downloaden",
+    "btnDownloadPdf": ".pdf downloaden",
+    "needInput": "⚠️ Vul eerst content in.",
+    "needLogin": "⚠️ Je moet inloggen om deze functie te gebruiken.",
+    "needYT": "⚠️ Plak een YouTube-URL of ID.",
+    "transcriptNA": "⚠️ Geen transcript beschikbaar voor deze video.",
+    "transcriptLang": "Transcript-taal"
+  },
+  "dashboard": {
+    "title": "Jouw Repurpose Tool",
+    "upgradeNudge": "Upgrade om gebruik te ontgrendelen"
+  },
+  "header": {
+    "manageBilling": "Facturatie beheren"
+  },
+  "footer": {
+    "tagline": {
+      "prefix": "Gemaakt met 💡 door ",
+      "suffix": " · Maak goud van content."
+    },
+    "copyright": "Ivy Web Designs. Alle rechten voorbehouden."
+  },
+  "auth": {
+    "common": {
+      "backHome": "Terug naar Home",
+      "maybeLater": "Misschien later",
+      "emailPlaceholder": "E-mailadres",
+      "passwordPlaceholder": "Wachtwoord",
+      "fullNamePlaceholder": "Volledige naam"
+    },
+    "login": {
+      "title": "Welkom terug",
+      "subtitle": "Log in om verder te gaan",
+      "cta": "Inloggen",
+      "loading": "Inloggen...",
+      "link": "Inloggen",
+      "error": "Kon je niet inloggen."
+    },
+    "reset": {
+      "link": "Wachtwoord vergeten?",
+      "sending": "Versturen…",
+      "promptEmailMissing": "Vul eerst je e-mailadres in.",
+      "sent": "Reset-e-mail verzonden. Controleer je inbox.",
+      "error": "Kon reset-e-mail niet verzenden."
+    },
+    "signup": {
+      "title": "Maak je account aan",
+      "subtitle": "Word in enkele seconden lid van IVContent",
+      "cta": "Registreren",
+      "loading": "Aanmaken...",
+      "link": "Account aanmaken",
+      "haveAccount": "Heb je al een account?",
+      "checkEmail": "Controleer je e-mail om je account te bevestigen en log daarna in.",
+      "error": "Kon je account niet aanmaken."
+    }
+  },
+  "settingsPage": {
+    "title": "Instellingen",
+    "loading": "Instellingen laden…",
+    "notSignedIn": "Je bent niet ingelogd. Log in om je instellingen te beheren.",
+    "goToLogin": "Ga naar inloggen",
+    "manageBillingTitle": "Beheer je abonnement in Stripe",
+    "manageBilling": "Facturatie beheren",
+    "opening": "Bezig met openen…",
+    "monthlyUsage": "Maandelijks gebruik",
+    "tokensLeft": "tokens over",
+    "renews": "Vernieuwt op",
+    "transcriptionMinutes": "Transcriptie-minuten",
+    "minUsed": "minuten gebruikt",
+    "noTranscriptionMinutes": "Je abonnement bevat momenteel geen transcriptie-minuten. Upgrade om video/audio uploads te gebruiken.",
+    "displayName": "Weergavenaam",
+    "displayNamePH": "Jouw weergavenaam",
+    "save": "Opslaan",
+    "email": "E-mail",
+    "changeEmail": "E-mail wijzigen",
+    "confirmationNote": "Je ontvangt een bevestigingsmail om de wijziging te verifiëren.",
+    "logout": "Uitloggen",
+    "deleteSoon": "Account verwijderen (binnenkort beschikbaar)",
+    "backToHelp": "Terug naar Help",
+    "needSignIn": "Log in om je instellingen te bewerken.",
+    "savedName": "✅ Naam opgeslagen.",
+    "saveNameError": "Kon naam niet opslaan.",
+    "checkInbox": "✅ Controleer je inbox om de nieuwe e-mail te bevestigen.",
+    "changeEmailError": "Kon e-mail niet wijzigen.",
+    "billingPortalError": "Kon facturatieportaal niet openen."
+  },
+  "help": {
+    "getStartedTitle": "Hulp nodig om te beginnen?",
+    "getStartedDesc": "Bekijk onze",
+    "quickStart": "Snelstartgids",
+    "faqTitle": "FAQ",
+    "faqDesc": "Vind antwoorden in de sectie",
+    "faqLink": "Veelgestelde vragen",
+    "contactTitle": "Neem contact op",
+    "contactDesc": "Heb je nog steeds hulp nodig? Stuur ons een e-mail op",
+    "settingsTitle": "Instellingen",
+    "settingsDesc": "Werk je account bij in",
+    "settingsLink": "Instellingen",
+    "backToHelp": "Terug naar Help"
+  },
+  "faq": {
+    "title": "Veelgestelde vragen",
+    "sub": "Antwoorden op veelgestelde vragen over IVContent",
+    "q1": "Wat is IVContent?",
+    "a1": "IVContent is een tool die je helpt om één stuk content om te zetten in meerdere formaten voor verschillende platforms — waardoor je tijd bespaart, je bereik vergroot en consistent blijft.",
+    "q2": "Hoe begin ik?",
+    "a2": "Meld je aan, kies een tool in het dashboard, plak je content en klik op 'Hergebruiken'.",
+    "q3": "Wat zit er in de Lifetime Deal?",
+    "a3": "De Lifetime Deal geeft je onbeperkt toegang tot alle huidige en toekomstige functies — zonder maandelijkse kosten.",
+    "q4": "Kan ik later upgraden?",
+    "a4": "Ja! Je kunt altijd overschakelen van een maandelijks naar een jaarlijks of lifetime abonnement.",
+    "q5": "Zijn mijn gegevens veilig?",
+    "a5": "Absoluut. We verkopen je gegevens nooit en bewaren alleen wat nodig is om de service veilig te laten werken."
+  },
+  "landing": {
+    "heroTitle": "IVContent — Hergebruik content. Vergroot impact.",
+    "heroSub": "Zet je blogs, video’s en posts direct om in meerdere formaten met AI. Bespaar tijd, bereik meer mensen en laat je publiek groeien.",
+    "cta": "Doe mee aan de Beta",
+    "f1Title": "Multi-platform output",
+    "f1Sub": "Van blogposts tot Twitter-threads, LinkedIn-carrousels, Pinterest-bijschriften en meer — in seconden.",
+    "f2Title": "AI-aangedreven bewerking",
+    "f2Sub": "Slim herschrijven, toon aanpassen en formaten optimaliseren om je publiek beter te bereiken.",
+    "f3Title": "Tijdbesparend",
+    "f3Sub": "Automatiseer je workflow en focus op creëren in plaats van formatteren.",
+    "testimonialsTitle": "Wat vroege testers zeggen",
+    "testimonialsSoon1": "\"Beta-recensies komen binnenkort...\"",
+    "testimonialsSoon2": "\"Deze sectie toont echte verhalen na de lancering.\"",
+    "finalTitle": "Wees een van de eersten om IVContent te ervaren",
+    "footer": "IVContent — Alle rechten voorbehouden."
+  },
+  "ltd": {
+    "title": "Lifetime Deal Toegang 🚀",
+    "sub": "Zeker je plek voordat het uitverkocht is! Zodra een tier is uitverkocht, wordt de volgende ontgrendeld.",
+    "joinBeta": "Doe mee aan de Beta tot 30 september",
+    "spotsError": "Kon plekken niet laden. Probeer opnieuw.",
+    "checkoutFailed": "Checkout mislukt",
+    "soldOut": "Uitverkocht",
+    "loadingSpots": "Plekken laden…",
+    "spotsLeft": "{{count}} plekken over",
+    "goPro": "Ga Pro — $13 / maand",
+    "videoTitle": "Videouitleg"
+  },
+  "qs": {
+    "title": "Snelstartgids",
+    "sub": "Leer IVContent in minuten gebruiken",
+    "videoTitle": "Videouitleg",
+    "stepsTitle": "Stapsgewijze instructies",
+    "step1": "Registreren of Inloggen – Maak een IVContent-account aan of log in op je bestaande account.",
+    "step2": "Voer je content in – Plak je blog, script of tekst in het invoerveld.",
+    "step3": "Kies een formaat – Kies wat je wilt maken (bijv. Blogs, TikTok-script, Pinterest-bijschrift).",
+    "step4": "Klik op 'Hergebruiken' – Laat IVContent zijn magie doen.",
+    "step5": "Bekijk & Bewerk – Maak indien nodig aanpassingen.",
+    "step6": "Download of Kopieer – Sla het op als bestand of kopieer het direct."
+  },
+  "beta": {
+    "title": "IVContent Beta",
+    "sub": "Zeker je plek als Beta Tester en help ons een beter product te bouwen!",
+    "source": "Bron",
+    "nameOpt": "Jouw naam (optioneel)",
+    "email": "E-mail",
+    "invalidEmail": "Vul een geldig e-mailadres in.",
+    "genericError": "Er ging iets mis. Probeer opnieuw.",
+    "submitting": "Versturen…",
+    "joinCta": "Doe mee aan de Beta",
+    "privacyNote": "We gebruiken je e-mail alleen voor beta-updates. Afmelden kan altijd.",
+    "inTitle": "Je doet mee!",
+    "inDesc": "Bedankt dat je meedoet aan de IVContent-beta. We sturen je snel instructies via e-mail.",
+    "backToLTD": "Terug naar Lifetime Deals"
+  }
+}

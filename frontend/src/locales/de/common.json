@@ -1,0 +1,189 @@
+{
+  "appName": "IV Content",
+  "nav": {
+    "dashboard": "Dashboard",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "tool": "Tool",
+    "ltd": "Lifetime Deal",
+    "help": "Hilfe",
+    "login": "Anmelden",
+    "signup": "Registrieren"
+  },
+  "repurpose": {
+    "heroTitle": "Verwandle jeden Inhalt in alles",
+    "heroSub": "Lade ein Video hoch oder füge Text ein. Erhalte Zusammenfassungen, Skripte und mehr.",
+    "textareaPlaceholder": "Füge deinen Inhalt hier ein oder schreibe ihn...",
+    "btnRepurpose": "Inhalt umwandeln",
+    "btnClear": "Löschen",
+    "btnCopy": "Kopieren",
+    "btnDownloadTxt": ".txt herunterladen",
+    "btnDownloadPdf": ".pdf herunterladen",
+    "needInput": "⚠️ Bitte zuerst Inhalt eingeben.",
+    "needLogin": "⚠️ Du musst angemeldet sein, um diese Funktion zu nutzen.",
+    "needYT": "⚠️ Bitte füge eine YouTube-URL oder ID ein.",
+    "transcriptNA": "⚠️ Keine Transkription für dieses Video verfügbar.",
+    "transcriptLang": "Transkript-Sprache"
+  },
+  "dashboard": {
+    "title": "Dein Repurpose Tool",
+    "upgradeNudge": "Upgrade durchführen, um mehr Nutzung freizuschalten"
+  },
+  "header": {
+    "manageBilling": "Abrechnung verwalten"
+  },
+  "footer": {
+    "tagline": {
+      "prefix": "Erstellt mit 💡 von ",
+      "suffix": " · Verwandle Inhalte in Gold."
+    },
+    "copyright": "Ivy Web Designs. Alle Rechte vorbehalten."
+  },
+  "auth": {
+    "common": {
+      "backHome": "Zurück zur Startseite",
+      "maybeLater": "Vielleicht später",
+      "emailPlaceholder": "E-Mail-Adresse",
+      "passwordPlaceholder": "Passwort",
+      "fullNamePlaceholder": "Vollständiger Name"
+    },
+    "login": {
+      "title": "Willkommen zurück",
+      "subtitle": "Melde dich an, um fortzufahren",
+      "cta": "Anmelden",
+      "loading": "Anmeldung läuft...",
+      "link": "Einloggen",
+      "error": "Anmeldung fehlgeschlagen."
+    },
+    "reset": {
+      "link": "Passwort vergessen?",
+      "sending": "Senden…",
+      "promptEmailMissing": "Bitte zuerst deine E-Mail eingeben.",
+      "sent": "E-Mail zum Zurücksetzen gesendet. Überprüfe dein Postfach.",
+      "error": "E-Mail zum Zurücksetzen konnte nicht gesendet werden."
+    },
+    "signup": {
+      "title": "Konto erstellen",
+      "subtitle": "In wenigen Sekunden bei IVContent beitreten",
+      "cta": "Registrieren",
+      "loading": "Wird erstellt...",
+      "link": "Konto erstellen",
+      "haveAccount": "Hast du schon ein Konto?",
+      "checkEmail": "Überprüfe deine E-Mails, um dein Konto zu bestätigen, und melde dich dann an.",
+      "error": "Konto konnte nicht erstellt werden."
+    }
+  },
+  "settingsPage": {
+    "title": "Einstellungen",
+    "loading": "Einstellungen werden geladen…",
+    "notSignedIn": "Du bist nicht angemeldet. Bitte logge dich ein, um deine Einstellungen zu verwalten.",
+    "goToLogin": "Zur Anmeldung",
+    "manageBillingTitle": "Abonnement in Stripe verwalten",
+    "manageBilling": "Abrechnung verwalten",
+    "opening": "Öffnen…",
+    "monthlyUsage": "Monatliche Nutzung",
+    "tokensLeft": "Tokens übrig",
+    "renews": "Erneuert sich am",
+    "transcriptionMinutes": "Transkriptionsminuten",
+    "minUsed": "verwendete Minuten",
+    "noTranscriptionMinutes": "Dein Plan enthält derzeit keine Transkriptionsminuten. Führe ein Upgrade durch, um Video-/Audio-Uploads zu aktivieren.",
+    "displayName": "Anzeigename",
+    "displayNamePH": "Dein Anzeigename",
+    "save": "Speichern",
+    "email": "E-Mail",
+    "changeEmail": "E-Mail ändern",
+    "confirmationNote": "Du erhältst eine Bestätigungs-E-Mail zur Verifizierung der Änderung.",
+    "logout": "Abmelden",
+    "deleteSoon": "Konto löschen (bald verfügbar)",
+    "backToHelp": "Zurück zur Hilfe",
+    "needSignIn": "Bitte melde dich an, um deine Einstellungen zu bearbeiten.",
+    "savedName": "✅ Anzeigename gespeichert.",
+    "saveNameError": "Anzeigename konnte nicht gespeichert werden.",
+    "checkInbox": "✅ Überprüfe dein Postfach, um die neue E-Mail zu bestätigen.",
+    "changeEmailError": "E-Mail konnte nicht geändert werden.",
+    "billingPortalError": "Abrechnungsportal konnte nicht geöffnet werden."
+  },
+  "help": {
+    "getStartedTitle": "Brauchst du Hilfe beim Einstieg?",
+    "getStartedDesc": "Schau dir unseren",
+    "quickStart": "Schnellstart-Guide",
+    "faqTitle": "FAQ",
+    "faqDesc": "Finde Antworten in unserer",
+    "faqLink": "Häufig gestellten Fragen",
+    "contactTitle": "Kontaktiere uns",
+    "contactDesc": "Wenn du noch Hilfe brauchst, sende uns eine E-Mail an",
+    "settingsTitle": "Einstellungen",
+    "settingsDesc": "Bearbeite dein Konto in",
+    "settingsLink": "Einstellungen",
+    "backToHelp": "Zurück zur Hilfe"
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "sub": "Antworten auf häufige Fragen zu IVContent",
+    "q1": "Was ist IVContent?",
+    "a1": "IVContent ist ein Tool zur Wiederverwendung von Inhalten. Es verwandelt einen Inhalt in mehrere Formate für verschiedene Plattformen — spart Zeit, vergrößert deine Reichweite und sorgt für Konsistenz.",
+    "q2": "Wie fange ich an?",
+    "a2": "Melde dich an, wähle ein Tool im Dashboard, füge deinen Inhalt ein und klicke auf „Umwandeln“.",
+    "q3": "Was beinhaltet der Lifetime Deal?",
+    "a3": "Der Lifetime Deal bietet dir unbegrenzten Zugang zu allen aktuellen und zukünftigen Funktionen — ohne monatliche Gebühren.",
+    "q4": "Kann ich später upgraden?",
+    "a4": "Ja! Du kannst jederzeit von einem Monatsplan auf einen Jahres- oder Lifetime-Plan wechseln.",
+    "q5": "Sind meine Daten sicher?",
+    "a5": "Absolut. Wir verkaufen deine Daten niemals und speichern nur, was notwendig ist, um den Service sicher bereitzustellen."
+  },
+  "landing": {
+    "heroTitle": "IVContent — Inhalte wiederverwenden. Wirkung multiplizieren.",
+    "heroSub": "Verwandle deine Blogs, Videos und Posts sofort in mehrere Formate mit KI. Spare Stunden, erreiche mehr Menschen und vergrößere deine Community.",
+    "cta": "BETA beitreten",
+    "f1Title": "Multi-Plattform Ausgabe",
+    "f1Sub": "Blogposts, Twitter-Threads, LinkedIn-Carousels, Pinterest-Captions und mehr — in Sekunden.",
+    "f2Title": "KI-gestützte Bearbeitung",
+    "f2Sub": "Intelligente Umschreibungen, Tonanpassungen und Formatoptimierungen passend zu deinem Publikum.",
+    "f3Title": "Zeitersparnis",
+    "f3Sub": "Automatisiere deinen Workflow zur Wiederverwendung und konzentriere dich auf das Erstellen, nicht das Umformatieren.",
+    "testimonialsTitle": "Was frühe Tester sagen",
+    "testimonialsSoon1": "„Beta-Bewertungen kommen bald...“",
+    "testimonialsSoon2": "„Dieser Bereich zeigt echte Erfahrungsberichte nach dem Start.“",
+    "finalTitle": "Sei einer der Ersten, die IVContent erleben",
+    "footer": "IVContent — Alle Rechte vorbehalten."
+  },
+  "ltd": {
+    "title": "Lifetime Deal Zugang 🚀",
+    "sub": "Sichere dir deinen Platz, bevor es zu spät ist! Sobald ein Kontingent ausverkauft ist, wird das nächste freigeschaltet.",
+    "joinBeta": "Beta bis 30. September beitreten",
+    "spotsError": "Kontingente werden nicht geladen. Versuche es erneut.",
+    "checkoutFailed": "Checkout fehlgeschlagen",
+    "soldOut": "Ausverkauft",
+    "loadingSpots": "Kontingente werden geladen…",
+    "spotsLeft": "{{count}} Plätze übrig",
+    "goPro": "Pro werden — 13 $ / Monat",
+    "videoTitle": "Video-Anleitung"
+  },
+  "qs": {
+    "title": "Schnellstart-Guide",
+    "sub": "Lerne, wie du IVContent in wenigen Minuten verwendest",
+    "videoTitle": "Video-Anleitung",
+    "stepsTitle": "Schritt-für-Schritt-Anleitung",
+    "step1": "Registriere dich oder melde dich an – Erstelle ein IVContent-Konto oder verwende dein bestehendes.",
+    "step2": "Gib deinen Inhalt ein – Füge deinen Blog, dein Videoskript oder deinen Text ein.",
+    "step3": "Wähle ein Format – Entscheide, was du erstellen möchtest (z. B. Blog-Zusammenfassung, TikTok-Skript, Pinterest-Caption).",
+    "step4": "Klicke auf ‚Umwandeln‘ – Lass IVContent seine Magie wirken.",
+    "step5": "Überprüfen & Bearbeiten – Passe den generierten Inhalt bei Bedarf an.",
+    "step6": "Herunterladen oder kopieren – Speichere den Inhalt als Datei oder kopiere ihn zur sofortigen Nutzung."
+  },
+  "beta": {
+    "title": "IVContent Beta",
+    "sub": "Sichere dir deinen Platz als Beta-Tester und hilf uns, ein besseres Produkt zu bauen!",
+    "source": "Quelle",
+    "nameOpt": "Dein Name (optional)",
+    "email": "E-Mail",
+    "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
+    "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "submitting": "Wird gesendet…",
+    "joinCta": "Beta beitreten",
+    "privacyNote": "Wir verwenden deine E-Mail nur für Beta-Updates. Du kannst dich jederzeit abmelden.",
+    "inTitle": "Du bist dabei!",
+    "inDesc": "Danke, dass du der IVContent-Beta beigetreten bist. Du erhältst bald eine E-Mail mit Anweisungen.",
+    "backToLTD": "Zurück zum Lifetime Deal"
+  }
+}
