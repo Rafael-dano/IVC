@@ -129,7 +129,7 @@
   "ltd": {
     "title": "终身优惠 🚀",
     "sub": "在名额用完前立即抢购！一旦售罄，下一个档位解锁。",
-    "joinBeta": "加入内测，截止 9 月 30 日",
+   "joinBeta": "加入测试版",
     "spotsError": "无法加载名额，请重试。",
     "checkoutFailed": "支付失败",
     "soldOut": "已售罄",
