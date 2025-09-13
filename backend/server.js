@@ -128,9 +128,9 @@ app.post(
           if (userId && isLTD && session.payment_status === "paid") {
             await supabaseAdmin
               .from("profiles")
-              .update({ plan: tier })
+              .update({ plan: tier, beta_expires_at: null }) // clear beta on LTD
               .eq("id", userId);
-
+          
             await supabaseAdmin.rpc("decrement_spot", { p_tier: tier });
           }
 
@@ -168,9 +168,9 @@ app.post(
             const renewsAt = new Date(invoice.lines.data[0].period.end * 1000).toISOString();
             await supabaseAdmin
               .from("profiles")
-              .update({ plan: "PRO", renews_at: renewsAt })
+              .update({ plan: "PRO", renews_at: renewsAt, beta_expires_at: null }) // clear beta on PRO
               .eq("id", userId);
-          }
+          }          
 
           // 🔔 Purchase/renewal email (best-effort)
           try {
@@ -310,6 +310,45 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
       return res.status(500).json({ error: "Could not save signup" });
     }
 
+    // ─────────────────────────────────────────────
+    // INSTANT BETA GRANT (best effort)
+    // If caller sent an Authorization header and is currently FREE,
+    // give them BETA_FREE for 30 days unless they already have beta_expires_at.
+    // Paid (PRO/LTD_*) are ignored.
+    // ─────────────────────────────────────────────
+    try {
+      const auth = req.headers.authorization || "";
+      const m = auth.match(/^Bearer\s+(.+)$/i);
+      if (m) {
+        const token = m[1];
+        const { data: authUser } = await supabaseAdmin.auth.getUser(token);
+        const userId = authUser?.user?.id || null;
+        const userEmail = authUser?.user?.email?.toLowerCase() || null;
+
+        if (userId && userEmail === cleanEmail) {
+          const { data: prof } = await supabaseAdmin
+            .from("profiles")
+            .select("plan, beta_expires_at")
+            .eq("id", userId)
+            .maybeSingle();
+
+          const plan = String(prof?.plan || "FREE").toUpperCase();
+          const alreadyHasBeta = !!prof?.beta_expires_at;
+
+          if (!plan.startsWith("LTD_") && plan !== "PRO" && !alreadyHasBeta) {
+            const plus30 = new Date();
+            plus30.setDate(plus30.getDate() + 30);
+            await supabaseAdmin
+              .from("profiles")
+              .update({ plan: "BETA_FREE", beta_expires_at: plus30.toISOString() })
+              .eq("id", userId);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("beta instant grant failed:", e?.message || e);
+    }
+
     // Optional: send welcome email
     // try {
     //   await sendBetaWelcomeEmail({ to: cleanEmail, name });
@@ -323,7 +362,6 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
     return res.status(500).json({ error: "Unexpected server error" });
   }
 });
-
 
 /* - this is where i am gonna put the video to summary route!! - */
 const upload = multer({
@@ -346,6 +384,42 @@ const videoLimiter = rateLimit({
   limit: 5, // 5 uploads/min per IP
   standardHeaders: true,
   legacyHeaders: false,
+});
+
+
+app.post("/api/beta/activate", requireUser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const { data: prof } = await supabaseAdmin
+      .from("profiles")
+      .select("plan, beta_expires_at")
+      .eq("id", userId)
+      .maybeSingle();
+
+    const plan = String(prof?.plan || "FREE").toUpperCase();
+    if (plan.startsWith("LTD_") || plan === "PRO") {
+      return res.json({ ok: true, plan }); // already paid
+    }
+
+    // Already on beta? return existing
+    if (plan === "BETA_FREE" && prof?.beta_expires_at) {
+      return res.json({ ok: true, plan, beta_expires_at: prof.beta_expires_at });
+    }
+
+    const plus30 = new Date();
+    plus30.setDate(plus30.getDate() + 30);
+
+    await supabaseAdmin
+      .from("profiles")
+      .update({ plan: "BETA_FREE", beta_expires_at: plus30.toISOString() })
+      .eq("id", userId);
+
+    res.json({ ok: true, plan: "BETA_FREE", beta_expires_at: plus30.toISOString() });
+  } catch (e) {
+    console.error("/api/beta/activate error:", e);
+    res.status(500).json({ error: "Could not activate beta" });
+  }
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -442,20 +516,6 @@ app.post(
         response_format: "json",
         temperature: 0,
       });
-
-      if (!resp.ok) {
-        const err = await resp.json().catch(()=>({}));
-        if (resp.status === 402) {
-         // limit reached
-          const mins = Math.floor((err.remaining_seconds || 0)/60);
-          alert(`You’ve hit your monthly transcription limit.\n${mins} minutes remain.\nPlan: ${err.plan}\nThis upload length: ~${Math.ceil((err.attempted_seconds||0)/60)} min.`);
-        } else if (resp.status === 415) {
-          alert("Unsupported file. Try mp4/m4a/mp3/wav/ogg/webm — MOV is auto-converted.");
-        } else {
-          alert(err.error || "Transcription failed.");
-        }
-        return;
-      }
 
       const text =
         transcriptResp?.text ||

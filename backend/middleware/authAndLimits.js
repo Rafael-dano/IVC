@@ -4,11 +4,58 @@ import { supabaseAdmin } from "../api/supabaseClient.js";
 // Simple limits used by enforceLimits (match your plans)
 const PLAN_LIMITS = {
   FREE: 50,
-  PRO: 2000,
-  LTD_99: 1000,
-  LTD_149: 2000,
+  PRO: 1500,
+  LTD_99: 2000,
+  LTD_149: 2500,
   LTD_199: 3000,
 };
+
+async function ensureBetaLifecycle(userId, userEmail) {
+  try {
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("plan, beta_expires_at")
+      .eq("id", userId)
+      .maybeSingle();
+
+    const plan = String(profile?.plan || "FREE").toUpperCase();
+    const nowIso = new Date().toISOString();
+
+    // Paid users: ignore
+    if (plan.startsWith("LTD_") || plan === "PRO") return;
+
+    // Expire if needed
+    if (plan === "BETA_FREE" && profile?.beta_expires_at) {
+      if (new Date(profile.beta_expires_at).toISOString() < nowIso) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ plan: "FREE", beta_expires_at: null })
+          .eq("id", userId);
+      }
+      return;
+    }
+
+    // Auto-grant if email is in beta_signups and user is effectively FREE
+    if (userEmail && (plan === "FREE" || !plan) && !profile?.beta_expires_at) {
+      const { data: signedUp } = await supabaseAdmin
+        .from("beta_signups")
+        .select("email")
+        .eq("email", userEmail.toLowerCase())
+        .maybeSingle();
+
+      if (signedUp) {
+        const plus30 = new Date();
+        plus30.setDate(plus30.getDate() + 30);
+        await supabaseAdmin
+          .from("profiles")
+          .update({ plan: "BETA_FREE", beta_expires_at: plus30.toISOString() })
+          .eq("id", userId);
+      }
+    }
+  } catch (e) {
+    console.warn("ensureBetaLifecycle error:", e?.message || e);
+  }
+}
 
 export async function requireUser(req, res, next) {
   try {
@@ -22,6 +69,10 @@ export async function requireUser(req, res, next) {
 
     // keep it minimal and consistent everywhere
     req.user = { id: data.user.id, email: data.user.email || null };
+
+    // 🔹 NEW: manage beta lifecycle (best-effort)
+    await ensureBetaLifecycle(req.user.id, req.user.email);
+
     next();
   } catch (e) {
     console.error("requireUser error:", e);
