@@ -327,6 +327,76 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
   }
 });
 
+app.post("/api/beta/confirm", express.json(), async (req, res) => {
+  try {
+    const { email, agreed, secret } = req.body || {};
+
+    if (!secret || secret !== process.env.BETA_CONFIRM_SECRET) {
+      console.warn("/api/beta/confirm invalid secret for", email || "<missing email>");
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    const didAgree = agreed === true || agreed === "true";
+    if (!didAgree) {
+      return res.status(400).json({ error: "Must accept agreement" });
+    }
+
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return res.status(400).json({ error: "Valid email required" });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("id, plan")
+      .eq("email", cleanEmail)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("/api/beta/confirm profile lookup failed:", profileError);
+      return res.status(500).json({ error: "Profile lookup failed" });
+    }
+
+    if (!profile) {
+      const { error: upsertError } = await supabaseAdmin
+        .from("beta_signups")
+        .upsert({ email: cleanEmail, approved: true, source: "beta-form" }, { onConflict: "email" });
+
+      if (upsertError) {
+        console.error("/api/beta/confirm queue upsert failed:", upsertError);
+        return res.status(500).json({ error: "Could not queue signup" });
+      }
+
+      return res.json({ ok: true, queued: true });
+    }
+
+    const plan = String(profile?.plan || "FREE").toUpperCase();
+    if (plan === "PRO" || plan.startsWith("LTD_")) {
+      return res.json({ ok: true, plan });
+    }
+
+    const plus30 = new Date();
+    plus30.setDate(plus30.getDate() + 30);
+    const betaExpiresAt = plus30.toISOString();
+
+    const { error: updateError } = await supabaseAdmin
+      .from("profiles")
+      .update({ plan: "BETA_FREE", beta_expires_at: betaExpiresAt, beta_status: "APPROVED" })
+      .eq("id", profile.id);
+
+    if (updateError) {
+      console.error("/api/beta/confirm profile update failed:", updateError);
+      return res.status(500).json({ error: "Could not update profile" });
+    }
+
+    return res.json({ ok: true, plan: "BETA_FREE", until: betaExpiresAt });
+  } catch (e) {
+    console.error("/api/beta/confirm error:", e);
+    return res.status(500).json({ error: "Unexpected server error" });
+  }
+});
+
 /* - this is where i am gonna put the video to summary route!! - */
 const upload = multer({
   dest: path.join(process.cwd(), "uploads"),
