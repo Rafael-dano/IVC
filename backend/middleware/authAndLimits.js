@@ -29,7 +29,7 @@ async function ensureBetaLifecycle(userId, userEmail) {
       if (new Date(profile.beta_expires_at).toISOString() < nowIso) {
         await supabaseAdmin
           .from("profiles")
-          .update({ plan: "FREE", beta_expires_at: null })
+          .update({ plan: "FREE", beta_expires_at: null, beta_status: "EXPIRED" })
           .eq("id", userId);
       }
       return;
@@ -39,16 +39,20 @@ async function ensureBetaLifecycle(userId, userEmail) {
     if (userEmail && (plan === "FREE" || !plan) && !profile?.beta_expires_at) {
       const { data: signedUp } = await supabaseAdmin
         .from("beta_signups")
-        .select("email")
+        .select("email, approved, beta_status")
         .eq("email", userEmail.toLowerCase())
         .maybeSingle();
 
-      if (signedUp) {
+        if (signedUp?.approved === true) {
         const plus30 = new Date();
         plus30.setDate(plus30.getDate() + 30);
         await supabaseAdmin
           .from("profiles")
-          .update({ plan: "BETA_FREE", beta_expires_at: plus30.toISOString() })
+          .update({
+            plan: "BETA_FREE",
+            beta_expires_at: plus30.toISOString(),
+            beta_status: "APPROVED",
+          })
           .eq("id", userId);
       }
     }

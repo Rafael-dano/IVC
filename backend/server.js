@@ -310,45 +310,6 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
       return res.status(500).json({ error: "Could not save signup" });
     }
 
-    // ─────────────────────────────────────────────
-    // INSTANT BETA GRANT (best effort)
-    // If caller sent an Authorization header and is currently FREE,
-    // give them BETA_FREE for 30 days unless they already have beta_expires_at.
-    // Paid (PRO/LTD_*) are ignored.
-    // ─────────────────────────────────────────────
-    try {
-      const auth = req.headers.authorization || "";
-      const m = auth.match(/^Bearer\s+(.+)$/i);
-      if (m) {
-        const token = m[1];
-        const { data: authUser } = await supabaseAdmin.auth.getUser(token);
-        const userId = authUser?.user?.id || null;
-        const userEmail = authUser?.user?.email?.toLowerCase() || null;
-
-        if (userId && userEmail === cleanEmail) {
-          const { data: prof } = await supabaseAdmin
-            .from("profiles")
-            .select("plan, beta_expires_at")
-            .eq("id", userId)
-            .maybeSingle();
-
-          const plan = String(prof?.plan || "FREE").toUpperCase();
-          const alreadyHasBeta = !!prof?.beta_expires_at;
-
-          if (!plan.startsWith("LTD_") && plan !== "PRO" && !alreadyHasBeta) {
-            const plus30 = new Date();
-            plus30.setDate(plus30.getDate() + 30);
-            await supabaseAdmin
-              .from("profiles")
-              .update({ plan: "BETA_FREE", beta_expires_at: plus30.toISOString() })
-              .eq("id", userId);
-          }
-        }
-      }
-    } catch (e) {
-      console.warn("beta instant grant failed:", e?.message || e);
-    }
-
     // Optional: send welcome email
     // try {
     //   await sendBetaWelcomeEmail({ to: cleanEmail, name });
@@ -356,7 +317,10 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
     //   console.warn("welcome email send failed:", e?.message || e);
     // }
 
-    return res.json({ ok: true });
+    return res.json({
+      ok: true,
+      next: "Please complete the Beta Agreement form to activate access."
+    });    
   } catch (e) {
     console.error("/api/beta/signup error:", e);
     return res.status(500).json({ error: "Unexpected server error" });
@@ -386,6 +350,74 @@ const videoLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// --- Google Form webhook: approve beta if agreed ---
+// SECURITY: set a long random secret in your .env, e.g. BETA_CONFIRM_SECRET="uY9..."
+// Only Google Apps Script will call this with that secret.
+app.post("/api/beta/confirm", express.json(), async (req, res) => {
+  try {
+    const { email, agreed, secret } = req.body || {};
+    if (!secret || secret !== process.env.BETA_CONFIRM_SECRET) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return res.status(400).json({ error: "Valid email required" });
+    }
+    if (!agreed) {
+      return res.status(400).json({ error: "Agreement not accepted" });
+    }
+
+    const cleanEmail = String(email).trim().toLowerCase();
+
+    // Find user profile by email
+    const { data: prof, error: pErr } = await supabaseAdmin
+      .from("profiles")
+      .select("id, plan, beta_expires_at")
+      .eq("email", cleanEmail)     // ensure you store email on profiles
+      .maybeSingle();
+
+    // If you don't store email on profiles, fallback: lookup auth user by email via Admin API, then use user.id to fetch profile.
+    // (Recommended to keep profiles.email in sync for simplicity.)
+
+    if (pErr) {
+      console.error("/api/beta/confirm profile error:", pErr);
+      return res.status(500).json({ error: "Profile lookup failed" });
+    }
+
+    if (!prof?.id) {
+      // No profile yet — store a pre-approved row in beta_signups so you can grant later when they sign up
+      await supabaseAdmin
+        .from("beta_signups")
+        .upsert({ email: cleanEmail, name: null, source: "beta-form", approved: true }, { onConflict: "email" });
+
+      return res.json({ ok: true, queued: true, detail: "No user yet. Marked approved; will grant on first login." });
+    }
+
+    // If they’re already LTD or PRO, do nothing (keep paid plan)
+    const plan = String(prof.plan || "FREE").toUpperCase();
+    if (plan.startsWith("LTD_") || plan === "PRO") {
+      return res.json({ ok: true, plan, detail: "Paid plan detected. No change." });
+    }
+
+    // Grant 30-day beta
+    const plus30 = new Date();
+    plus30.setDate(plus30.getDate() + 30);
+
+    const { error: uErr } = await supabaseAdmin
+      .from("profiles")
+      .update({ plan: "BETA_FREE", beta_expires_at: plus30.toISOString(), beta_status: "APPROVED" })
+      .eq("id", prof.id);
+
+    if (uErr) {
+      console.error("/api/beta/confirm update error:", uErr);
+      return res.status(500).json({ error: "Could not update plan" });
+    }
+
+    return res.json({ ok: true, plan: "BETA_FREE", until: plus30.toISOString() });
+  } catch (e) {
+    console.error("/api/beta/confirm error:", e);
+    return res.status(500).json({ error: "Unexpected error" });
+  }
+});
 
 app.post("/api/beta/activate", requireUser, async (req, res) => {
   try {
