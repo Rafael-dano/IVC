@@ -152,18 +152,23 @@
   },
   "beta": {
     "title": "Beta do IVContent",
-    "sub": "Garanta sua vaga como Testador Beta e nos ajude a construir um produto melhor!",
+    "sub": "Assine o acordo beta para ativar seu acesso e nos ajudar a melhorar o produto!",
     "source": "Fonte",
     "nameOpt": "Seu Nome (opcional)",
     "email": "Email",
     "invalidEmail": "Digite um endereço de email válido.",
     "genericError": "Algo deu errado. Tente novamente.",
-    "submitting": "Enviando…",
-    "joinCta": "Participar do Beta",
+    "submitting": "Abrindo…",
+    "joinCta": "Abrir acordo beta",
     "privacyNote": "Usaremos seu email apenas para atualizações do beta. Você pode cancelar a qualquer momento.",
     "inTitle": "Você entrou!",
-    "inDesc": "Obrigado por se juntar ao beta do IVContent. Em breve enviaremos instruções por email.",
-    "backToLTD": "Voltar à Oferta Vitalícia"
+    "inDesc": "Obrigado por confirmar seu interesse. O acesso beta é ativado depois que você concluir o acordo.",
+    "backToLTD": "Voltar à Oferta Vitalícia",
+    "agreementNotice": "O acesso beta é ativado após você concluir o acordo. Vamos abri-lo em uma nova guia.",
+    "agreementDefault": "Quase lá! Conclua o acordo beta na guia que acabou de abrir para ativar seu acesso.",
+    "agreementReminder": "O formulário não apareceu? Use o botão acima para abrir o acordo novamente.",
+    "noEmail": "Não encontramos um email para sua conta. Faça login e tente novamente.",
+    "formUnavailable": "O formulário do acordo beta ainda não está configurado. Entre em contato com o suporte."
   }
 }
 

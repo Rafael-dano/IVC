@@ -4,54 +4,115 @@ import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import "./beta.css";
 import { useTranslation } from "react-i18next";
+import { supabase } from "../api/supabaseClient.js";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
+const BETA_FORM_URL = import.meta.env.VITE_BETA_FORM_URL;
+const BETA_FORM_EMAIL_ENTRY = import.meta.env.VITE_BETA_FORM_EMAIL_ENTRY;
 
 export default function Beta() {
   const { t } = useTranslation();
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [ok, setOk] = useState(false);
   const [error, setError] = useState("");
+  const [nextMessage, setNextMessage] = useState("");
 
   const source = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get("utm_source") || params.get("source") || "beta-page";
   }, []);
 
-  function isValidEmail(v) {
-    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test((v || "").trim());
+  async function getBetaFormUrl() {
+    if (!BETA_FORM_URL || !BETA_FORM_EMAIL_ENTRY) {
+      throw new Error(t("beta.formUnavailable"));
+    }
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      throw new Error(userError.message || t("beta.genericError"));
+    }
+
+    const email = userData?.user?.email?.trim();
+    if (!email) {
+      throw new Error(t("beta.noEmail"));
+    }
+
+    let formUrl;
+    try {
+      formUrl = new URL(BETA_FORM_URL);
+    } catch {
+      throw new Error(t("beta.formUnavailable"));
+    }
+
+    formUrl.searchParams.set(BETA_FORM_EMAIL_ENTRY, email);
+    if (!formUrl.searchParams.has("usp")) {
+      formUrl.searchParams.set("usp", "pp_url");
+    }
+
+    return formUrl.toString();
   }
 
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
 
-    const cleanEmail = email.trim().toLowerCase();
-    if (!isValidEmail(cleanEmail)) {
-      setError(t("beta.invalidEmail"));
-      return;
-    }
-
     setSubmitting(true);
     try {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        throw new Error(userError.message || t("beta.genericError"));
+      }
+
+      const user = userData?.user;
+      const cleanEmail = user?.email?.trim().toLowerCase();
+      if (!cleanEmail) {
+        throw new Error(t("beta.noEmail"));
+      }
+
+      const displayName =
+        (user?.user_metadata?.full_name ||
+          user?.user_metadata?.name ||
+          user?.user_metadata?.display_name ||
+          "")
+          .toString()
+          .trim() || null;
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+
       const res = await fetch(`${API_BASE}/api/beta/signup`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: cleanEmail, name: name.trim() || null, source }),
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ email: cleanEmail, name: displayName, source }),
       });
+      const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "Sign-up failed");
+        throw new Error(body.error || t("beta.genericError"));
       }
+
+      const guidance = body.next ?? t("beta.agreementDefault");
+      const formUrl = await getBetaFormUrl();
+
+      setNextMessage(guidance);
       setOk(true);
-      setEmail("");
-      setName("");
+      window.open(formUrl, "_blank", "noopener,noreferrer");
     } catch (e) {
       setError(e.message || t("beta.genericError"));
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleAgreementRetry() {
+    setError("");
+    try {
+      const formUrl = await getBetaFormUrl();
+      window.open(formUrl, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      setError(e.message || t("beta.genericError"));
     }
   }
 
@@ -72,34 +133,11 @@ export default function Beta() {
               {t("beta.source")}: <code>{source}</code>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-sm font-medium">{t("beta.nameOpt")}</label>
-              <input
-                type="text"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                placeholder="Jane Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete="name"
-              />
-            </div>
+            <p className="text-sm text-gray-600 bg-purple-50 border border-purple-100 rounded-md px-3 py-2">
+              {t("beta.agreementNotice")}
+            </p>
 
-            <div className="space-y-1">
-              <label className="block text-sm font-medium">{t("beta.email")}</label>
-              <input
-                type="email"
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                required
-              />
-            </div>
-
-            {error && (
-              <div className="text-sm text-red-600">{error}</div>
-            )}
+            {error && <div className="text-sm text-red-600">{error}</div>}
 
             <button
               type="submit"
@@ -115,12 +153,23 @@ export default function Beta() {
             </div>
           </form>
         ) : (
-          <div className="bg-white rounded-xl shadow p-6 text-center space-y-3">
+          <div className="bg-white rounded-xl shadow p-6 text-center space-y-4">
             <div className="text-2xl">🎉</div>
             <h2 className="text-xl font-semibold">{t("beta.inTitle")}</h2>
-            <p className="text-gray-700">
-              {t("beta.inDesc")}
-            </p>
+            <p className="text-gray-700">{nextMessage || t("beta.agreementDefault")}</p>
+
+            <button
+              type="button"
+              onClick={handleAgreementRetry}
+              className="w-full rounded-md px-4 py-2 text-white bg-purple-600 hover:bg-purple-700 transition"
+            >
+              {t("beta.joinCta")}
+            </button>
+
+            <p className="text-sm text-gray-500">{t("beta.agreementReminder")}</p>
+
+            {error && <div className="text-sm text-red-600">{error}</div>}
+
             <a
               href="/ltd"
               className="inline-block mt-2 px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"

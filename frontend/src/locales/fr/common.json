@@ -173,17 +173,22 @@
   },
   "beta": {
     "title": "IVContent Bêta",
-    "sub": "Devenez bêta testeur et aidez-nous à construire un meilleur produit !",
+    "sub": "Signez l’accord bêta pour activer votre accès et nous aider à améliorer le produit !",
     "source": "Source",
     "nameOpt": "Votre nom (facultatif)",
     "email": "E-mail",
     "invalidEmail": "Veuillez entrer une adresse e-mail valide.",
     "genericError": "Une erreur s’est produite. Réessayez.",
-    "submitting": "Envoi…",
-    "joinCta": "Rejoindre la bêta",
+    "submitting": "Ouverture…",
+    "joinCta": "Ouvrir l’accord bêta",
     "privacyNote": "Votre e-mail ne servira qu’aux mises à jour bêta. Vous pouvez vous désabonner à tout moment.",
     "inTitle": "Bienvenue !",
-    "inDesc": "Merci d’avoir rejoint la bêta IVContent. Vous recevrez bientôt un e-mail avec les instructions.",
-    "backToLTD": "Retour à l’offre à vie"
+    "inDesc": "Merci de confirmer votre intérêt. L’accès bêta s’active une fois l’accord terminé.",
+    "backToLTD": "Retour à l’offre à vie",
+    "agreementNotice": "L’accès bêta s’active après avoir rempli l’accord. Nous l’ouvrirons dans un nouvel onglet.",
+    "agreementDefault": "Vous y êtes presque ! Terminez l’accord bêta dans l’onglet qui vient de s’ouvrir pour activer votre accès.",
+    "agreementReminder": "Le formulaire ne s’est pas affiché ? Utilisez le bouton ci-dessus pour rouvrir l’accord.",
+    "noEmail": "Nous n’avons pas trouvé d’e-mail pour votre compte. Veuillez vous reconnecter et réessayer.",
+    "formUnavailable": "Le formulaire d’accord bêta n’est pas encore configuré. Contactez le support."
   }
 }

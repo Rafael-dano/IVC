@@ -173,17 +173,22 @@
   },
   "beta": {
     "title": "IVContent Beta",
-    "sub": "Sichere dir deinen Platz als Beta-Tester und hilf uns, ein besseres Produkt zu bauen!",
+    "sub": "Unterschreibe die Beta-Vereinbarung, um deinen Zugang zu aktivieren und uns bei der Produktentwicklung zu unterstützen!",
     "source": "Quelle",
     "nameOpt": "Dein Name (optional)",
     "email": "E-Mail",
     "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
     "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
-    "submitting": "Wird gesendet…",
-    "joinCta": "Beta beitreten",
+    "submitting": "Wird geöffnet…",
+    "joinCta": "Beta-Vereinbarung öffnen",
     "privacyNote": "Wir verwenden deine E-Mail nur für Beta-Updates. Du kannst dich jederzeit abmelden.",
     "inTitle": "Du bist dabei!",
-    "inDesc": "Danke, dass du der IVContent-Beta beigetreten bist. Du erhältst bald eine E-Mail mit Anweisungen.",
-    "backToLTD": "Zurück zum Lifetime Deal"
+    "inDesc": "Danke für dein Interesse. Der Beta-Zugang wird aktiviert, sobald du die Vereinbarung abschließt.",
+    "backToLTD": "Zurück zum Lifetime Deal",
+    "agreementNotice": "Der Beta-Zugang wird aktiviert, nachdem du die Vereinbarung abgeschlossen hast. Wir öffnen sie in einem neuen Tab.",
+    "agreementDefault": "Fast geschafft! Schließe die Beta-Vereinbarung im geöffneten Tab ab, um deinen Zugang zu aktivieren.",
+    "agreementReminder": "Das Formular ist nicht erschienen? Nutze den Button oben, um die Vereinbarung erneut zu öffnen.",
+    "noEmail": "Wir konnten keine E-Mail für dein Konto finden. Bitte melde dich an und versuche es erneut.",
+    "formUnavailable": "Das Formular für die Beta-Vereinbarung ist noch nicht konfiguriert. Bitte wende dich an den Support."
   }
 }

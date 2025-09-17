@@ -144,18 +144,131 @@
   "landing": {
     "heroTitle": "IVContent — Repurpose Content. Multiply Impact.",
     "heroSub": "Instantly transform your blogs, videos, and social posts into multiple formats with AI. Save hours, reach more people, and grow your audience.",
+    "heroHighlight": "Create once. Publish everywhere.",
+    "heroBullet1": "Summaries, scripts, captions & carousels in seconds.",
+    "heroBullet2": "Multilingual outputs across 12 languages.",
+    "heroBullet3": "Designed for creators, agencies, and repurposing pros.",
     "cta": "Join the Beta",
+    "heroSecondaryCta": "Explore Lifetime Deal",
+    "heroCardTitle": "Automate your repurposing workflow",
+    "heroCardBody": "Drop in your long-form content and generate ready-to-post assets tailored to every channel.",
+    "heroCardTag1": "AI drafts",
+    "heroCardTag2": "Tone controls",
+    "heroCardTag3": "Content calendar sync",
+    "trustedBy": "Trusted by 500+ creators and teams experimenting with AI repurposing.",
+    "metricCreators": "500+ creators",
+    "metricCreatorsLabel": "Already streamlining their repurposing workflow",
+    "metricHours": "12+ hours saved",
+    "metricHoursLabel": "Per team each week after switching to RepurposeIV",
+    "metricFormats": "20+ formats",
+    "metricFormatsLabel": "From blogs to carousels, transcripts, and more",
+    "featuresLabel": "Platform features",
+    "featuresTitle": "Everything you need to turn long-form content into ready-to-post assets",
+    "featuresSubtitle": "RepurposeIV gives you a full-stack AI assistant to ideate, outline, script, and publish.",
     "f1Title": "Multi-Platform Output",
     "f1Sub": "From blog posts to Twitter threads, LinkedIn carousels, Pinterest captions and more — all in seconds.",
     "f2Title": "AI-Powered Editing",
     "f2Sub": "Smart rewriting, tone adjustments, and format optimization to match your audience’s style.",
     "f3Title": "Time-Saving Workflow",
     "f3Sub": "Automate your content repurposing pipeline and focus on creating, not reformatting.",
-    "testimonialsTitle": "What Early Testers Are Saying",
-    "testimonialsSoon1": "“Beta tester reviews coming soon...”",
-    "testimonialsSoon2": "“This section will showcase real stories after launch.”",
+    "workflowTitle": "Built for fast-moving content teams",
+    "workflowSubtitle": "Collaborate with clients and co-creators, stay on-brand, and never miss a publishing slot.",
+    "betaSpotlightsLabel": "Beta spotlight stories",
+    "betaSpotlightsTitle": "Beta testers shipping more in less time",
+    "betaSpotlightsSubtitle": "See how early testers are using RepurposeIV to ship more content with less effort.",
+    "betaVideoLabel": "Beta video",
+    "betaSpotlights": {
+      "spot1": {
+        "name": "Maya Chen",
+        "role": "Founder, Creator Lab",
+        "summary": "Turned a 45-minute webinar into 8 platform-ready posts in under 20 minutes.",
+        "result": "Saved her team half a day of editing per campaign.",
+        "quote": "“IVContent cut our editing time by 70%. It's like having a strategist and copywriter on standby.”",
+        "videoTitle": "Webinar to social sprint"
+      },
+      "spot2": {
+        "name": "Andre Walker",
+        "role": "Marketing Lead, PodLab",
+        "summary": "Repurposed podcast interviews into newsletters, reels, and SEO blogs automatically.",
+        "result": "Doubled weekly output without hiring another freelancer.",
+        "quote": "“The multilingual support is unreal. We ship English and Spanish recaps with one click.”",
+        "videoTitle": "Podcast to newsletter remix"
+      },
+      "spot3": {
+        "name": "Sasha Patel",
+        "role": "Agency Strategist",
+        "summary": "Built a client content calendar with 30 days of social copy in one afternoon.",
+        "result": "Clients now approve campaigns 3× faster with ready-to-post drafts.",
+        "quote": "“Our clients feel like we have a full creative department behind the scenes.”",
+        "videoTitle": "Client campaign accelerator"
+      }
+    },
+    "testimonialsLabel": "Mock reviews",
+    "testimonialsTitle": "Loved by marketing teams and solo creators",
+    "testimonialsSubtitle": "Social proof pulled from discovery calls and beta waitlist feedback.",
+    "reviews": {
+      "r1": {
+        "quote": "“RepurposeIV is the first tool that actually keeps our voice consistent across formats.”",
+        "name": "Jordan Reeves",
+        "role": "Content Director, FlowStudios"
+      },
+      "r2": {
+        "quote": "“I deliver more assets per client without burning out. The scripts are scary-good.”",
+        "name": "Priya Desai",
+        "role": "Founder, Repurpose Boutique"
+      },
+      "r3": {
+        "quote": "“Our editors use it as a starting point for every campaign. It’s our unfair advantage.”",
+        "name": "Liam Carter",
+        "role": "Head of Growth, LaunchHouse"
+      }
+    },
+    "pricingLabel": "Pricing",
+    "pricingTitle": "Choose your launch plan",
+    "pricingSubtitle": "Start free during beta and upgrade when you’re ready. Lifetime deals remain until spots sell out.",
+    "pricing": {
+      "starter": {
+        "name": "Beta Starter",
+        "price": "$0",
+        "description": "Request access and explore RepurposeIV during the beta period.",
+        "cta": "Join the beta",
+        "benefits": {
+          "b1": "Limited-time free access while beta is open",
+          "b2": "5 AI repurpose runs each week",
+          "b3": "Private community feedback sessions"
+        }
+      },
+      "pro": {
+        "name": "Pro Creator",
+        "price": "$29/mo",
+        "description": "Unlock higher limits, brand voices, and collaboration features.",
+        "cta": "Get launch notification",
+        "benefits": {
+          "b1": "Unlimited repurpose runs",
+          "b2": "Saved templates & brand voice presets",
+          "b3": "Team workspaces (coming soon)"
+        }
+      },
+      "ltd": {
+        "name": "Lifetime Deal",
+        "price": "From $99 once",
+        "description": "One-time payment for lifetime access. Spots are capped and go fast.",
+        "cta": "View LTD tiers",
+        "benefits": {
+          "b1": "All current & future features included",
+          "b2": "Priority roadmap requests",
+          "b3": "Access to LTD-only community"
+        }
+      }
+    },
+    "pricingDisclaimer": "The LTD tiers redirect you to the dedicated Lifetime Deal page to secure remaining spots.",
+    "ctaFinalTitle": "Join the RepurposeIV beta today",
+    "ctaFinalSubtitle": "Lock in your spot, share your agreement, and start transforming one idea into dozens of assets.",
+    "ctaFinalButton": "Claim your beta seat",
     "finalTitle": "Be the First to Experience IVContent",
-    "footer": "IVContent — All rights reserved."
+    "footer": "IVContent — All rights reserved.",
+    "testimonialsSoon1": "“Beta tester reviews coming soon...”",
+    "testimonialsSoon2": "“This section will showcase real stories after launch.”"
   },
 
   "ltd": {
@@ -187,17 +300,22 @@
 
   "beta": {
     "title": "IVContent Beta",
-    "sub": "Secure your spot to become a Beta Tester and help us build a better product!",
+    "sub": "Sign the beta agreement to activate your access and help us build a better product!",
     "source": "Source",
     "nameOpt": "Your Name (optional)",
     "email": "Email",
     "invalidEmail": "Please enter a valid email address.",
     "genericError": "Something went wrong. Please try again.",
-    "submitting": "Submitting…",
-    "joinCta": "Join the Beta",
+    "submitting": "Opening…",
+    "joinCta": "Open Beta Agreement",
     "privacyNote": "We’ll use your email only for beta updates. You can unsubscribe anytime.",
     "inTitle": "You’re in!",
-    "inDesc": "Thanks for joining the IVContent beta. We’ll email you instructions soon.",
-    "backToLTD": "Back to Lifetime Deals"
+    "inDesc": "Thanks for confirming your interest. Beta access activates after you finish the agreement.",
+    "backToLTD": "Back to Lifetime Deals",
+    "agreementNotice": "Beta access activates after you complete the agreement. We’ll open it in a new tab.",
+    "agreementDefault": "Almost there! Complete the Beta Agreement in the tab that just opened to activate your access.",
+    "agreementReminder": "If the form didn’t appear, use the button above to reopen it.",
+    "noEmail": "We couldn’t find an email for your account. Please sign in and try again.",
+    "formUnavailable": "The beta agreement form isn’t configured yet. Please contact support."
   }
 }

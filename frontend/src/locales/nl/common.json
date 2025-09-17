@@ -173,17 +173,22 @@
   },
   "beta": {
     "title": "IVContent Beta",
-    "sub": "Zeker je plek als Beta Tester en help ons een beter product te bouwen!",
+    "sub": "Onderteken de beta-overeenkomst om je toegang te activeren en ons te helpen het product te verbeteren!",
     "source": "Bron",
     "nameOpt": "Jouw naam (optioneel)",
     "email": "E-mail",
     "invalidEmail": "Vul een geldig e-mailadres in.",
     "genericError": "Er ging iets mis. Probeer opnieuw.",
-    "submitting": "Versturen…",
-    "joinCta": "Doe mee aan de Beta",
+    "submitting": "Bezig met openen…",
+    "joinCta": "Beta-overeenkomst openen",
     "privacyNote": "We gebruiken je e-mail alleen voor beta-updates. Afmelden kan altijd.",
     "inTitle": "Je doet mee!",
-    "inDesc": "Bedankt dat je meedoet aan de IVContent-beta. We sturen je snel instructies via e-mail.",
-    "backToLTD": "Terug naar Lifetime Deals"
+    "inDesc": "Bedankt voor je interesse. De beta-toegang wordt geactiveerd zodra je de overeenkomst afrondt.",
+    "backToLTD": "Terug naar Lifetime Deals",
+    "agreementNotice": "Beta-toegang wordt geactiveerd nadat je de overeenkomst hebt voltooid. We openen hem in een nieuw tabblad.",
+    "agreementDefault": "Bijna klaar! Voltooi de beta-overeenkomst in het tabblad dat net is geopend om je toegang te activeren.",
+    "agreementReminder": "Verschijnt het formulier niet? Gebruik de knop hierboven om de overeenkomst opnieuw te openen.",
+    "noEmail": "We konden geen e-mailadres voor je account vinden. Log in en probeer het opnieuw.",
+    "formUnavailable": "Het formulier voor de beta-overeenkomst is nog niet ingesteld. Neem contact op met support."
   }
 }

@@ -152,17 +152,22 @@
   },
   "beta": {
     "title": "IVContent 内测",
-    "sub": "立即报名成为内测用户，帮助我们打造更好的产品！",
+    "sub": "签署测试协议即可激活访问权限，并帮助我们打造更好的产品！",
     "source": "来源",
     "nameOpt": "姓名（可选）",
     "email": "邮箱",
     "invalidEmail": "请输入有效的邮箱地址。",
     "genericError": "出错了，请重试。",
-    "submitting": "提交中…",
-    "joinCta": "加入内测",
+    "submitting": "正在打开…",
+    "joinCta": "打开测试协议",
     "privacyNote": "我们只会使用你的邮箱发送内测更新。你可随时取消订阅。",
     "inTitle": "加入成功！",
-    "inDesc": "感谢你加入 IVContent 内测。我们会尽快通过邮件发送使用说明。",
-    "backToLTD": "返回终身优惠"
+    "inDesc": "感谢你的确认。完成协议后即可激活测试访问权限。",
+    "backToLTD": "返回终身优惠",
+    "agreementNotice": "完成协议后将激活测试访问。我们会在新的标签页中为你打开。",
+    "agreementDefault": "快完成了！在刚刚打开的标签页中完成测试协议即可激活访问权限。",
+    "agreementReminder": "没有看到表单？请使用上方的按钮重新打开协议。",
+    "noEmail": "未能找到与你账户关联的邮箱。请重新登录后再试一次。",
+    "formUnavailable": "测试协议表单尚未配置。请联系支持团队。"
   }
 }

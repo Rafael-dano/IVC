@@ -173,17 +173,22 @@
   },
   "beta": {
     "title": "IVContent Beta",
-    "sub": "Assicurati un posto come Beta Tester e aiutaci a costruire un prodotto migliore!",
+    "sub": "Firma l’accordo beta per attivare l’accesso e aiutarci a migliorare il prodotto!",
     "source": "Fonte",
     "nameOpt": "Il tuo nome (opzionale)",
     "email": "Email",
     "invalidEmail": "Inserisci un indirizzo email valido.",
     "genericError": "Qualcosa è andato storto. Riprova.",
-    "submitting": "Invio in corso…",
-    "joinCta": "Unisciti alla Beta",
+    "submitting": "Apertura in corso…",
+    "joinCta": "Apri accordo beta",
     "privacyNote": "Useremo la tua email solo per aggiornamenti beta. Puoi annullare l’iscrizione in qualsiasi momento.",
     "inTitle": "Sei dentro!",
-    "inDesc": "Grazie per esserti unito alla beta di IVContent. Ti invieremo presto istruzioni via email.",
-    "backToLTD": "Torna alle offerte Lifetime"
+    "inDesc": "Grazie per aver confermato il tuo interesse. L’accesso beta si attiva dopo che completi l’accordo.",
+    "backToLTD": "Torna alle offerte Lifetime",
+    "agreementNotice": "L’accesso beta si attiva una volta completato l’accordo. Lo apriremo in una nuova scheda.",
+    "agreementDefault": "Ci sei quasi! Completa l’accordo beta nella scheda appena aperta per attivare l’accesso.",
+    "agreementReminder": "Il modulo non è apparso? Usa il pulsante sopra per aprire di nuovo l’accordo.",
+    "noEmail": "Non abbiamo trovato un’e-mail per il tuo account. Accedi e riprova.",
+    "formUnavailable": "Il modulo dell’accordo beta non è ancora configurato. Contatta il supporto."
   }
 }
