@@ -73,7 +73,7 @@ function UsageBubble({ account }) {
         <div className="text-sm font-medium mb-2">Unlock transcription & higher token limits</div>
         <div className="flex gap-2">
           <a
-            href="/pricing"
+            href="/LTD"
             className="inline-flex items-center px-3 py-1.5 rounded-lg bg-cyan-400 text-black text-sm font-semibold hover:bg-cyan-300 transition"
           >
             Upgrade

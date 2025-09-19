@@ -116,6 +116,49 @@ export default function Beta() {
     }
   }
 
+  async function checkOrActivate() {
+    setError("");
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+  
+      // try activate (idempotent)
+      const actRes = await fetch(`${API_BASE}/api/beta/activate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      const actBody = await actRes.json().catch(() => ({}));
+  
+      if (actRes.ok) {
+        setNextMessage(
+          `Your plan is ${actBody.plan}. ${
+            actBody.beta_expires_at ? `Beta expires: ${new Date(actBody.beta_expires_at).toLocaleString()}` : ""
+          }`
+        );
+        setOk(true);
+        return;
+      }
+  
+      // If not approved yet, show status
+      const stRes = await fetch(`${API_BASE}/api/beta/status`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const stBody = await stRes.json().catch(() => ({}));
+  
+      if (stRes.ok) {
+        setNextMessage(
+          `Status: plan ${stBody.plan}${
+            stBody.beta_expires_at ? `, beta expires ${new Date(stBody.beta_expires_at).toLocaleString()}` : ""
+          }. If you already submitted the form, give it a minute and try Activate again.`
+        );
+      } else {
+        throw new Error(stBody.error || "Could not fetch status");
+      }
+    } catch (e) {
+      setError(e.message || "Something went wrong");
+    }
+  }  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 font-sans">
       <Header />
@@ -166,6 +209,14 @@ export default function Beta() {
               {t("beta.joinCta")}
             </button>
 
+            <button
+              type="button"
+              onClick={checkOrActivate}
+              className="w-full rounded-md px-4 py-2 text-white bg-green-600 hover:bg-green-700 transition"
+            >
+              {t("beta.activateCta")}
+            </button>
+            
             <p className="text-sm text-gray-500">{t("beta.agreementReminder")}</p>
 
             {error && <div className="text-sm text-red-600">{error}</div>}

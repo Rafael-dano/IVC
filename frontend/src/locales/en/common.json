@@ -208,7 +208,7 @@
     "testimonialsSubtitle": "Social proof pulled from discovery calls and beta waitlist feedback.",
     "reviews": {
       "r1": {
-        "quote": "“RepurposeIV is the first tool that actually keeps our voice consistent across formats.”",
+        "quote": "“IVContent is the first tool that actually keeps our voice consistent across formats.”",
         "name": "Jordan Reeves",
         "role": "Content Director, FlowStudios"
       },
@@ -230,7 +230,7 @@
       "starter": {
         "name": "Beta Starter",
         "price": "$0",
-        "description": "Request access and explore RepurposeIV during the beta period.",
+        "description": "Request access and explore IVContent during the beta period.",
         "cta": "Join the beta",
         "benefits": {
           "b1": "Limited-time free access while beta is open",
@@ -240,7 +240,7 @@
       },
       "pro": {
         "name": "Pro Creator",
-        "price": "$29/mo",
+        "price": "$13/mo",
         "description": "Unlock higher limits, brand voices, and collaboration features.",
         "cta": "Get launch notification",
         "benefits": {
@@ -251,7 +251,7 @@
       },
       "ltd": {
         "name": "Lifetime Deal",
-        "price": "From $99 once",
+        "price": "$99, $149, or $199",
         "description": "One-time payment for lifetime access. Spots are capped and go fast.",
         "cta": "View LTD tiers",
         "benefits": {
@@ -316,6 +316,10 @@
     "agreementDefault": "Almost there! Complete the Beta Agreement in the tab that just opened to activate your access.",
     "agreementReminder": "If the form didn’t appear, use the button above to reopen it.",
     "noEmail": "We couldn’t find an email for your account. Please sign in and try again.",
-    "formUnavailable": "The beta agreement form isn’t configured yet. Please contact support."
+    "activateCta": "Activate / Check Status",
+    "activationSuccess": "Your plan is {{plan}}. {{extra}}",
+    "betaExpires": "Beta expires: {{date}}",
+    "statusLine": "Status: plan {{plan}}{{extra}}. If you already submitted the form, give it a minute and try Activate again.",
+    "formUnavailable": "The beta agreement form is unavailable."
   }
 }
