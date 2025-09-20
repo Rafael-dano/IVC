@@ -1,19 +1,21 @@
 {
   "appName": "IV Content",
+
   "nav": {
     "dashboard": "Tableau de bord",
     "settings": "Paramètres",
     "logout": "Se déconnecter",
     "tool": "Outil",
-    "ltd": "Offre à vie",
+    "ltd": "LTD",
     "help": "Aide",
     "login": "Connexion",
     "signup": "Créer un compte"
   },
+
   "repurpose": {
-    "heroTitle": "Transformez n’importe quel contenu",
-    "heroSub": "Téléversez une vidéo ou collez un texte. Obtenez résumés, scripts et bien plus encore.",
-    "textareaPlaceholder": "Collez ou saisissez votre contenu ici...",
+    "heroTitle": "Transformez n’importe quel contenu en n’importe quel format",
+    "heroSub": "Téléversez une vidéo ou collez du texte. Obtenez des résumés, des scripts et plus encore.",
+    "textareaPlaceholder": "Collez ou écrivez votre contenu ici…",
     "btnRepurpose": "Réutiliser le contenu",
     "btnClear": "Effacer",
     "btnCopy": "Copier",
@@ -23,25 +25,29 @@
     "needLogin": "⚠️ Vous devez être connecté pour utiliser cette fonctionnalité.",
     "needYT": "⚠️ Veuillez coller une URL ou un ID YouTube.",
     "transcriptNA": "⚠️ Aucune transcription disponible pour cette vidéo.",
-    "transcriptLang": "Langue de transcription"
+    "transcriptLang": "Langue de la transcription"
   },
+
   "dashboard": {
     "title": "Votre outil de réutilisation",
-    "upgradeNudge": "Améliorez votre plan pour débloquer l’utilisation"
+    "upgradeNudge": "Passez à une offre supérieure pour débloquer l’usage"
   },
+
   "header": {
     "manageBilling": "Gérer la facturation"
   },
+
   "footer": {
     "tagline": {
       "prefix": "Créé avec 💡 par ",
-      "suffix": " · Transformez votre contenu en or."
+      "suffix": " · Transformez le contenu en or."
     },
     "copyright": "Ivy Web Designs. Tous droits réservés."
   },
+
   "auth": {
     "common": {
-      "backHome": "Retour à l’accueil",
+      "backHome": "Retour",
       "maybeLater": "Peut-être plus tard",
       "emailPlaceholder": "Adresse e-mail",
       "passwordPlaceholder": "Mot de passe",
@@ -50,35 +56,36 @@
     "login": {
       "title": "Bon retour",
       "subtitle": "Connectez-vous pour continuer",
-      "cta": "Connexion",
-      "loading": "Connexion en cours...",
+      "cta": "Se connecter",
+      "loading": "Connexion…",
       "link": "Se connecter",
-      "error": "Impossible de vous connecter."
+      "error": "Connexion impossible."
     },
     "reset": {
       "link": "Mot de passe oublié ?",
       "sending": "Envoi…",
-      "promptEmailMissing": "Entrez d’abord votre e-mail.",
-      "sent": "E-mail de réinitialisation envoyé. Vérifiez votre boîte de réception.",
+      "promptEmailMissing": "Saisissez d’abord votre e-mail.",
+      "sent": "E-mail de réinitialisation envoyé. Vérifiez votre boîte.",
       "error": "Impossible d’envoyer l’e-mail de réinitialisation."
     },
     "signup": {
       "title": "Créez votre compte",
       "subtitle": "Rejoignez IVContent en quelques secondes",
       "cta": "Créer un compte",
-      "loading": "Création...",
+      "loading": "Création…",
       "link": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
-      "checkEmail": "Vérifiez votre e-mail pour confirmer votre compte, puis connectez-vous.",
+      "checkEmail": "Vérifiez votre e-mail pour confirmer le compte, puis connectez-vous.",
       "error": "Impossible de créer votre compte."
     }
   },
-  "settingsPage": {
+
+  "settings": {
     "title": "Paramètres",
     "loading": "Chargement des paramètres…",
     "notSignedIn": "Vous n’êtes pas connecté. Veuillez vous connecter pour gérer vos paramètres.",
     "goToLogin": "Aller à la connexion",
-    "manageBillingTitle": "Gérer votre abonnement dans Stripe",
+    "manageBillingTitle": "Gérez votre abonnement dans Stripe",
     "manageBilling": "Gérer la facturation",
     "opening": "Ouverture…",
     "monthlyUsage": "Utilisation mensuelle",
@@ -86,109 +93,233 @@
     "renews": "Renouvelle",
     "transcriptionMinutes": "Minutes de transcription",
     "minUsed": "min utilisées",
-    "noTranscriptionMinutes": "Votre plan actuel ne comprend pas de minutes de transcription. Améliorez pour activer le téléversement vidéo/audio.",
-    "displayName": "Nom affiché",
+    "noTranscriptionMinutes": "Votre offre n’inclut pas de minutes de transcription. Passez à une offre supérieure pour activer les téléversements audio/vidéo.",
+    "displayName": "Nom d’affichage",
     "displayNamePH": "Votre nom d’affichage",
     "save": "Enregistrer",
     "email": "E-mail",
     "changeEmail": "Changer d’e-mail",
-    "confirmationNote": "Vous recevrez un e-mail de confirmation pour vérifier le changement.",
+    "confirmationNote": "Vous recevrez un e-mail pour confirmer la modification.",
     "logout": "Se déconnecter",
-    "deleteSoon": "Supprimer le compte (bientôt disponible)",
+    "deleteSoon": "Supprimer le compte (bientôt)",
     "backToHelp": "Retour à l’aide",
-    "needSignIn": "Veuillez vous connecter pour modifier vos paramètres.",
-    "savedName": "✅ Nom enregistré.",
-    "saveNameError": "Impossible d’enregistrer le nom.",
+    "needSignIn": "Connectez-vous pour modifier vos paramètres.",
+    "savedName": "✅ Nom d’affichage enregistré.",
+    "saveNameError": "Impossible d’enregistrer le nom d’affichage.",
     "checkInbox": "✅ Vérifiez votre boîte de réception pour confirmer le nouvel e-mail.",
     "changeEmailError": "Impossible de changer l’e-mail.",
     "billingPortalError": "Impossible d’ouvrir le portail de facturation"
   },
+
   "help": {
-    "getStartedTitle": "Besoin d’aide pour commencer ?",
+    "getStartedTitle": "Besoin d’aide pour démarrer ?",
     "getStartedDesc": "Consultez notre",
     "quickStart": "Guide de démarrage rapide",
     "faqTitle": "FAQ",
-    "faqDesc": "Trouvez les réponses dans notre section",
+    "faqDesc": "Trouvez des réponses dans notre",
     "faqLink": "Foire aux questions",
-    "contactTitle": "Contactez-nous",
-    "contactDesc": "Si vous avez encore besoin d’aide, envoyez-nous un e-mail à",
+    "contactTitle": "Nous contacter",
+    "contactDesc": "Si vous avez encore besoin d’aide, écrivez-nous à",
     "settingsTitle": "Paramètres",
-    "settingsDesc": "Mettez à jour votre compte dans",
+    "settingsDesc": "Mettez votre compte à jour dans",
     "settingsLink": "Paramètres",
     "backToHelp": "Retour à l’aide"
   },
+
   "faq": {
     "title": "Foire aux questions",
     "sub": "Réponses aux questions fréquentes sur IVContent",
     "q1": "Qu’est-ce qu’IVContent ?",
-    "a1": "IVContent est un outil de réutilisation qui transforme un contenu en plusieurs formats adaptés aux différentes plateformes — gagnez du temps, élargissez votre audience et restez constant.",
-    "q2": "Comment commencer à l’utiliser ?",
+    "a1": "IVContent est un outil de réutilisation de contenu qui transforme une pièce de contenu en plusieurs formats pour différentes plateformes — pour gagner du temps, étendre la portée et rester cohérent.",
+    "q2": "Comment commencer ?",
     "a2": "Créez un compte, choisissez un outil dans le tableau de bord, collez votre contenu et cliquez sur « Réutiliser ».",
-    "q3": "Que comprend l’Offre à vie ?",
-    "a3": "L’offre à vie vous donne un accès illimité à toutes les fonctionnalités actuelles et futures, sans frais mensuels.",
-    "q4": "Puis-je mettre à niveau plus tard ?",
-    "a4": "Oui ! Vous pouvez passer d’un plan mensuel à un plan annuel ou à vie à tout moment depuis vos paramètres.",
-    "q5": "Mes données sont-elles sécurisées ?",
-    "a5": "Absolument. Nous ne vendons jamais vos données et ne stockons que le minimum nécessaire pour faire fonctionner le service en toute sécurité."
+    "q3": "Que comprend le Lifetime Deal ?",
+    "a3": "Le LTD vous donne un accès illimité à toutes les fonctionnalités actuelles et futures, à vie — sans frais mensuels.",
+    "q4": "Puis-je passer à une offre supérieure plus tard ?",
+    "a4": "Oui ! Si vous démarrez avec une offre mensuelle, vous pouvez passer à l’annuelle ou au lifetime à tout moment depuis vos paramètres.",
+    "q5": "Mes données sont-elles en sécurité ?",
+    "a5": "Absolument. Nous ne vendons jamais vos données et ne stockons que ce qui est nécessaire au fonctionnement sécurisé du service."
   },
+
   "landing": {
     "heroTitle": "IVContent — Réutilisez le contenu. Multipliez l’impact.",
-    "heroSub": "Transformez instantanément vos blogs, vidéos et posts en plusieurs formats grâce à l’IA. Gagnez du temps, atteignez plus de monde et développez votre audience.",
+    "heroSub": "Transformez instantanément blogs, vidéos et publications sociales en plusieurs formats grâce à l’IA. Gagnez des heures, touchez plus de monde et faites croître votre audience.",
+    "heroHighlight": "Créez une fois. Publiez partout.",
+    "heroBullet1": "Résumés, scripts, légendes & carrousels en quelques secondes.",
+    "heroBullet2": "Sorties multilingues dans 12 langues.",
+    "heroBullet3": "Conçu pour créateurs, agences et pros de la réutilisation.",
     "cta": "Rejoindre la bêta",
+    "heroSecondaryCta": "Explorer le Lifetime Deal",
+    "heroCardTitle": "Automatisez votre workflow de réutilisation",
+    "heroCardBody": "Déposez votre contenu long et générez des assets prêts pour chaque canal.",
+    "heroCardTag1": "Brouillons IA",
+    "heroCardTag2": "Contrôles de ton",
+    "heroCardTag3": "Synchronisation du calendrier",
+    "trustedBy": "Plébiscité par 500+ créateurs et équipes qui expérimentent l’IA.",
+    "metricCreators": "500+ créateurs",
+    "metricCreatorsLabel": "Optimisent déjà leur flux de travail",
+    "metricHours": "12+ heures gagnées",
+    "metricHoursLabel": "Par équipe et par semaine après passage à RepurposeIV",
+    "metricFormats": "20+ formats",
+    "metricFormatsLabel": "Des blogs aux carrousels, transcriptions et plus",
+    "featuresLabel": "Fonctionnalités",
+    "featuresTitle": "Tout pour transformer du contenu long en assets prêts à publier",
+    "featuresSubtitle": "RepurposeIV est votre assistant de bout en bout pour idéer, structurer, scénariser et publier.",
     "f1Title": "Sortie multi-plateforme",
-    "f1Sub": "Articles de blog, fils Twitter, carrousels LinkedIn, légendes Pinterest et plus encore — en quelques secondes.",
+    "f1Sub": "Des articles de blog aux threads Twitter, carrousels LinkedIn, légendes Pinterest et plus — en quelques secondes.",
     "f2Title": "Édition assistée par IA",
-    "f2Sub": "Réécriture intelligente, ajustement du ton et optimisation du format adaptés à votre audience.",
-    "f3Title": "Gain de temps",
-    "f3Sub": "Automatisez votre flux de réutilisation et concentrez-vous sur la création plutôt que la mise en forme.",
-    "testimonialsTitle": "Avis des premiers testeurs",
-    "testimonialsSoon1": "« Les avis bêta arrivent bientôt... »",
-    "testimonialsSoon2": "« Cette section présentera de vrais témoignages après le lancement. »",
-    "finalTitle": "Soyez les premiers à découvrir IVContent",
-    "footer": "IVContent — Tous droits réservés."
+    "f2Sub": "Réécriture intelligente, ajustements de ton et optimisation par format.",
+    "f3Title": "Workflow gain de temps",
+    "f3Sub": "Automatisez la chaîne de réutilisation et concentrez-vous sur la création.",
+    "workflowTitle": "Pensé pour les équipes rapides",
+    "workflowSubtitle": "Collaborez avec clients et co-créateurs, gardez la cohérence de marque et ne ratez aucun créneau.",
+    "betaSpotlightsLabel": "Mises en avant bêta",
+    "betaSpotlightsTitle": "Des bêta-testeurs qui livrent plus en moins de temps",
+    "betaSpotlightsSubtitle": "Découvrez comment les early testers utilisent RepurposeIV pour produire davantage avec moins d’efforts.",
+    "betaVideoLabel": "Vidéo bêta",
+    "betaSpotlights": {
+      "spot1": {
+        "name": "Maya Chen",
+        "role": "Fondatrice, Creator Lab",
+        "summary": "A transformé un webinaire de 45 min en 8 posts prêts à publier en moins de 20 min.",
+        "result": "A économisé une demi-journée d’édition par campagne.",
+        "quote": "« IVContent a réduit notre temps d’édition de 70 %. C’est comme avoir un stratège et un copy à portée de main. »",
+        "videoTitle": "Webinaire vers sprint social"
+      },
+      "spot2": {
+        "name": "Andre Walker",
+        "role": "Marketing Lead, PodLab",
+        "summary": "A réutilisé des interviews de podcast en newsletters, reels et blogs SEO automatiquement.",
+        "result": "A doublé la production hebdomadaire sans recruter un freelance de plus.",
+        "quote": "« Le support multilingue est incroyable. Recaps en anglais et espagnol en un clic. »",
+        "videoTitle": "Remix podcast → newsletter"
+      },
+      "spot3": {
+        "name": "Sasha Patel",
+        "role": "Stratège en agence",
+        "summary": "A construit un calendrier avec 30 jours de copies sociales en un après-midi.",
+        "result": "Les clients valident 3× plus vite grâce aux brouillons prêts à publier.",
+        "quote": "« Nos clients ont l’impression que nous avons tout un studio créatif derrière. »",
+        "videoTitle": "Accélérateur de campagnes"
+      }
+    },
+    "testimonialsLabel": "Avis fictifs",
+    "testimonialsTitle": "Adoré par les équipes marketing et les créateurs solo",
+    "testimonialsSubtitle": "Preuves sociales issues d’appels découverte et de la liste d’attente bêta.",
+    "reviews": {
+      "r1": {
+        "quote": "« IVContent est le premier outil qui maintient notre voix cohérente entre les formats. »",
+        "name": "Jordan Reeves",
+        "role": "Directeur du contenu, FlowStudios"
+      },
+      "r2": {
+        "quote": "« Je livre plus d’assets par client sans burn-out. Les scripts sont bluffants. »",
+        "name": "Priya Desai",
+        "role": "Fondatrice, Repurpose Boutique"
+      },
+      "r3": {
+        "quote": "« Nos éditeurs l’utilisent comme point de départ à chaque campagne. Notre avantage déloyal. »",
+        "name": "Liam Carter",
+        "role": "Head of Growth, LaunchHouse"
+      }
+    },
+    "pricingLabel": "Tarifs",
+    "pricingTitle": "Choisissez votre plan de lancement",
+    "pricingSubtitle": "Commencez gratuitement pendant la bêta et passez à l’offre supérieure quand vous êtes prêt. Les LTD restent jusqu’à épuisement des places.",
+    "pricing": {
+      "starter": {
+        "name": "Beta Starter",
+        "price": "$0",
+        "description": "Demandez l’accès et explorez IVContent pendant la période bêta.",
+        "cta": "Rejoindre la bêta",
+        "benefits": {
+          "b1": "Accès gratuit et limité tant que la bêta est ouverte",
+          "b2": "5 exécutions IA par semaine",
+          "b3": "Sessions privées de feedback"
+        }
+      },
+      "pro": {
+        "name": "Pro Creator",
+        "price": "$13/mois",
+        "description": "Débloquez des limites plus élevées, des voix de marque et la collaboration.",
+        "cta": "Recevoir l’alerte de lancement",
+        "benefits": {
+          "b1": "Exécutions illimitées",
+          "b2": "Modèles enregistrés & voix de marque",
+          "b3": "Espaces d’équipe (bientôt)"
+        }
+      },
+      "ltd": {
+        "name": "Lifetime Deal",
+        "price": "$99, $149 ou $199",
+        "description": "Paiement unique pour un accès à vie. Places limitées.",
+        "cta": "Voir les paliers LTD",
+        "benefits": {
+          "b1": "Toutes les fonctionnalités actuelles et futures",
+          "b2": "Priorité sur la feuille de route",
+          "b3": "Accès à la communauté LTD"
+        }
+      }
+    },
+    "pricingDisclaimer": "Les paliers LTD redirigent vers la page dédiée pour sécuriser les places restantes.",
+    "ctaFinalTitle": "Rejoignez la bêta de RepurposeIV aujourd’hui",
+    "ctaFinalSubtitle": "Réservez votre place, signez l’accord et commencez à transformer une idée en des dizaines d’assets.",
+    "ctaFinalButton": "Réclamer ma place en bêta",
+    "finalTitle": "Soyez parmi les premiers à découvrir IVContent",
+    "footer": "IVContent — Tous droits réservés.",
+    "testimonialsSoon1": "« Avis de bêta-testeurs bientôt… »",
+    "testimonialsSoon2": "« Cette section présentera des histoires réelles après le lancement. »"
   },
+
   "ltd": {
-    "title": "Accès à vie 🚀",
-    "sub": "Assurez-vous une place avant qu’il ne soit trop tard ! Une fois un palier épuisé, le suivant s’ouvre.",
-    "joinBeta": "Rejoindre le test bêta",
+    "title": "Accès au Lifetime Deal 🚀",
+    "sub": "Sécurisez votre place avant qu’elle ne disparaisse ! Une fois un palier épuisé, le suivant s’ouvre.",
+    "joinBeta": "Rejoindre la bêta",
     "spotsError": "Impossible de charger les places. Réessayez.",
     "checkoutFailed": "Échec du paiement",
     "soldOut": "Épuisé",
     "loadingSpots": "Chargement des places…",
     "spotsLeft": "{{count}} places restantes",
-    "goPro": "Passer Pro — 13 $ / mois",
-    "videoTitle": "Présentation vidéo"
+    "goPro": "Passer à Pro — 13 $ / mois",
+    "videoTitle": "Présentation vidéo",
+    "errPrefix": ""
   },
+
   "qs": {
     "title": "Guide de démarrage rapide",
     "sub": "Apprenez à utiliser IVContent en quelques minutes",
     "videoTitle": "Présentation vidéo",
-    "stepsTitle": "Instructions étape par étape",
-    "step1": "Inscrivez-vous ou connectez-vous – Créez un compte IVContent ou utilisez le vôtre.",
-    "step2": "Entrez votre contenu – Collez votre blog, script vidéo ou texte.",
-    "step3": "Sélectionnez un format – Choisissez ce que vous voulez créer (ex : résumé de blog, script TikTok, légende Pinterest).",
-    "step4": "Cliquez sur ‘Réutiliser’ – Laissez IVContent faire sa magie.",
-    "step5": "Relisez et modifiez – Ajustez le contenu généré si besoin.",
-    "step6": "Téléchargez ou copiez – Enregistrez-le en fichier ou copiez-le pour une utilisation immédiate."
+    "stepsTitle": "Instructions pas à pas",
+    "step1": "Inscrivez-vous ou connectez-vous — Créez votre compte IVContent ou accédez au vôtre.",
+    "step2": "Entrez votre contenu — Collez votre blog, script ou texte dans le champ.",
+    "step3": "Sélectionnez un format — p. ex. Résumé de blog, Script TikTok, Légende Pinterest.",
+    "step4": "Cliquez sur « Réutiliser » — Laissez IVContent faire sa magie.",
+    "step5": "Relisez & éditez — Ajustez le contenu généré dans le panneau de sortie.",
+    "step6": "Téléchargez ou copiez — Enregistrez en fichier ou copiez dans le presse-papiers."
   },
+
   "beta": {
-    "title": "IVContent Bêta",
-    "sub": "Signez l’accord bêta pour activer votre accès et nous aider à améliorer le produit !",
+    "title": "Bêta IVContent",
+    "sub": "Signez l’accord de bêta pour activer votre accès et nous aider à construire un meilleur produit !",
     "source": "Source",
-    "nameOpt": "Votre nom (facultatif)",
+    "nameOpt": "Votre nom (optionnel)",
     "email": "E-mail",
-    "invalidEmail": "Veuillez entrer une adresse e-mail valide.",
-    "genericError": "Une erreur s’est produite. Réessayez.",
+    "invalidEmail": "Veuillez saisir une adresse e-mail valide.",
+    "genericError": "Un problème est survenu. Réessayez.",
     "submitting": "Ouverture…",
-    "joinCta": "Ouvrir l’accord bêta",
-    "privacyNote": "Votre e-mail ne servira qu’aux mises à jour bêta. Vous pouvez vous désabonner à tout moment.",
-    "inTitle": "Bienvenue !",
-    "inDesc": "Merci de confirmer votre intérêt. L’accès bêta s’active une fois l’accord terminé.",
-    "backToLTD": "Retour à l’offre à vie",
-    "agreementNotice": "L’accès bêta s’active après avoir rempli l’accord. Nous l’ouvrirons dans un nouvel onglet.",
-    "agreementDefault": "Vous y êtes presque ! Terminez l’accord bêta dans l’onglet qui vient de s’ouvrir pour activer votre accès.",
-    "agreementReminder": "Le formulaire ne s’est pas affiché ? Utilisez le bouton ci-dessus pour rouvrir l’accord.",
-    "noEmail": "Nous n’avons pas trouvé d’e-mail pour votre compte. Veuillez vous reconnecter et réessayer.",
-    "formUnavailable": "Le formulaire d’accord bêta n’est pas encore configuré. Contactez le support."
+    "joinCta": "Ouvrir l’accord de bêta",
+    "privacyNote": "Nous utilisons votre e-mail uniquement pour les nouvelles de la bêta. Désinscription possible à tout moment.",
+    "inTitle": "Vous êtes dedans !",
+    "inDesc": "Merci d’avoir confirmé votre intérêt. L’accès s’active après avoir terminé l’accord.",
+    "backToLTD": "Retour aux Lifetime Deals",
+    "agreementNotice": "L’accès s’active après avoir complété l’accord. Nous l’ouvrons dans un nouvel onglet.",
+    "agreementDefault": "Presque fini ! Terminez l’accord de bêta dans l’onglet ouvert pour activer votre accès.",
+    "agreementReminder": "Si le formulaire n’est pas apparu, utilisez le bouton ci-dessus pour le rouvrir.",
+    "noEmail": "Nous n’avons pas trouvé d’e-mail pour votre compte. Veuillez vous connecter et réessayer.",
+    "activateCta": "Activer / Vérifier le statut",
+    "activationSuccess": "Votre offre est {{plan}}. {{extra}}",
+    "betaExpires": "La bêta expire : {{date}}",
+    "statusLine": "Statut : offre {{plan}}{{extra}}. Si vous avez déjà envoyé le formulaire, attendez une minute puis cliquez à nouveau sur Activer.",
+    "formUnavailable": "Le formulaire de l’accord de bêta est indisponible."
   }
 }

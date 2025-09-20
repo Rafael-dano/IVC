@@ -1,47 +1,53 @@
 {
   "appName": "IV Content",
+
   "nav": {
     "dashboard": "ダッシュボード",
     "settings": "設定",
     "logout": "ログアウト",
     "tool": "ツール",
-    "ltd": "ライフタイムディール",
+    "ltd": "LTD",
     "help": "ヘルプ",
     "login": "ログイン",
     "signup": "新規登録"
   },
+
   "repurpose": {
-    "heroTitle": "あらゆるコンテンツを別の形に",
-    "heroSub": "動画をアップロードするかテキストを貼り付けてください。要約、スクリプトなどをすぐに取得できます。",
-    "textareaPlaceholder": "ここにコンテンツを入力または貼り付けてください...",
-    "btnRepurpose": "コンテンツを変換",
+    "heroTitle": "あらゆるコンテンツをあらゆる形式へ",
+    "heroSub": "動画をアップロードするかテキストを貼り付けるだけ。要約、スクリプトなどを生成します。",
+    "textareaPlaceholder": "ここにコンテンツを貼り付けるか入力してください…",
+    "btnRepurpose": "コンテンツを再利用",
     "btnClear": "クリア",
     "btnCopy": "コピー",
     "btnDownloadTxt": ".txt をダウンロード",
     "btnDownloadPdf": ".pdf をダウンロード",
-    "needInput": "⚠️ コンテンツを入力してください。",
-    "needLogin": "⚠️ この機能を使用するにはログインが必要です。",
-    "needYT": "⚠️ YouTubeのURLまたはIDを入力してください。",
-    "transcriptNA": "⚠️ この動画には文字起こしがありません。",
-    "transcriptLang": "文字起こしの言語"
+    "needInput": "⚠️ まずコンテンツを入力してください。",
+    "needLogin": "⚠️ この機能を使うにはログインが必要です。",
+    "needYT": "⚠️ YouTube の URL または ID を貼り付けてください。",
+    "transcriptNA": "⚠️ この動画のトランスクリプトは利用できません。",
+    "transcriptLang": "トランスクリプトの言語"
   },
+
   "dashboard": {
-    "title": "あなたの Repurpose ツール",
-    "upgradeNudge": "アップグレードして利用を解除"
+    "title": "あなたのリパーパスツール",
+    "upgradeNudge": "利用を解放するにはアップグレードしてください"
   },
+
   "header": {
-    "manageBilling": "請求を管理"
+    "manageBilling": "請求の管理"
   },
+
   "footer": {
     "tagline": {
-      "prefix": "💡で作られた ",
-      "suffix": " · コンテンツをゴールドに変えよう。"
+      "prefix": "💡 制作: ",
+      "suffix": " · コンテンツを黄金に。"
     },
-    "copyright": "Ivy Web Designs. 無断複製を禁じます。"
+    "copyright": "Ivy Web Designs. 無断転載を禁じます。"
   },
+
   "auth": {
     "common": {
-      "backHome": "ホームに戻る",
+      "backHome": "戻る",
       "maybeLater": "また今度",
       "emailPlaceholder": "メールアドレス",
       "passwordPlaceholder": "パスワード",
@@ -49,146 +55,271 @@
     },
     "login": {
       "title": "おかえりなさい",
-      "subtitle": "続けるにはログインしてください",
+      "subtitle": "続行するにはログインしてください",
       "cta": "ログイン",
-      "loading": "ログイン中...",
+      "loading": "ログイン中…",
       "link": "ログイン",
       "error": "ログインできませんでした。"
     },
     "reset": {
-      "link": "パスワードを忘れましたか？",
+      "link": "パスワードをお忘れですか？",
       "sending": "送信中…",
-      "promptEmailMissing": "先にメールアドレスを入力してください。",
-      "sent": "パスワードリセットメールを送信しました。受信トレイを確認してください。",
-      "error": "リセットメールを送信できませんでした。"
+      "promptEmailMissing": "まずメールアドレスを入力してください。",
+      "sent": "パスワード再設定メールを送信しました。受信ボックスを確認してください。",
+      "error": "再設定メールを送信できませんでした。"
     },
     "signup": {
       "title": "アカウントを作成",
-      "subtitle": "数秒でIVContentに参加できます",
-      "cta": "新規登録",
-      "loading": "作成中...",
-      "link": "アカウントを作成",
+      "subtitle": "数秒で IVContent に参加",
+      "cta": "登録",
+      "loading": "作成中…",
+      "link": "アカウント作成",
       "haveAccount": "すでにアカウントをお持ちですか？",
-      "checkEmail": "アカウント確認メールをチェックし、その後ログインしてください。",
+      "checkEmail": "確認メールをチェックしてからログインしてください。",
       "error": "アカウントを作成できませんでした。"
     }
   },
-  "settingsPage": {
+
+  "settings": {
     "title": "設定",
     "loading": "設定を読み込み中…",
-    "notSignedIn": "ログインしていません。設定を管理するにはログインしてください。",
+    "notSignedIn": "未ログインです。設定を管理するにはログインしてください。",
     "goToLogin": "ログインへ",
-    "manageBillingTitle": "Stripeでサブスクリプションを管理",
-    "manageBilling": "請求を管理",
+    "manageBillingTitle": "Stripe でサブスクリプションを管理",
+    "manageBilling": "請求の管理",
     "opening": "開いています…",
-    "monthlyUsage": "月間利用状況",
-    "tokensLeft": "トークン残数",
+    "monthlyUsage": "月間使用量",
+    "tokensLeft": "残りトークン",
     "renews": "更新日",
     "transcriptionMinutes": "文字起こし分数",
-    "minUsed": "使用済み分数",
-    "noTranscriptionMinutes": "現在のプランには文字起こし分数が含まれていません。アップグレードすると利用可能です。",
+    "minUsed": "使用分",
+    "noTranscriptionMinutes": "現在のプランには文字起こし分数が含まれていません。動画/音声のアップロードを有効にするにはアップグレードしてください。",
     "displayName": "表示名",
     "displayNamePH": "あなたの表示名",
     "save": "保存",
     "email": "メール",
     "changeEmail": "メールを変更",
-    "confirmationNote": "変更を確認するためのメールが届きます。",
+    "confirmationNote": "変更確認のメールが送信されます。",
     "logout": "ログアウト",
-    "deleteSoon": "アカウント削除（近日公開）",
+    "deleteSoon": "アカウント削除（近日対応）",
     "backToHelp": "ヘルプに戻る",
     "needSignIn": "設定を編集するにはログインしてください。",
     "savedName": "✅ 表示名を保存しました。",
     "saveNameError": "表示名を保存できませんでした。",
-    "checkInbox": "✅ 受信トレイで新しいメールを確認してください。",
+    "checkInbox": "✅ 新しいメールの確認リンクを受信ボックスで確認してください。",
     "changeEmailError": "メールを変更できませんでした。",
-    "billingPortalError": "請求ポータルを開けませんでした。"
+    "billingPortalError": "請求ポータルを開けませんでした"
   },
+
   "help": {
-    "getStartedTitle": "使い方ガイド",
-    "getStartedDesc": "ぜひご覧ください",
+    "getStartedTitle": "はじめての方へ",
+    "getStartedDesc": "こちらの",
     "quickStart": "クイックスタートガイド",
-    "faqTitle": "よくある質問",
-    "faqDesc": "次のセクションで回答をご確認ください",
-    "faqLink": "FAQ",
+    "faqTitle": "FAQ",
+    "faqDesc": "よくある質問への回答は",
+    "faqLink": "FAQ ページ",
     "contactTitle": "お問い合わせ",
-    "contactDesc": "まだお困りの場合は、こちらへメールしてください",
+    "contactDesc": "まだお困りの場合は次のアドレスへメールしてください:",
     "settingsTitle": "設定",
-    "settingsDesc": "アカウントを更新するには",
+    "settingsDesc": "アカウントの更新は",
     "settingsLink": "設定",
     "backToHelp": "ヘルプに戻る"
   },
+
   "faq": {
     "title": "よくある質問",
-    "sub": "IVContentに関する一般的な質問への回答",
-    "q1": "IVContentとは？",
-    "a1": "IVContentは、1つのコンテンツを複数のフォーマットに変換し、時間を節約し、リーチを拡大し、一貫性を保つためのツールです。",
-    "q2": "どうやって始めればいいですか？",
-    "a2": "アカウントにサインアップし、ダッシュボードからツールを選び、コンテンツを貼り付けて「変換」をクリックするだけです。",
-    "q3": "ライフタイムディールには何が含まれますか？",
-    "a3": "LTDは、現在および今後のすべての機能に無制限でアクセスできます。月額料金はかかりません。",
-    "q4": "後でアップグレードできますか？",
-    "a4": "はい！月額プランから年額またはライフタイムにいつでもアップグレードできます。",
-    "q5": "私のデータは安全ですか？",
-    "a5": "もちろんです。私たちはあなたのデータを販売せず、サービスを安全に運用するために必要な情報のみを保存します。"
+    "sub": "IVContent に関する一般的な質問と回答",
+    "q1": "IVContent とは？",
+    "a1": "IVContent はコンテンツ再利用ツールです。1つのコンテンツを複数フォーマットに変換し、各プラットフォーム向けに最適化します。時間を節約し、リーチを拡大し、発信を継続しやすくします。",
+    "q2": "どう始めればいいですか？",
+    "a2": "アカウントを作成し、ダッシュボードでツールを選び、コンテンツを貼り付けて「再利用」をクリックします。",
+    "q3": "Lifetime Deal（LTD）には何が含まれますか？",
+    "a3": "LTD は現在および将来のすべての機能を無制限で生涯利用できます。月額料金はかかりません。",
+    "q4": "あとからアップグレードできますか？",
+    "a4": "はい。月額プランから開始しても、いつでも設定から年額やライフタイムにアップグレードできます。",
+    "q5": "データは安全ですか？",
+    "a5": "安心してください。私たちはデータを販売せず、安全な運用に必要な最小限のみを保存します。"
   },
+
   "landing": {
-    "heroTitle": "IVContent — コンテンツを変換し、影響力を拡大",
-    "heroSub": "ブログ、動画、投稿をAIで一瞬で複数のフォーマットに変換。時間を節約し、より多くの人に届き、オーディエンスを拡大します。",
+    "heroTitle": "IVContent — コンテンツを再利用。効果を倍増。",
+    "heroSub": "ブログ・動画・SNS投稿を AI で瞬時に複数フォーマットへ。時間を節約し、より多くの人に届き、オーディエンスを拡大。",
+    "heroHighlight": "一度作って、どこでも公開。",
+    "heroBullet1": "要約、スクリプト、キャプション、カルーセルを数秒で。",
+    "heroBullet2": "12 言語での多言語出力。",
+    "heroBullet3": "クリエイター、代理店、リパーパスのプロに最適。",
     "cta": "ベータに参加",
-    "f1Title": "マルチプラットフォーム対応",
-    "f1Sub": "ブログ投稿からTwitterスレッド、LinkedInカルーセル、Pinterestキャプションまで — 数秒で作成。",
-    "f2Title": "AIによる編集",
-    "f2Sub": "スマートなリライト、トーン調整、フォーマット最適化でターゲットに合わせます。",
-    "f3Title": "時間を節約",
-    "f3Sub": "ワークフローを自動化して、形式変換ではなく創作に集中しましょう。",
-    "testimonialsTitle": "早期テスターの声",
-    "testimonialsSoon1": "「ベータレビューは近日公開予定…」",
-    "testimonialsSoon2": "「このセクションはローンチ後に実際の声を紹介します。」",
-    "finalTitle": "IVContentをいち早く体験してください",
-    "footer": "IVContent — 無断複製を禁じます。"
+    "heroSecondaryCta": "Lifetime Deal を見る",
+    "heroCardTitle": "リパーパスのワークフローを自動化",
+    "heroCardBody": "長文コンテンツを投入して、各チャネルに最適化された投稿素材を生成。",
+    "heroCardTag1": "AI 下書き",
+    "heroCardTag2": "トーン調整",
+    "heroCardTag3": "カレンダー連携",
+    "trustedBy": "AI 活用を進める 500+ のクリエイター/チームに支持されています。",
+    "metricCreators": "500+ クリエイター",
+    "metricCreatorsLabel": "すでにワークフローを効率化",
+    "metricHours": "12+ 時間短縮",
+    "metricHoursLabel": "RepurposeIV 導入後の週あたり（チーム平均）",
+    "metricFormats": "20+ 形式",
+    "metricFormatsLabel": "ブログからカルーセル、トランスクリプトまで",
+    "featuresLabel": "プラットフォーム機能",
+    "featuresTitle": "長文コンテンツを“すぐ投稿できる”資産に変えるためのすべて",
+    "featuresSubtitle": "RepurposeIV は構想・設計・スクリプト作成・投稿までを支援するフルスタックの相棒です。",
+    "f1Title": "マルチプラットフォーム出力",
+    "f1Sub": "ブログ、Twitter スレッド、LinkedIn カルーセル、Pinterest キャプションなどを数秒で。",
+    "f2Title": "AI 補助の編集",
+    "f2Sub": "スマートな書き換え、トーン調整、フォーマット最適化。",
+    "f3Title": "時間を節約するワークフロー",
+    "f3Sub": "再利用パイプラインを自動化し、制作に集中。",
+    "workflowTitle": "スピード重視のチームのために",
+    "workflowSubtitle": "クライアント/共同制作者と連携し、ブランドを維持し、投稿の機会を逃さない。",
+    "betaSpotlightsLabel": "ベータ事例",
+    "betaSpotlightsTitle": "ベータ参加者は短時間でより多くを出荷",
+    "betaSpotlightsSubtitle": "少ない労力で成果を増やす活用例をご紹介。",
+    "betaVideoLabel": "ベータ動画",
+    "betaSpotlights": {
+      "spot1": {
+        "name": "Maya Chen",
+        "role": "Founder, Creator Lab",
+        "summary": "45 分のウェビナーを 20 分未満で 8 本の投稿案に変換。",
+        "result": "キャンペーンごとの編集時間を半日削減。",
+        "quote": "「IVContent で編集時間が 70% 減りました。ストラテジストとコピーが常駐しているみたい。」",
+        "videoTitle": "ウェビナー → ソーシャルスプリント"
+      },
+      "spot2": {
+        "name": "Andre Walker",
+        "role": "Marketing Lead, PodLab",
+        "summary": "ポッドキャストのインタビューをニュースレター、リール、SEO ブログへ自動再利用。",
+        "result": "追加のフリーランサーなしで週次アウトプットを 2 倍に。",
+        "quote": "「多言語対応が最高。英語/スペイン語の要約をワンクリックで。」",
+        "videoTitle": "Podcast → Newsletter リミックス"
+      },
+      "spot3": {
+        "name": "Sasha Patel",
+        "role": "エージェンシー・ストラテジスト",
+        "summary": "1 日で 30 日分のソーシャル用コピーを作成。",
+        "result": "投稿準備済みの下書きにより、承認が 3 倍速く。",
+        "quote": "「まるで大きなクリエイティブチームが裏にいるみたいだと言われます。」",
+        "videoTitle": "キャンペーン加速器"
+      }
+    },
+    "testimonialsLabel": "モックレビュー",
+    "testimonialsTitle": "マーケチームとソロクリエイターに愛されています",
+    "testimonialsSubtitle": "ディスカバリーコールとベータ待機リストからのソーシャルプルーフ。",
+    "reviews": {
+      "r1": {
+        "quote": "「IVContent はフォーマットが変わっても私たちの声を一貫させてくれます。」",
+        "name": "Jordan Reeves",
+        "role": "Content Director, FlowStudios"
+      },
+      "r2": {
+        "quote": "「燃え尽きずにクライアントごとの納品量が増えました。スクリプトの出来がすごい。」",
+        "name": "Priya Desai",
+        "role": "Founder, Repurpose Boutique"
+      },
+      "r3": {
+        "quote": "「毎キャンペーンの出発点として使っています。私たちの切り札です。」",
+        "name": "Liam Carter",
+        "role": "Head of Growth, LaunchHouse"
+      }
+    },
+    "pricingLabel": "料金",
+    "pricingTitle": "ローンチプランを選択",
+    "pricingSubtitle": "ベータ期間は無料で開始、準備ができたらアップグレード。LTD は在庫が無くなるまで提供します。",
+    "pricing": {
+      "starter": {
+        "name": "Beta Starter",
+        "price": "$0",
+        "description": "アクセスを申請し、ベータ期間中に IVContent を体験。",
+        "cta": "ベータに参加",
+        "benefits": {
+          "b1": "ベータ公開中は期間限定で無料アクセス",
+          "b2": "週 5 回の AI 実行",
+          "b3": "プライベートなフィードバックセッション"
+        }
+      },
+      "pro": {
+        "name": "Pro Creator",
+        "price": "$13/月",
+        "description": "より高い上限、ブランドボイス、コラボ機能を解放。",
+        "cta": "ローンチ通知を受け取る",
+        "benefits": {
+          "b1": "無制限の実行回数",
+          "b2": "保存テンプレート & ブランドボイス",
+          "b3": "チームワークスペース（近日）"
+        }
+      },
+      "ltd": {
+        "name": "Lifetime Deal",
+        "price": "$99 / $149 / $199",
+        "description": "一度の支払いで生涯アクセス。席数は限定。",
+        "cta": "LTD の各ティアを見る",
+        "benefits": {
+          "b1": "現在と今後のすべての機能",
+          "b2": "ロードマップ要望で優先度アップ",
+          "b3": "LTD 専用コミュニティにアクセス"
+        }
+      }
+    },
+    "pricingDisclaimer": "LTD のティアは残り席を確保できる専用ページにリダイレクトされます。",
+    "ctaFinalTitle": "今日から RepurposeIV ベータに参加",
+    "ctaFinalSubtitle": "席を確保し、同意書を提出して、ひとつのアイデアを数十の資産に変換しよう。",
+    "ctaFinalButton": "ベータ席を確保する",
+    "finalTitle": "IVContent をいち早く体験しよう",
+    "footer": "IVContent — All rights reserved.",
+    "testimonialsSoon1": "「ベータテスターのレビューは近日公開…」",
+    "testimonialsSoon2": "「ローンチ後に実際のストーリーを掲載します。」"
   },
+
   "ltd": {
-    "title": "ライフタイムディールアクセス 🚀",
-    "sub": "売り切れる前にあなたの席を確保してください！ 一つのティアが売り切れると、次のティアが解放されます。",
-    "joinBeta": "ベータテストに参加する",
-    "spotsError": "残り枠を読み込めませんでした。もう一度お試しください。",
+    "title": "ライフタイムディールへのアクセス 🚀",
+    "sub": "売り切れる前に席を確保！1 つのティアが完売すると次が開放されます。",
+    "joinBeta": "ベータに参加",
+    "spotsError": "席数を読み込めません。再試行してください。",
     "checkoutFailed": "決済に失敗しました",
     "soldOut": "売り切れ",
-    "loadingSpots": "残り枠を読み込み中…",
-    "spotsLeft": "残り{{count}}枠",
-    "goPro": "プロにアップグレード — 月額13ドル",
-    "videoTitle": "動画ウォークスルー"
+    "loadingSpots": "席数を読み込み中…",
+    "spotsLeft": "残り {{count}} 席",
+    "goPro": "Pro に移行 — $13 / 月",
+    "videoTitle": "ビデオツアー",
+    "errPrefix": ""
   },
+
   "qs": {
     "title": "クイックスタートガイド",
-    "sub": "数分でIVContentを使いこなす",
-    "videoTitle": "動画ウォークスルー",
-    "stepsTitle": "ステップごとの手順",
-    "step1": "サインアップまたはログイン – アカウントを作成するか既存のものにログイン。",
-    "step2": "コンテンツを入力 – ブログ、スクリプト、テキストを貼り付けます。",
-    "step3": "フォーマットを選択 – 作成したい形式を選びます（例: ブログ要約、TikTokスクリプト、Pinterestキャプション）。",
-    "step4": "「変換」をクリック – IVContentにお任せください。",
-    "step5": "確認と編集 – 必要に応じて生成されたコンテンツを修正します。",
-    "step6": "ダウンロードまたはコピー – ファイルとして保存するかクリップボードにコピーします。"
+    "sub": "数分で IVContent の使い方を習得",
+    "videoTitle": "ビデオツアー",
+    "stepsTitle": "ステップバイステップ手順",
+    "step1": "サインアップまたはログイン — 新規に作成するか既存アカウントにログイン。",
+    "step2": "コンテンツを入力 — ブログ・スクリプト・テキストを入力欄に貼り付け。",
+    "step3": "形式を選択 — 例: ブログ要約、TikTok スクリプト、Pinterest キャプション。",
+    "step4": "「再利用」をクリック — IVContent におまかせ。",
+    "step5": "見直し & 編集 — 出力欄で生成結果を微調整。",
+    "step6": "ダウンロードまたはコピー — ファイルに保存するか、クリップボードへコピー。"
   },
+
   "beta": {
     "title": "IVContent ベータ",
-    "sub": "ベータ規約に署名してアクセスを有効化し、より良い製品づくりにご協力ください。",
+    "sub": "ベータ同意書に署名してアクセスを有効化し、より良い製品づくりにご協力ください！",
     "source": "ソース",
-    "nameOpt": "名前（任意）",
+    "nameOpt": "お名前（任意）",
     "email": "メール",
     "invalidEmail": "有効なメールアドレスを入力してください。",
     "genericError": "問題が発生しました。もう一度お試しください。",
     "submitting": "開いています…",
-    "joinCta": "ベータ規約を開く",
-    "privacyNote": "メールはベータの最新情報のみに使用します。いつでも配信停止できます。",
-    "inTitle": "参加完了！",
-    "inDesc": "ご参加ありがとうございます。規約の完了後にベータアクセスが有効になります。",
-    "backToLTD": "ライフタイムディールに戻る",
-    "agreementNotice": "規約を完了するとベータアクセスが有効になります。新しいタブで自動的に開きます。",
-    "agreementDefault": "あと少しです！開いたタブでベータ規約を完了してアクセスを有効化してください。",
-    "agreementReminder": "フォームが表示されない場合は、上のボタンでもう一度規約を開いてください。",
-    "noEmail": "アカウントのメールアドレスが見つかりませんでした。再度サインインしてお試しください。",
-    "formUnavailable": "ベータ規約フォームがまだ設定されていません。サポートまでご連絡ください。"
+    "joinCta": "ベータ同意書を開く",
+    "privacyNote": "メールはベータ更新の連絡にのみ使用します。いつでも配信停止できます。",
+    "inTitle": "参加が完了しました！",
+    "inDesc": "ご関心の確認ありがとうございます。同意書完了後にベータアクセスが有効になります。",
+    "backToLTD": "Lifetime Deal に戻る",
+    "agreementNotice": "同意書を完了するとアクセスが有効になります。新しいタブで開きます。",
+    "agreementDefault": "もう少し！開いたタブでベータ同意書を完了するとアクセスが有効になります。",
+    "agreementReminder": "フォームが表示されなかった場合は、上のボタンで再度開いてください。",
+    "noEmail": "アカウントのメールが見つかりません。ログインしてからお試しください。",
+    "activateCta": "有効化 / ステータス確認",
+    "activationSuccess": "あなたのプランは {{plan}} です。{{extra}}",
+    "betaExpires": "ベータの有効期限: {{date}}",
+    "statusLine": "ステータス: プラン {{plan}}{{extra}}。すでにフォームを送信済みなら、少し待ってから再度「有効化」を押してください。",
+    "formUnavailable": "ベータ同意書フォームを利用できません。"
   }
 }

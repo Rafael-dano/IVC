@@ -3,9 +3,18 @@ import { supabase } from "../api/supabaseClient.js";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 
-export async function startCheckout({ price = "LTD", mode = "payment" }) {
+export async function startCheckout({
+    tier = "LTD_99",
+    mode = "payment",
+    currency,
+  } = {}) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Please log in first.");
+
+  const payload = { tier, mode };
+  if (currency) {
+    payload.currency = currency;
+  }
 
   const res = await fetch(`${API_BASE}/api/checkout`, {
     method: "POST",
@@ -13,7 +22,7 @@ export async function startCheckout({ price = "LTD", mode = "payment" }) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${session.access_token}`,
     },
-    body: JSON.stringify({ price, mode }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));

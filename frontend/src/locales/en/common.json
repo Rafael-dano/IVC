@@ -42,7 +42,12 @@
       "prefix": "Built with 💡 by ",
       "suffix": " · Turn content into gold."
     },
-    "copyright": "Ivy Web Designs. All rights reserved."
+    "terms": "Terms of Service",
+    "termsPdf": "Terms (PDF)",
+    "privacy": "Privacy PDF",
+    "betaTerms": "Beta Program Terms",
+    "copyright": "IVContent. All rights reserved.",
+    "privacyHtml": "Privacy Policy"
   },
 
   "auth": {

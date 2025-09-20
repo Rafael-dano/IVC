@@ -1,58 +1,55 @@
 {
   "appName": "IV Content",
+
   "nav": {
     "dashboard": "Painel",
     "settings": "Configurações",
     "logout": "Sair",
     "tool": "Ferramenta",
-    "ltd": "Oferta Vitalícia",
+    "ltd": "LTD",
     "help": "Ajuda",
     "login": "Entrar",
-    "signup": "Cadastrar"
+    "signup": "Criar conta"
   },
+
   "repurpose": {
     "heroTitle": "Transforme qualquer conteúdo em qualquer formato",
     "heroSub": "Envie um vídeo ou cole um texto. Obtenha resumos, roteiros e muito mais.",
-    "textareaPlaceholder": "Cole ou escreva seu conteúdo aqui...",
-    "btnRepurpose": "Reaproveitar Conteúdo",
+    "textareaPlaceholder": "Cole ou escreva seu conteúdo aqui…",
+    "btnRepurpose": "Reaproveitar conteúdo",
     "btnClear": "Limpar",
     "btnCopy": "Copiar",
     "btnDownloadTxt": "Baixar .txt",
     "btnDownloadPdf": "Baixar .pdf",
-    "needInput": "⚠️ Por favor, insira algum conteúdo primeiro.",
-    "needLogin": "⚠️ Você precisa estar logado para usar esta função.",
+    "needInput": "⚠️ Insira algum conteúdo primeiro.",
+    "needLogin": "⚠️ Você precisa entrar para usar este recurso.",
     "needYT": "⚠️ Cole uma URL ou ID do YouTube.",
-    "transcriptNA": "⚠️ Nenhuma transcrição disponível para este vídeo.",
+    "transcriptNA": "⚠️ Não há transcrição disponível para este vídeo.",
     "transcriptLang": "Idioma da transcrição"
   },
+
   "dashboard": {
-    "title": "Sua Ferramenta de Reaproveitamento",
-    "upgradeNudge": "Atualize para desbloquear o uso"
+    "title": "Sua ferramenta de reaproveitamento",
+    "upgradeNudge": "Faça upgrade para liberar o uso"
   },
-  "settings": {
-    "title": "Configurações",
-    "displayName": "Nome de Exibição",
-    "email": "Email",
-    "save": "Salvar",
-    "changeEmail": "Alterar Email",
-    "manageBilling": "Gerenciar Cobrança",
-    "notSignedIn": "Você não está logado. Faça login para gerenciar suas configurações."
-  },
+
   "header": {
-    "manageBilling": "Gerenciar Cobrança"
+    "manageBilling": "Gerenciar cobrança"
   },
+
   "footer": {
     "tagline": {
-      "prefix": "Criado com 💡 por ",
+      "prefix": "Feito com 💡 por ",
       "suffix": " · Transforme conteúdo em ouro."
     },
     "copyright": "Ivy Web Designs. Todos os direitos reservados."
   },
+
   "auth": {
     "common": {
       "backHome": "Voltar",
-      "maybeLater": "Talvez mais tarde",
-      "emailPlaceholder": "Endereço de email",
+      "maybeLater": "Talvez depois",
+      "emailPlaceholder": "E-mail",
       "passwordPlaceholder": "Senha",
       "fullNamePlaceholder": "Nome completo"
     },
@@ -60,115 +57,269 @@
       "title": "Bem-vindo de volta",
       "subtitle": "Entre para continuar",
       "cta": "Entrar",
-      "loading": "Entrando...",
+      "loading": "Entrando…",
       "link": "Entrar",
       "error": "Não foi possível fazer login."
     },
     "reset": {
       "link": "Esqueceu a senha?",
       "sending": "Enviando…",
-      "promptEmailMissing": "Digite seu email primeiro.",
-      "sent": "Email de redefinição enviado. Verifique sua caixa de entrada.",
-      "error": "Não foi possível enviar o email de redefinição."
+      "promptEmailMissing": "Informe seu e-mail primeiro.",
+      "sent": "E-mail de redefinição enviado. Verifique sua caixa de entrada.",
+      "error": "Não foi possível enviar o e-mail de redefinição."
     },
     "signup": {
       "title": "Crie sua conta",
       "subtitle": "Junte-se ao IVContent em segundos",
-      "cta": "Cadastrar",
-      "loading": "Criando...",
-      "link": "Criar Conta",
+      "cta": "Criar conta",
+      "loading": "Criando…",
+      "link": "Criar conta",
       "haveAccount": "Já tem uma conta?",
-      "checkEmail": "Verifique seu email para confirmar a conta e depois faça login.",
+      "checkEmail": "Verifique seu e-mail para confirmar a conta e depois entre.",
       "error": "Não foi possível criar sua conta."
     }
   },
+
+  "settings": {
+    "title": "Configurações",
+    "loading": "Carregando configurações…",
+    "notSignedIn": "Você não está conectado. Entre para gerenciar suas configurações.",
+    "goToLogin": "Ir para Entrar",
+    "manageBillingTitle": "Gerencie sua assinatura no Stripe",
+    "manageBilling": "Gerenciar cobrança",
+    "opening": "Abrindo…",
+    "monthlyUsage": "Uso mensal",
+    "tokensLeft": "tokens restantes",
+    "renews": "Renova",
+    "transcriptionMinutes": "Minutos de transcrição",
+    "minUsed": "min usados",
+    "noTranscriptionMinutes": "Seu plano não inclui minutos de transcrição. Faça upgrade para habilitar upload de áudio/vídeo.",
+    "displayName": "Nome de exibição",
+    "displayNamePH": "Seu nome de exibição",
+    "save": "Salvar",
+    "email": "E-mail",
+    "changeEmail": "Alterar e-mail",
+    "confirmationNote": "Você receberá um e-mail para confirmar a alteração.",
+    "logout": "Sair",
+    "deleteSoon": "Excluir conta (em breve)",
+    "backToHelp": "Voltar para Ajuda",
+    "needSignIn": "Entre para editar suas configurações.",
+    "savedName": "✅ Nome de exibição salvo.",
+    "saveNameError": "Não foi possível salvar o nome de exibição.",
+    "checkInbox": "✅ Confira sua caixa de entrada para confirmar o novo e-mail.",
+    "changeEmailError": "Não foi possível alterar o e-mail.",
+    "billingPortalError": "Não foi possível abrir o portal de cobrança"
+  },
+
   "help": {
     "getStartedTitle": "Precisa de ajuda para começar?",
     "getStartedDesc": "Confira nosso",
-    "quickStart": "Guia Rápido",
-    "faqTitle": "Perguntas Frequentes",
-    "faqDesc": "Encontre respostas em nossa seção",
-    "faqLink": "Perguntas Frequentes",
-    "contactTitle": "Fale Conosco",
-    "contactDesc": "Se ainda precisar de ajuda, envie um email para",
+    "quickStart": "Guia de início rápido",
+    "faqTitle": "Perguntas frequentes",
+    "faqDesc": "Encontre respostas em nossas",
+    "faqLink": "FAQs",
+    "contactTitle": "Fale conosco",
+    "contactDesc": "Se ainda precisar de ajuda, envie um e-mail para",
     "settingsTitle": "Configurações",
     "settingsDesc": "Atualize sua conta em",
     "settingsLink": "Configurações",
     "backToHelp": "Voltar para Ajuda"
   },
+
   "faq": {
-    "title": "Perguntas Frequentes",
-    "sub": "Respostas para dúvidas comuns sobre o IVContent",
-    "q1": "O que é IVContent?",
-    "a1": "IVContent é uma ferramenta de reaproveitamento de conteúdo que ajuda você a transformar um único material em múltiplos formatos para diferentes plataformas — economizando tempo, ampliando alcance e mantendo consistência.",
-    "q2": "Como começo a usar?",
-    "a2": "Basta criar uma conta, escolher uma ferramenta no painel, colar seu conteúdo e clicar em “Reaproveitar”.",
-    "q3": "O que a Oferta Vitalícia inclui?",
-    "a3": "A oferta vitalícia garante acesso ilimitado a todas as ferramentas atuais e futuras, para sempre — sem mensalidades.",
-    "q4": "Posso fazer upgrade depois?",
-    "a4": "Sim! Se começar com um plano mensal, pode mudar para anual ou vitalício a qualquer momento nas configurações.",
+    "title": "Perguntas frequentes",
+    "sub": "Respostas às dúvidas comuns sobre o IVContent",
+    "q1": "O que é o IVContent?",
+    "a1": "O IVContent é uma ferramenta de reaproveitamento que transforma um único conteúdo em vários formatos para diferentes plataformas — economize tempo, amplie o alcance e mantenha a consistência.",
+    "q2": "Como começo?",
+    "a2": "Crie uma conta, escolha uma ferramenta no painel, cole seu conteúdo e clique em “Reaproveitar”.",
+    "q3": "O que inclui a Lifetime Deal?",
+    "a3": "A LTD oferece acesso vitalício e ilimitado a todos os recursos atuais e futuros — sem mensalidades.",
+    "q4": "Posso atualizar depois?",
+    "a4": "Sim! Se começar no plano mensal, você pode mudar para anual ou vitalício a qualquer momento nas Configurações.",
     "q5": "Meus dados estão seguros?",
-    "a5": "Com certeza. Nunca vendemos seus dados e armazenamos apenas o necessário para operar o serviço com segurança."
+    "a5": "Com certeza. Nunca vendemos seus dados e armazenamos apenas o necessário para operar com segurança."
   },
+
   "landing": {
-    "heroTitle": "IVContent — Reaproveite Conteúdo. Multiplique o Impacto.",
-    "heroSub": "Transforme instantaneamente blogs, vídeos e posts sociais em múltiplos formatos com IA. Economize horas, alcance mais pessoas e expanda sua audiência.",
-    "cta": "Participe do Beta",
-    "f1Title": "Saída Multi-Plataforma",
-    "f1Sub": "De posts de blog a threads no Twitter, carrosséis no LinkedIn, legendas para Pinterest e muito mais — em segundos.",
-    "f2Title": "Edição com IA",
-    "f2Sub": "Reescrita inteligente, ajustes de tom e otimização de formato para se adequar ao seu público.",
-    "f3Title": "Fluxo de Trabalho que Economiza Tempo",
-    "f3Sub": "Automatize sua linha de reaproveitamento de conteúdo e concentre-se em criar, não em formatar.",
-    "testimonialsTitle": "O que dizem os primeiros usuários",
-    "testimonialsSoon1": "“Avaliações dos testadores beta em breve...”",
-    "testimonialsSoon2": "“Histórias reais serão mostradas após o lançamento.”",
-    "finalTitle": "Seja o Primeiro a Experimentar o IVContent",
-    "footer": "IVContent — Todos os direitos reservados."
+    "heroTitle": "IVContent — Reaproveite conteúdo. Multiplique o impacto.",
+    "heroSub": "Transforme blogs, vídeos e posts sociais em múltiplos formatos com IA. Economize horas, alcance mais pessoas e cresça sua audiência.",
+    "heroHighlight": "Crie uma vez. Publique em todo lugar.",
+    "heroBullet1": "Resumos, roteiros, legendas e carrosséis em segundos.",
+    "heroBullet2": "Saídas multilíngues em 12 idiomas.",
+    "heroBullet3": "Feito para criadores, agências e profissionais de repurpose.",
+    "cta": "Participar da beta",
+    "heroSecondaryCta": "Explorar a Lifetime Deal",
+    "heroCardTitle": "Automatize seu fluxo de reaproveitamento",
+    "heroCardBody": "Envie seu conteúdo longo e gere assets prontos para cada canal.",
+    "heroCardTag1": "Rascunhos com IA",
+    "heroCardTag2": "Controles de tom",
+    "heroCardTag3": "Sincronização com calendário",
+    "trustedBy": "Confiado por 500+ criadores e equipes que exploram IA.",
+    "metricCreators": "500+ criadores",
+    "metricCreatorsLabel": "Já otimizando seu fluxo de trabalho",
+    "metricHours": "12+ horas economizadas",
+    "metricHoursLabel": "Por equipe por semana após migrar para o RepurposeIV",
+    "metricFormats": "20+ formatos",
+    "metricFormatsLabel": "De blogs a carrosséis, transcrições e mais",
+    "featuresLabel": "Recursos da plataforma",
+    "featuresTitle": "Tudo para transformar long-form em assets prontos para publicar",
+    "featuresSubtitle": "O RepurposeIV é seu assistente full-stack para idear, estruturar, roteirizar e publicar.",
+    "f1Title": "Saída multiplataforma",
+    "f1Sub": "De posts de blog a threads no Twitter, carrosséis no LinkedIn e legendas para o Pinterest — em segundos.",
+    "f2Title": "Edição com suporte de IA",
+    "f2Sub": "Reescrita inteligente, ajuste de tom e otimização por formato.",
+    "f3Title": "Fluxo que economiza tempo",
+    "f3Sub": "Automatize a pipeline de reaproveitamento e foque na criação.",
+    "workflowTitle": "Feito para equipes rápidas",
+    "workflowSubtitle": "Colabore com clientes e co-criadores, mantenha sua marca e não perca janelas de publicação.",
+    "betaSpotlightsLabel": "Histórias da beta",
+    "betaSpotlightsTitle": "Betatesters entregando mais em menos tempo",
+    "betaSpotlightsSubtitle": "Veja como os early testers usam o RepurposeIV para produzir mais com menos esforço.",
+    "betaVideoLabel": "Vídeo da beta",
+    "betaSpotlights": {
+      "spot1": {
+        "name": "Maya Chen",
+        "role": "Fundadora, Creator Lab",
+        "summary": "Transformou um webinar de 45 min em 8 publicações em menos de 20 min.",
+        "result": "Economizou meio dia de edição por campanha.",
+        "quote": "“O IVContent reduziu nosso tempo de edição em 70%. É como ter estrategista e copy de plantão.”",
+        "videoTitle": "Webinar para sprint social"
+      },
+      "spot2": {
+        "name": "Andre Walker",
+        "role": "Líder de Marketing, PodLab",
+        "summary": "Entrevistas de podcast reaproveitadas automaticamente em newsletters, reels e blogs de SEO.",
+        "result": "Dobrou a produção semanal sem contratar outro freelancer.",
+        "quote": "“O suporte multilíngue é incrível. Recaps em inglês e espanhol com um clique.”",
+        "videoTitle": "Remix podcast → newsletter"
+      },
+      "spot3": {
+        "name": "Sasha Patel",
+        "role": "Estrategista de agência",
+        "summary": "Criou um calendário com 30 dias de copys sociais em uma tarde.",
+        "result": "Aprovação de clientes 3× mais rápida com rascunhos prontos para publicar.",
+        "quote": "“Nossos clientes acham que temos uma equipe criativa inteira por trás.”",
+        "videoTitle": "Acelerador de campanhas"
+      }
+    },
+    "testimonialsLabel": "Depoimentos fictícios",
+    "testimonialsTitle": "Queridinho de equipes de marketing e criadores solo",
+    "testimonialsSubtitle": "Provas sociais vindas de discovery calls e da lista de espera da beta.",
+    "reviews": {
+      "r1": {
+        "quote": "“O IVContent é a primeira ferramenta que mantém nossa voz consistente entre formatos.”",
+        "name": "Jordan Reeves",
+        "role": "Diretor de Conteúdo, FlowStudios"
+      },
+      "r2": {
+        "quote": "“Entrego mais assets por cliente sem me esgotar. Os roteiros são assustadoramente bons.”",
+        "name": "Priya Desai",
+        "role": "Fundadora, Repurpose Boutique"
+      },
+      "r3": {
+        "quote": "“Nossos editores usam como ponto de partida em toda campanha. É nossa vantagem injusta.”",
+        "name": "Liam Carter",
+        "role": "Head de Growth, LaunchHouse"
+      }
+    },
+    "pricingLabel": "Preços",
+    "pricingTitle": "Escolha seu plano de lançamento",
+    "pricingSubtitle": "Comece grátis durante a beta e faça upgrade quando quiser. O LTD fica disponível até as vagas acabarem.",
+    "pricing": {
+      "starter": {
+        "name": "Beta Starter",
+        "price": "$0",
+        "description": "Solicite acesso e explore o IVContent durante a beta.",
+        "cta": "Participar da beta",
+        "benefits": {
+          "b1": "Acesso gratuito por tempo limitado enquanto a beta estiver aberta",
+          "b2": "5 execuções de IA por semana",
+          "b3": "Sessões privadas de feedback"
+        }
+      },
+      "pro": {
+        "name": "Pro Creator",
+        "price": "$13/mês",
+        "description": "Desbloqueie limites maiores, vozes de marca e colaboração.",
+        "cta": "Receber aviso de lançamento",
+        "benefits": {
+          "b1": "Execuções ilimitadas",
+          "b2": "Modelos salvos e presets de voz de marca",
+          "b3": "Espaços de equipe (em breve)"
+        }
+      },
+      "ltd": {
+        "name": "Lifetime Deal",
+        "price": "$99, $149 ou $199",
+        "description": "Pagamento único para acesso vitalício. Vagas limitadas.",
+        "cta": "Ver níveis do LTD",
+        "benefits": {
+          "b1": "Todos os recursos atuais e futuros",
+          "b2": "Prioridade em pedidos de roadmap",
+          "b3": "Acesso à comunidade exclusiva do LTD"
+        }
+      }
+    },
+    "pricingDisclaimer": "Os níveis do LTD redirecionam para a página dedicada para garantir as vagas restantes.",
+    "ctaFinalTitle": "Junte-se hoje à beta do RepurposeIV",
+    "ctaFinalSubtitle": "Garanta sua vaga, conclua o acordo e transforme uma ideia em dezenas de assets.",
+    "ctaFinalButton": "Garantir minha vaga na beta",
+    "finalTitle": "Seja um dos primeiros a experimentar o IVContent",
+    "footer": "IVContent — Todos os direitos reservados.",
+    "testimonialsSoon1": "“Depoimentos de betatesters em breve…”",
+    "testimonialsSoon2": "“Após o lançamento, exibiremos histórias reais aqui.”"
   },
+
   "ltd": {
-    "title": "Oferta Vitalícia 🚀",
-    "sub": "Garanta sua vaga antes que acabe! Assim que um lote esgota, o próximo é liberado.",
-    "joinBeta": "Participar do Teste Beta",
-    "spotsError": "Não foi possível carregar as vagas. Tente novamente.",
-    "checkoutFailed": "Falha no checkout",
+    "title": "Acesso à Lifetime Deal 🚀",
+    "sub": "Garanta sua vaga antes que acabe! Quando um nível esgota, o próximo é aberto.",
+    "joinBeta": "Participar da beta",
+    "spotsError": "Falha ao carregar vagas. Tente novamente.",
+    "checkoutFailed": "Falha no pagamento",
     "soldOut": "Esgotado",
     "loadingSpots": "Carregando vagas…",
     "spotsLeft": "{{count}} vagas restantes",
-    "goPro": "Assine Pro — $13 / mês",
-    "videoTitle": "Vídeo Explicativo"
+    "goPro": "Ir para Pro — $13 / mês",
+    "videoTitle": "Vídeo de apresentação",
+    "errPrefix": ""
   },
+
   "qs": {
-    "title": "Guia Rápido",
-    "sub": "Aprenda a usar o IVContent em minutos",
-    "videoTitle": "Vídeo Explicativo",
-    "stepsTitle": "Instruções Passo a Passo",
-    "step1": "Cadastre-se ou Entre – Crie sua conta IVContent ou acesse a existente.",
-    "step2": "Insira seu Conteúdo – Cole seu blog, roteiro de vídeo ou texto.",
-    "step3": "Escolha um Formato – Selecione o que deseja gerar (ex.: Resumo de Blog, Script TikTok, Legenda Pinterest).",
-    "step4": "Clique em 'Reaproveitar' – Deixe o IVContent fazer a mágica.",
-    "step5": "Revise e Edite – Faça ajustes no conteúdo gerado.",
-    "step6": "Baixe ou Copie – Salve como arquivo ou copie para uso imediato."
+    "title": "Guia de início rápido",
+    "sub": "Aprenda a usar o IVContent em poucos minutos",
+    "videoTitle": "Vídeo de apresentação",
+    "stepsTitle": "Passo a passo",
+    "step1": "Cadastre-se ou entre — Crie sua conta IVContent ou acesse a existente.",
+    "step2": "Insira seu conteúdo — Cole blog, roteiro ou texto no campo de entrada.",
+    "step3": "Selecione um formato — ex.: Resumo de blog, Roteiro para TikTok, Legenda para Pinterest.",
+    "step4": "Clique em ‘Reaproveitar’ — Deixe o IVContent trabalhar.",
+    "step5": "Revise e edite — Ajuste o conteúdo gerado no campo de saída.",
+    "step6": "Baixe ou copie — Salve como arquivo ou copie para a área de transferência."
   },
+
   "beta": {
-    "title": "Beta do IVContent",
-    "sub": "Assine o acordo beta para ativar seu acesso e nos ajudar a melhorar o produto!",
-    "source": "Fonte",
-    "nameOpt": "Seu Nome (opcional)",
-    "email": "Email",
-    "invalidEmail": "Digite um endereço de email válido.",
+    "title": "IVContent Beta",
+    "sub": "Assine o acordo da beta para ativar seu acesso e nos ajudar a construir um produto melhor!",
+    "source": "Origem",
+    "nameOpt": "Seu nome (opcional)",
+    "email": "E-mail",
+    "invalidEmail": "Informe um e-mail válido.",
     "genericError": "Algo deu errado. Tente novamente.",
     "submitting": "Abrindo…",
-    "joinCta": "Abrir acordo beta",
-    "privacyNote": "Usaremos seu email apenas para atualizações do beta. Você pode cancelar a qualquer momento.",
-    "inTitle": "Você entrou!",
-    "inDesc": "Obrigado por confirmar seu interesse. O acesso beta é ativado depois que você concluir o acordo.",
-    "backToLTD": "Voltar à Oferta Vitalícia",
-    "agreementNotice": "O acesso beta é ativado após você concluir o acordo. Vamos abri-lo em uma nova guia.",
-    "agreementDefault": "Quase lá! Conclua o acordo beta na guia que acabou de abrir para ativar seu acesso.",
-    "agreementReminder": "O formulário não apareceu? Use o botão acima para abrir o acordo novamente.",
-    "noEmail": "Não encontramos um email para sua conta. Faça login e tente novamente.",
-    "formUnavailable": "O formulário do acordo beta ainda não está configurado. Entre em contato com o suporte."
+    "joinCta": "Abrir acordo da beta",
+    "privacyNote": "Usaremos seu e-mail apenas para novidades da beta. Você pode sair quando quiser.",
+    "inTitle": "Você está dentro!",
+    "inDesc": "Obrigado por confirmar seu interesse. O acesso ativa após concluir o acordo.",
+    "backToLTD": "Voltar às Lifetime Deals",
+    "agreementNotice": "O acesso ativa após concluir o acordo. Abriremos em uma nova aba.",
+    "agreementDefault": "Quase lá! Conclua o acordo da beta na aba aberta para ativar seu acesso.",
+    "agreementReminder": "Se o formulário não apareceu, reabra com o botão acima.",
+    "noEmail": "Não encontramos um e-mail para sua conta. Entre e tente novamente.",
+    "activateCta": "Ativar / Ver status",
+    "activationSuccess": "Seu plano é {{plan}}. {{extra}}",
+    "betaExpires": "Beta expira: {{date}}",
+    "statusLine": "Status: plano {{plan}}{{extra}}. Se você já enviou o formulário, aguarde um minuto e clique em Ativar novamente.",
+    "formUnavailable": "O formulário do acordo da beta não está disponível."
   }
 }
-

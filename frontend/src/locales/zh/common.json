@@ -1,173 +1,325 @@
 {
-  "appName": "IV 内容",
+  "appName": "IV Content",
+
   "nav": {
-    "dashboard": "控制台",
+    "dashboard": "仪表盘",
     "settings": "设置",
     "logout": "退出登录",
     "tool": "工具",
-    "ltd": "终身优惠",
+    "ltd": "LTD",
     "help": "帮助",
     "login": "登录",
     "signup": "注册"
   },
+
   "repurpose": {
-    "heroTitle": "将任何内容转换为任何形式",
-    "heroSub": "上传视频或粘贴文本。获取摘要、脚本等。",
-    "textareaPlaceholder": "在这里粘贴或输入内容...",
+    "heroTitle": "将任何内容转成任意格式",
+    "heroSub": "上传视频或粘贴文本。获取摘要、脚本等更多产出。",
+    "textareaPlaceholder": "在此粘贴或输入你的内容…",
     "btnRepurpose": "内容再利用",
     "btnClear": "清空",
     "btnCopy": "复制",
     "btnDownloadTxt": "下载 .txt",
     "btnDownloadPdf": "下载 .pdf",
-    "needInput": "⚠️ 请先输入内容。",
-    "needLogin": "⚠️ 必须登录才能使用此功能。",
-    "needYT": "⚠️ 请粘贴 YouTube 链接或视频 ID。",
-    "transcriptNA": "⚠️ 此视频没有可用的字幕。",
-    "transcriptLang": "字幕语言"
+    "needInput": "⚠️ 请先输入一些内容。",
+    "needLogin": "⚠️ 使用此功能需要先登录。",
+    "needYT": "⚠️ 请粘贴一个 YouTube 链接或视频 ID。",
+    "transcriptNA": "⚠️ 此视频暂无可用转录。",
+    "transcriptLang": "转录语言"
   },
+
   "dashboard": {
-    "title": "你的内容再利用工具",
-    "upgradeNudge": "升级以解锁更多使用次数"
+    "title": "你的再利用工具",
+    "upgradeNudge": "升级以解锁用量"
   },
-  "settings": {
-    "title": "设置",
-    "displayName": "显示名称",
-    "email": "邮箱",
-    "save": "保存",
-    "changeEmail": "更改邮箱",
-    "manageBilling": "管理账单",
-    "notSignedIn": "您尚未登录。请先登录以管理设置。"
-  },
+
   "header": {
     "manageBilling": "管理账单"
   },
+
   "footer": {
     "tagline": {
-      "prefix": "由 💡 打造 ",
-      "suffix": " · 让内容变成黄金。"
+      "prefix": "由 💡 打造：",
+      "suffix": " · 把内容变成“黄金”。"
     },
-    "copyright": "Ivy Web Designs. 版权所有。"
+    "copyright": "Ivy Web Designs. 保留所有权利。"
   },
+
   "auth": {
     "common": {
-      "backHome": "返回主页",
+      "backHome": "带我返回",
       "maybeLater": "以后再说",
       "emailPlaceholder": "邮箱地址",
       "passwordPlaceholder": "密码",
-      "fullNamePlaceholder": "全名"
+      "fullNamePlaceholder": "姓名"
     },
     "login": {
       "title": "欢迎回来",
       "subtitle": "登录以继续",
       "cta": "登录",
-      "loading": "正在登录...",
+      "loading": "正在登录…",
       "link": "登录",
-      "error": "无法登录。"
+      "error": "无法为你登录。"
     },
     "reset": {
       "link": "忘记密码？",
       "sending": "发送中…",
-      "promptEmailMissing": "请先输入邮箱。",
-      "sent": "已发送重置密码邮件，请检查邮箱。",
+      "promptEmailMissing": "请先输入你的邮箱。",
+      "sent": "已发送重置邮件，请查收。",
       "error": "无法发送重置邮件。"
     },
     "signup": {
-      "title": "创建账户",
-      "subtitle": "几秒钟即可加入 IVContent",
+      "title": "创建你的账号",
+      "subtitle": "几秒钟加入 IVContent",
       "cta": "注册",
-      "loading": "正在创建...",
-      "link": "创建账户",
-      "haveAccount": "已有账户？",
-      "checkEmail": "请检查邮箱确认账户，然后登录。",
-      "error": "无法创建账户。"
+      "loading": "创建中…",
+      "link": "创建账号",
+      "haveAccount": "已经有账号？",
+      "checkEmail": "请查收验证邮件以确认账号，然后登录。",
+      "error": "无法创建你的账号。"
     }
   },
+
+  "settings": {
+    "title": "设置",
+    "loading": "正在加载设置…",
+    "notSignedIn": "你尚未登录。请登录后管理设置。",
+    "goToLogin": "前往登录",
+    "manageBillingTitle": "在 Stripe 中管理你的订阅",
+    "manageBilling": "管理账单",
+    "opening": "正在打开…",
+    "monthlyUsage": "本月用量",
+    "tokensLeft": "剩余 tokens",
+    "renews": "续订",
+    "transcriptionMinutes": "转录分钟数",
+    "minUsed": "已用分钟",
+    "noTranscriptionMinutes": "你当前的套餐不含转录分钟。升级以启用音视频上传。",
+    "displayName": "显示名称",
+    "displayNamePH": "你的显示名称",
+    "save": "保存",
+    "email": "邮箱",
+    "changeEmail": "更改邮箱",
+    "confirmationNote": "你将收到一封确认邮件以验证更改。",
+    "logout": "退出登录",
+    "deleteSoon": "删除账号（即将推出）",
+    "backToHelp": "返回帮助",
+    "needSignIn": "请登录后再编辑设置。",
+    "savedName": "✅ 显示名称已保存。",
+    "saveNameError": "无法保存显示名称。",
+    "checkInbox": "✅ 请在收件箱中确认新的邮箱。",
+    "changeEmailError": "无法更改邮箱。",
+    "billingPortalError": "无法打开账单门户"
+  },
+
   "help": {
-    "getStartedTitle": "需要帮助开始使用？",
+    "getStartedTitle": "需要入门帮助？",
     "getStartedDesc": "查看我们的",
-    "quickStart": "快速入门指南",
+    "quickStart": "快速上手指南",
     "faqTitle": "常见问题",
-    "faqDesc": "在这里找到答案：",
+    "faqDesc": "在我们的",
     "faqLink": "常见问题解答",
     "contactTitle": "联系我们",
-    "contactDesc": "如果仍需要帮助，请发邮件至",
+    "contactDesc": "如果仍需帮助，请发送邮件至",
     "settingsTitle": "设置",
-    "settingsDesc": "在此更新你的账户：",
+    "settingsDesc": "在此更新你的账号：",
     "settingsLink": "设置",
     "backToHelp": "返回帮助"
   },
+
   "faq": {
     "title": "常见问题",
-    "sub": "关于 IVContent 的常见问题解答",
-    "q1": "什么是 IVContent？",
-    "a1": "IVContent 是一款内容再利用工具，帮助你将一篇内容快速转换成多种形式，以适配不同平台 —— 节省时间、扩大覆盖面、保持高频率发布。",
-    "q2": "我该如何开始？",
-    "a2": "注册一个账户，从控制台选择工具（例如博客 TL;DR 或 Pinterest 文案生成器），粘贴内容，然后点击“再利用”。",
-    "q3": "终身优惠包括什么？",
-    "a3": "终身优惠为你提供对当前和未来所有工具的无限访问权限 —— 永无月费。",
-    "q4": "我能之后升级吗？",
-    "a4": "当然！如果先从月度套餐开始，你可以随时在账户设置中升级到年度或终身套餐。",
+    "sub": "关于 IVContent 的常见问答",
+    "q1": "IVContent 是什么？",
+    "a1": "IVContent 是一款内容再利用工具，帮助你把一份内容转换为适配不同平台的多种格式——节省时间、扩大触达并保持风格一致。",
+    "q2": "如何开始？",
+    "a2": "创建账号，在仪表盘选择工具，粘贴内容，然后点击“再利用”。",
+    "q3": "Lifetime Deal 包含什么？",
+    "a3": "LTD 让你终身无限访问当前与未来功能——无需月费。",
+    "q4": "之后可以升级吗？",
+    "a4": "可以！如果先从月付开始，随时可在设置中升级到年付或终身。",
     "q5": "我的数据安全吗？",
-    "a5": "绝对安全。我们从不出售你的数据，仅存储必要的内容以安全运行服务。"
+    "a5": "非常安全。我们从不售卖你的数据，只保存运行所必需的最小信息。"
   },
+
   "landing": {
-    "heroTitle": "IVContent — 内容再利用，效果倍增。",
-    "heroSub": "用 AI 即刻将博客、视频和社交帖子转化为多种形式。节省时间，触达更多人群，扩大影响力。",
+    "heroTitle": "IVContent — 再利用内容，倍增影响",
+    "heroSub": "用 AI 将博客、视频和社交帖迅速转换为多种格式。节省时间，触达更多人群，扩大受众。",
+    "heroHighlight": "一次创作，处处发布。",
+    "heroBullet1": "数秒生成摘要、脚本、文案与轮播。",
+    "heroBullet2": "支持 12 种语言的多语输出。",
+    "heroBullet3": "为创作者、代理商与再利用高手而生。",
     "cta": "加入内测",
+    "heroSecondaryCta": "查看终身套餐",
+    "heroCardTitle": "自动化你的再利用流程",
+    "heroCardBody": "投入长内容，生成适配各渠道的就绪素材。",
+    "heroCardTag1": "AI 草稿",
+    "heroCardTag2": "语气控制",
+    "heroCardTag3": "内容日历同步",
+    "trustedBy": "获 500+ 名创作者与团队信赖，积极探索 AI 再利用。",
+    "metricCreators": "500+ 创作者",
+    "metricCreatorsLabel": "已优化其工作流程",
+    "metricHours": "节省 12+ 小时",
+    "metricHoursLabel": "团队每周（采用 RepurposeIV 之后）",
+    "metricFormats": "20+ 种格式",
+    "metricFormatsLabel": "从博客到轮播、转录等",
+    "featuresLabel": "平台功能",
+    "featuresTitle": "把长内容变成“随时可发”的资产所需的一切",
+    "featuresSubtitle": "RepurposeIV 是你的全流程助手：构思、框架、脚本、发布一条龙。",
     "f1Title": "多平台输出",
-    "f1Sub": "从博客文章到推特长文、领英轮播、Pinterest 文案等等 —— 秒级完成。",
-    "f2Title": "AI 驱动编辑",
-    "f2Sub": "智能改写、语气调整、格式优化，贴合你的受众风格。",
-    "f3Title": "节省时间的工作流",
-    "f3Sub": "自动化内容再利用流程，把精力放在创作而不是格式转换。",
-    "testimonialsTitle": "早期用户的评价",
-    "testimonialsSoon1": "“内测用户评价即将上线...”",
-    "testimonialsSoon2": "“正式上线后将展示真实用户故事。”",
-    "finalTitle": "抢先体验 IVContent",
-    "footer": "IVContent — 版权所有。"
+    "f1Sub": "从博客到 Twitter 线程、LinkedIn 轮播、Pinterest 文案——数秒完成。",
+    "f2Title": "AI 辅助编辑",
+    "f2Sub": "智能改写、语气调整与格式优化。",
+    "f3Title": "节省时间的流程",
+    "f3Sub": "自动化再利用流水线，把精力放在创作上。",
+    "workflowTitle": "为高速团队打造",
+    "workflowSubtitle": "与客户与协作者协同，保持品牌声音，不错过任何发布窗口。",
+    "betaSpotlightsLabel": "内测亮点故事",
+    "betaSpotlightsTitle": "测试者用更少时间产出更多",
+    "betaSpotlightsSubtitle": "看看早期测试者如何以更少努力获得更高产出。",
+    "betaVideoLabel": "内测视频",
+    "betaSpotlights": {
+      "spot1": {
+        "name": "Maya Chen",
+        "role": "Creator Lab 创始人",
+        "summary": "将 45 分钟的网络研讨会在 20 分钟内变成 8 条可发布内容。",
+        "result": "每次活动节省半天编辑时间。",
+        "quote": "“IVContent 让我们的编辑时间减少了 70%。就像随时有策划和文案在身边。”",
+        "videoTitle": "Webinar → 社媒冲刺"
+      },
+      "spot2": {
+        "name": "Andre Walker",
+        "role": "PodLab 市场负责人",
+        "summary": "将播客访谈自动再利用为新闻简报、短视频和 SEO 博客。",
+        "result": "无需再雇自由职业者，每周产出翻倍。",
+        "quote": "“多语言支持太强大了。一键生成英文与西语回顾。”",
+        "videoTitle": "Podcast → Newsletter Remix"
+      },
+      "spot3": {
+        "name": "Sasha Patel",
+        "role": "代理公司策略师",
+        "summary": "一个下午做出 30 天的社媒文案日历。",
+        "result": "有了可发布草稿，客户审批速度提升 3×。",
+        "quote": "“客户说我们背后像有整支创意团队。”",
+        "videoTitle": "活动加速器"
+      }
+    },
+    "testimonialsLabel": "模拟评价",
+    "testimonialsTitle": "深受营销团队与独立创作者喜爱",
+    "testimonialsSubtitle": "基于访谈与内测等候名单收集的社交证明。",
+    "reviews": {
+      "r1": {
+        "quote": "“IVContent 是首个能在不同格式中保持我们品牌声音一致的工具。”",
+        "name": "Jordan Reeves",
+        "role": "内容总监，FlowStudios"
+      },
+      "r2": {
+        "quote": "“我为每位客户交付更多素材而不至于过劳。脚本效果惊人。”",
+        "name": "Priya Desai",
+        "role": "创始人，Repurpose Boutique"
+      },
+      "r3": {
+        "quote": "“我们的编辑把它作为每次活动的起点。这是我们的不公平优势。”",
+        "name": "Liam Carter",
+        "role": "增长负责人，LaunchHouse"
+      }
+    },
+    "pricingLabel": "定价",
+    "pricingTitle": "选择你的上线方案",
+    "pricingSubtitle": "内测期间可免费开始，准备就绪后再升级。终身套餐售完即止。",
+    "pricing": {
+      "starter": {
+        "name": "Beta Starter",
+        "price": "$0",
+        "description": "申请访问，在内测期体验 IVContent。",
+        "cta": "加入内测",
+        "benefits": {
+          "b1": "内测开放期间限时免费访问",
+          "b2": "每周 5 次 AI 运行",
+          "b3": "私密反馈会"
+        }
+      },
+      "pro": {
+        "name": "Pro Creator",
+        "price": "$13/月",
+        "description": "解锁更高上限、品牌语音与协同功能。",
+        "cta": "接收上线通知",
+        "benefits": {
+          "b1": "不限运行次数",
+          "b2": "保存模板与品牌语音预设",
+          "b3": "团队空间（即将推出）"
+        }
+      },
+      "ltd": {
+        "name": "Lifetime Deal",
+        "price": "$99、$149 或 $199",
+        "description": "一次性付款，终身访问。名额有限。",
+        "cta": "查看 LTD 分级",
+        "benefits": {
+          "b1": "包含所有当前与未来功能",
+          "b2": "路线图需求优先",
+          "b3": "加入 LTD 专属社区"
+        }
+      }
+    },
+    "pricingDisclaimer": "LTD 分级会将你重定向至专页以锁定剩余名额。",
+    "ctaFinalTitle": "今天就加入 RepurposeIV 内测",
+    "ctaFinalSubtitle": "锁定席位，完成协议，把一个想法变成数十个资产。",
+    "ctaFinalButton": "领取我的内测试位",
+    "finalTitle": "成为最早体验 IVContent 的人",
+    "footer": "IVContent — 保留所有权利。",
+    "testimonialsSoon1": "“内测用户评价即将上线……”",
+    "testimonialsSoon2": "“上线后这里将展示真实故事。”"
   },
+
   "ltd": {
-    "title": "终身优惠 🚀",
-    "sub": "在名额用完前立即抢购！一旦售罄，下一个档位解锁。",
-   "joinBeta": "加入测试版",
-    "spotsError": "无法加载名额，请重试。",
-    "checkoutFailed": "支付失败",
+    "title": "终身套餐通道 🚀",
+    "sub": "名额有限，先到先得！一个档位售罄后将解锁下一个。",
+    "joinBeta": "加入内测",
+    "spotsError": "名额加载失败。请重试。",
+    "checkoutFailed": "结账失败",
     "soldOut": "已售罄",
     "loadingSpots": "正在加载名额…",
     "spotsLeft": "剩余 {{count}} 个名额",
-    "goPro": "升级到 Pro — 每月 $13",
-    "videoTitle": "演示视频"
-  },
-  "qs": {
-    "title": "快速入门指南",
-    "sub": "几分钟即可学会使用 IVContent",
+    "goPro": "升级 Pro — $13 / 月",
     "videoTitle": "演示视频",
-    "stepsTitle": "分步指南",
-    "step1": "注册或登录 – 创建账户或登录现有账户。",
-    "step2": "输入内容 – 粘贴博客、视频脚本或其他文本。",
-    "step3": "选择格式 – 选择要生成的内容（如博客摘要、抖音脚本、Pinterest 文案）。",
-    "step4": "点击 '再利用' – 让 IVContent 自动完成转换。",
-    "step5": "审阅和编辑 – 在输出框中做必要调整。",
-    "step6": "下载或复制 – 保存为文件或直接复制使用。"
+    "errPrefix": ""
   },
+
+  "qs": {
+    "title": "快速上手指南",
+    "sub": "用几分钟学会使用 IVContent",
+    "videoTitle": "演示视频",
+    "stepsTitle": "分步说明",
+    "step1": "注册或登录——创建 IVContent 账号或登录现有账号。",
+    "step2": "输入你的内容——将博客、脚本或文本粘贴到输入框。",
+    "step3": "选择一种格式——例如：博客摘要、TikTok 脚本、Pinterest 文案。",
+    "step4": "点击“再利用”——让 IVContent 发挥魔法。",
+    "step5": "审阅并编辑——在输出框中微调生成内容。",
+    "step6": "下载或复制——保存为文件或复制到剪贴板。"
+  },
+
   "beta": {
     "title": "IVContent 内测",
-    "sub": "签署测试协议即可激活访问权限，并帮助我们打造更好的产品！",
+    "sub": "签署内测协议以激活访问权限，并帮助我们打造更好的产品！",
     "source": "来源",
-    "nameOpt": "姓名（可选）",
+    "nameOpt": "你的姓名（可选）",
     "email": "邮箱",
     "invalidEmail": "请输入有效的邮箱地址。",
-    "genericError": "出错了，请重试。",
+    "genericError": "出现问题，请重试。",
     "submitting": "正在打开…",
-    "joinCta": "打开测试协议",
-    "privacyNote": "我们只会使用你的邮箱发送内测更新。你可随时取消订阅。",
-    "inTitle": "加入成功！",
-    "inDesc": "感谢你的确认。完成协议后即可激活测试访问权限。",
-    "backToLTD": "返回终身优惠",
-    "agreementNotice": "完成协议后将激活测试访问。我们会在新的标签页中为你打开。",
-    "agreementDefault": "快完成了！在刚刚打开的标签页中完成测试协议即可激活访问权限。",
-    "agreementReminder": "没有看到表单？请使用上方的按钮重新打开协议。",
-    "noEmail": "未能找到与你账户关联的邮箱。请重新登录后再试一次。",
-    "formUnavailable": "测试协议表单尚未配置。请联系支持团队。"
+    "joinCta": "打开内测协议",
+    "privacyNote": "我们仅用你的邮箱发送内测更新。你可随时退订。",
+    "inTitle": "你已加入！",
+    "inDesc": "感谢确认兴趣。完成协议后将激活内测访问。",
+    "backToLTD": "返回终身套餐",
+    "agreementNotice": "完成协议后将激活访问。我们会在新标签页中打开。",
+    "agreementDefault": "就差一步！在新打开的标签页中完成内测协议以激活访问。",
+    "agreementReminder": "若表单未出现，请点击上方按钮重新打开。",
+    "noEmail": "未找到与你账号关联的邮箱。请先登录后重试。",
+    "activateCta": "激活 / 查看状态",
+    "activationSuccess": "你的套餐为 {{plan}}。{{extra}}",
+    "betaExpires": "内测到期：{{date}}",
+    "statusLine": "状态：套餐 {{plan}}{{extra}}。若已提交表单，请等待片刻后再次点击“激活”。",
+    "formUnavailable": "内测协议表单不可用。"
   }
 }

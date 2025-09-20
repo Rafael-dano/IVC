@@ -1,5 +1,5 @@
 // src/pages/LTD.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import "./LTD.css";
@@ -14,11 +14,43 @@ const TIERS = [
   { key: "LTD_199", label: "Last 199 spots at $199" },
 ];
 
+const SUPPORTED_LTD_CURRENCIES = [
+    "USD",
+    "EUR",
+    "GBP",
+   "CAD",
+    "AUD",
+    "INR",
+    "JPY",
+    "BRL",
+    "MXN",
+    "ZAR",
+    "SGD",
+    "HKD",
+    "SEK",
+    "CHF",
+    "NZD",
+  ];
+
 export default function LTD() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [spots, setSpots] = useState({});
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const defaultCurrency = useMemo(() => {
+        const parts = (i18n.language || "").split("-");
+        const maybeCode = parts.pop()?.toUpperCase();
+        return maybeCode && SUPPORTED_LTD_CURRENCIES.includes(maybeCode)
+          ? maybeCode
+          : "USD";
+      }, [i18n.language]);
+      const [currency, setCurrency] = useState(defaultCurrency);
+      const [isProcessing, setProcessing] = useState(false);
+      const [checkoutError, setCheckoutError] = useState("");
+    
+      useEffect(() => {
+        setCurrency(defaultCurrency);
+      }, [defaultCurrency]);
 
   async function loadSpots(signal) {
     try {
@@ -45,18 +77,28 @@ export default function LTD() {
   }, []);
 
   const onBuy = async (tierKey) => {
+    setCheckoutError("");
+    setProcessing(true);
     try {
-      await startCheckout({ price: tierKey, mode: "payment" });
+      await startCheckout({
+        tier: tierKey,
+        mode: "payment",
+        currency,
+      });
     } catch (e) {
-      alert(e.message || t("ltd.checkoutFailed"));
+      setCheckoutError(e.message || t("ltd.checkoutFailed"));
+      setProcessing(false);
     }
   };
 
   const onSubscribe = async () => {
+    setCheckoutError("");
+    setProcessing(true);
     try {
-      await startCheckout({ price: "PRO", mode: "subscription" });
+      await startCheckout({ tier: "PRO", mode: "subscription" });
     } catch (e) {
-      alert(e.message || t("ltd.checkoutFailed"));
+      setCheckoutError(e.message || t("ltd.checkoutFailed"));
+      setProcessing(false);
     }
   };
 
@@ -75,7 +117,35 @@ export default function LTD() {
           <a href="/beta" className="ltd-button">{t("ltd.joinBeta")}</a>
         </section>
 
+        <section className="flex flex-col items-center gap-2">
+          <label
+            htmlFor="ltd-currency"
+            className="text-sm font-medium text-gray-700"
+          >
+            {t("ltd.currencyLabel", { defaultValue: "Currency" })}
+          </label>
+          <select
+            id="ltd-currency"
+            className="ltd-select"
+            value={currency}
+            onChange={(event) => {
+              setCurrency(event.target.value);
+              setCheckoutError("");
+            }}
+            disabled={isProcessing}
+          >
+            {SUPPORTED_LTD_CURRENCIES.map((code) => (
+              <option key={code} value={code}>
+                {code}
+              </option>
+            ))}
+          </select>
+        </section>
+
         {err && <p className="text-sm text-red-600">{t("ltd.errPrefix")} {err}</p>}
+        {checkoutError && (
+          <p className="text-sm text-red-600">{checkoutError}</p>
+        )}
 
         <section className="ltd-pricing-grid">
           {TIERS.map((tTier) => {
@@ -87,7 +157,7 @@ export default function LTD() {
                 key={tTier.key}
                 className={`ltd-button ${soldOut ? "ltd-button--disabled" : ""}`}
                 onClick={() => onBuy(tTier.key)}
-                disabled={soldOut || loading}
+                disabled={soldOut || loading || isProcessing}
                 title={soldOut ? t("ltd.soldOut") : undefined}
               >
                 <div className="ltd-button-title">{tTier.label}</div>
@@ -106,7 +176,11 @@ export default function LTD() {
         </section>
 
         <section>
-          <button className="ltd-button" onClick={onSubscribe}>
+        <button
+            className="ltd-button"
+            onClick={onSubscribe}
+            disabled={isProcessing}
+          >
             {t("ltd.goPro")}
           </button>
         </section>

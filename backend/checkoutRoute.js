@@ -3,6 +3,8 @@ import express from "express";
 import Stripe from "stripe";
 import { requireUser } from "./middleware/authAndLimits.js";
 import { supabaseAdmin } from "./api/supabaseClient.js";
+import { LTD_PRICE_IDS, SUPPORTED_LTD_CURRENCIES } from "./plans.js";
+
 
 const router = express.Router();
 
@@ -14,9 +16,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // .env needed:
 // SITE_URL=http://127.0.0.1:5173     (MUST include http:// or https://)
-// STRIPE_PRICE_LTD_99=price_xxx
-// STRIPE_PRICE_LTD_149=price_xxx
-// STRIPE_PRICE_LTD_199=price_xxx
 // STRIPE_PRICE_PRO=price_xxx
 
 function getOrigin() {
@@ -30,35 +29,75 @@ function getOrigin() {
   return raw.replace(/\/+$/, "");
 }
 
-function mapPriceId(priceKey) {
-  switch (priceKey) {
-    case "LTD_99":  return process.env.STRIPE_PRICE_LTD_99;
-    case "LTD_149": return process.env.STRIPE_PRICE_LTD_149;
-    case "LTD_199": return process.env.STRIPE_PRICE_LTD_199;
-    case "PRO":     return process.env.STRIPE_PRICE_PRO;
-    default:        return null;
+const FALLBACK_CURRENCY = "USD";
+
+function resolveLTDPrice(tier, currency) {
+  const tierMap = LTD_PRICE_IDS[tier];
+  if (!tierMap) {
+    return { priceId: null, resolvedCurrency: null };
   }
+
+  const normalizedCurrency = currency?.toUpperCase() ?? FALLBACK_CURRENCY;
+
+  if (!SUPPORTED_LTD_CURRENCIES.includes(normalizedCurrency)) {
+    return { priceId: null, resolvedCurrency: normalizedCurrency };
+  }
+
+  const resolvedCurrency = tierMap[normalizedCurrency]
+    ? normalizedCurrency
+    : FALLBACK_CURRENCY;
+
+  const priceId = tierMap[resolvedCurrency] ?? null;
+
+  return { priceId, resolvedCurrency };
 }
 
 router.post("/api/checkout", requireUser, async (req, res) => {
   try {
     const userId = req.user.id; // set by requireUser
-    let { mode = "payment", price = "LTD_99" } = req.body;
-
-    // normalize mode to only the two allowed values
-    mode = mode === "subscription" ? "subscription" : "payment";
-
-    const priceId = mapPriceId(price);
-    if (!priceId) {
-      return res.status(400).json({ error: `Invalid price option: ${price}` });
-    }
+    const {
+            mode = "payment",
+            tier = "LTD_99",
+            currency = FALLBACK_CURRENCY,
+          } = req.body ?? {};
+      
+          const normalizedMode =
+            mode === "subscription" ? "subscription" : "payment";
+      
+          let priceId = null;
+          let metadataTier = tier;
+          let resolvedCurrency = FALLBACK_CURRENCY;
+      
+          if (normalizedMode === "subscription") {
+            priceId = process.env.STRIPE_PRICE_PRO;
+           metadataTier = "PRO";
+            if (!priceId) {
+              return res
+                .status(500)
+                .json({ error: "Subscription price is not configured" });
+            }
+          } else {
+            if (!Object.hasOwn(LTD_PRICE_IDS, tier)) {
+              return res.status(400).json({ error: `Unknown tier: ${tier}` });
+            }
+      
+            const result = resolveLTDPrice(tier, currency);
+            priceId = result.priceId;
+            resolvedCurrency = result.resolvedCurrency ?? FALLBACK_CURRENCY;
+      
+            if (!priceId) {
+              return res.status(400).json({
+                error: `Unsupported currency for tier ${tier}: ${currency}`,
+              });
+            }
+          }
 
     // ✅ Stock check ONLY for LTD tiers (one-time)
-    if (mode === "payment" && price !== "PRO") {
+    if (normalizedMode === "payment" && metadataTier !== "PRO") {
       const { data: spot, error: spotErr } = await supabaseAdmin
         .from("ltd_spots")
         .select("remaining")
-        .eq("tier", price)
+        .eq("tier", tier)
         .maybeSingle();
 
       if (spotErr) {
@@ -78,15 +117,22 @@ router.post("/api/checkout", requireUser, async (req, res) => {
 
     // Debug log (very helpful while testing)
     console.log("Creating checkout session ->", {
-      userId, mode, price, priceId, success_url, cancel_url,
-    });
+            userId,
+            mode: normalizedMode,
+            tier,
+            requestedCurrency: currency,
+            resolvedCurrency,
+            priceId,
+            success_url,
+            cancel_url,
+          });
 
     const session = await stripe.checkout.sessions.create({
-      mode, // "payment" for LTD, "subscription" for PRO
+      mode: normalizedMode, // "payment" for LTD, "subscription" for PRO
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/settings?success=true`,
       cancel_url:  `${origin}/ltd?canceled=true`,
-      metadata: { user_id: userId, tier: price },
+      metadata: { user_id: userId, tier: metadataTier },
     });    
 
     return res.json({ url: session.url });
