@@ -5,5 +5,9 @@
     "i18next-browser-languagedetector": "^8.2.0",
     "openai": "^5.15.0",
     "react-i18next": "^15.7.3"
+  },
+  "scripts": {
+    "i18n:check": "node scripts/check-i18n.mjs",
+    "i18n:fill": "node scripts/fill-missing-i18n.mjs"
   }
 }

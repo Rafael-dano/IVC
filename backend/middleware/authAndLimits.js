@@ -10,6 +10,47 @@ const PLAN_LIMITS = {
   LTD_199: 3000,
 };
 
+async function ensureProfileRow(user) {
+  try {
+    const id = user.id;
+    const email = (user.email || "").toLowerCase();
+    const display =
+      (user.user_metadata?.full_name ||
+       user.user_metadata?.name ||
+       user.user_metadata?.display_name ||
+       null);
+
+    const { data: prof, error: pErr } = await supabaseAdmin
+      .from("profiles")
+      .select("id, email, plan")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (pErr) {
+      console.warn("ensureProfileRow select error:", pErr.message || pErr);
+      return;
+    }
+
+    if (!prof) {
+      // brand-new profile
+      await supabaseAdmin
+        .from("profiles")
+        .insert({ id, email, display_name: display, plan: "FREE" });
+      return;
+    }
+
+    // fill missing email if needed
+    if (!prof.email && email) {
+      await supabaseAdmin
+        .from("profiles")
+        .update({ email })
+        .eq("id", id);
+    }
+  } catch (e) {
+    console.warn("ensureProfileRow error:", e?.message || e);
+  }
+}
+
 async function ensureBetaLifecycle(userId, userEmail) {
   try {
     const { data: profile } = await supabaseAdmin
@@ -71,10 +112,12 @@ export async function requireUser(req, res, next) {
     const { data, error } = await supabaseAdmin.auth.getUser(token);
     if (error || !data?.user) return res.status(401).json({ error: "Invalid or expired token" });
 
-    // keep it minimal and consistent everywhere
     req.user = { id: data.user.id, email: data.user.email || null };
 
-    // 🔹 NEW: manage beta lifecycle (best-effort)
+    // 🔹 NEW: make sure a profiles row exists and has email
+    await ensureProfileRow(data.user);
+
+    // existing logic
     await ensureBetaLifecycle(req.user.id, req.user.email);
 
     next();
@@ -83,6 +126,7 @@ export async function requireUser(req, res, next) {
     res.status(500).json({ error: "Auth error" });
   }
 }
+
 
 export async function enforceLimits(req, res, next) {
   try {
