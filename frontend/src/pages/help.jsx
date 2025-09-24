@@ -2,6 +2,7 @@
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import { useTranslation } from "react-i18next";
+import FeedbackBox from "../components/FeedbackBox";
 
 export default function Help() {
   const { t } = useTranslation();
@@ -40,6 +41,7 @@ export default function Help() {
             <a href="/settings" className="text-cyan-300 hover:underline"><strong>{t("help.settingsLink")}</strong></a>.
           </p>
         </section>
+        <section><FeedbackBox /></section>
       </main>
       <Footer />
     </div>

@@ -15,11 +15,15 @@ export default function QuickStart() {
 
         <h2 className="text-2xl font-semibold mb-2">{t("qs.videoTitle")}</h2>
         <div className="mb-6">
-          <iframe
-            className="w-full h-96 rounded-md"
-            src="https://www.youtube.com/embed/VIDEO_ID"
-            title="IVContent Quick Start"
-          />
+        <iframe
+          loading="lazy"
+          className="w-full h-96 rounded-md"
+          src="https://www.youtube.com/embed/VIDEO_ID" // change with real video 
+          title="IVContent Quick Start"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        />
         </div>
 
         <h2 className="text-2xl font-semibold mb-2">{t("qs.stepsTitle")}</h2>

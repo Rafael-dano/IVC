@@ -4,6 +4,8 @@ import { supabase } from "../api/supabaseClient.js";
 import "./Settings.css";
 import { fetchMe, openBillingPortal } from "../api/account.js";
 import { useTranslation } from "react-i18next";
+import EmailPrefsSection from "../components/EmailPrefsSection";
+import CompanyBlock from "../components/CompanyBlock";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -13,6 +15,7 @@ export default function Settings() {
   const [email, setEmail] = useState("");
   const [account, setAccount] = useState(null);
   const [portalBusy, setPortalBusy] = useState(false);
+  const [unsubbed, setUnsubbed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,6 +58,17 @@ export default function Settings() {
       }
     })();
     return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("unsub") === "success") {
+      setUnsubbed(true);
+      // optional: clean the URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("unsub");
+      window.history.replaceState({}, "", url.toString());
+    }
   }, []);
 
   async function saveDisplayName() {
@@ -255,6 +269,13 @@ export default function Settings() {
       >
         <strong>← {t("settings.backToHelp")}</strong>
       </a>
+      {unsubbed && (
+        <div className="mb-4 rounded-md bg-green-50 border border-green-200 text-green-800 px-4 py-2 text-sm">
+          ✅ You’ve been unsubscribed from marketing emails. You can re-subscribe below anytime.
+        </div>
+      )}
+      <EmailPrefsSection />
+      <CompanyBlock />  
     </div>
   );
 }

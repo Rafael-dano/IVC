@@ -5,6 +5,8 @@ import Footer from "../components/Footer.jsx";
 import "./beta.css";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../api/supabaseClient.js";
+import { httpJson } from "../api/http.js";
+import { track } from "../analytics";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 const BETA_FORM_URL = import.meta.env.VITE_BETA_FORM_URL;

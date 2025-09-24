@@ -8,8 +8,14 @@ import rateLimit from "express-rate-limit";
 import multer from "multer";
 import fs from "fs/promises";
 import path from "path";
+import jwtPkg from "jsonwebtoken";
 import * as mm from "music-metadata";
 import ffmpegPath from "ffmpeg-static";
+import helmet from "helmet";
+import hpp from "hpp";
+import compression from "compression";
+import * as Sentry from "@sentry/node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
@@ -24,6 +30,13 @@ const app = express();
 const PORT = process.env.PORT || 5051;
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const execFileAsync = promisify(execFile);
+const jwt = jwtPkg.default ?? jwtPkg;
+const feedbackLimiter = rateLimit({ windowMs: 60_000, limit: 5 });
+
+if (!process.env.UNSUBSCRIBE_JWT_SECRET) {
+  console.error("FATAL: UNSUBSCRIBE_JWT_SECRET is not set. Add it to your .env / hosting env.");
+  if ((process.env.NODE_ENV || "development") !== "development") process.exit(1);
+}
 
 async function getTranscriptSecondsUsedThisMonth(userId) {
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
@@ -251,6 +264,37 @@ app.get("/webhooks/stripe/ping", (_req, res) => {
   res.json({ ok: true, at: "/webhooks/stripe/ping" });
 });
 
+// Remove Express signature
+app.disable("x-powered-by");
+
+// If behind Netlify/Render/CF proxy:
+app.set("trust proxy", 1);
+
+// Security headers (start conservative so you don't break embeds)
+app.use(helmet({
+  contentSecurityPolicy: false, // keep off until you whitelist YT, Stripe, etc.
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // allow images/videos if needed
+}));
+
+// Prevent HTTP parameter pollution
+app.use(hpp());
+
+// gzip/brotli (node will brotli if supported)
+app.use(compression());
+
+if (process.env.SENTRY_DSN_BACKEND) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN_BACKEND,
+    tracesSampleRate: 0.2,   // tune later
+    profilesSampleRate: 0.2,
+    integrations: [nodeProfilingIntegration()],
+    environment: process.env.NODE_ENV || "development",
+  });
+
+  app.use(Sentry.requestHandler());
+  app.use(Sentry.tracingHandler());
+}
+
 /* ----------------------------
    2) Standard middleware (safe AFTER webhook)
 ----------------------------- */
@@ -458,41 +502,6 @@ const videoLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.post("/api/beta/activate", requireUser, async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const { data: prof } = await supabaseAdmin
-      .from("profiles")
-      .select("plan, beta_expires_at")
-      .eq("id", userId)
-      .maybeSingle();
-
-    const plan = String(prof?.plan || "FREE").toUpperCase();
-    if (plan.startsWith("LTD_") || plan === "PRO") {
-      return res.json({ ok: true, plan }); // already paid
-    }
-
-    // Already on beta? return existing
-    if (plan === "BETA_FREE" && prof?.beta_expires_at) {
-      return res.json({ ok: true, plan, beta_expires_at: prof.beta_expires_at });
-    }
-
-    const plus30 = new Date();
-    plus30.setDate(plus30.getDate() + 30);
-
-    await supabaseAdmin
-      .from("profiles")
-      .update({ plan: "BETA_FREE", beta_expires_at: plus30.toISOString() })
-      .eq("id", userId);
-
-    res.json({ ok: true, plan: "BETA_FREE", beta_expires_at: plus30.toISOString() });
-  } catch (e) {
-    console.error("/api/beta/activate error:", e);
-    res.status(500).json({ error: "Could not activate beta" });
-  }
-});
-
 app.get("/api/beta/status", requireUser, async (req, res) => {
   try {
     const { data: prof } = await supabaseAdmin
@@ -665,6 +674,34 @@ app.post(
   }
 );
 
+app.post("/api/feedback", feedbackLimiter, requireUser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { email, category = "other", rating = null, message } = req.body || {};
+    if (!message || String(message).trim().length < 5) {
+      return res.status(400).json({ error: "Please provide a bit more detail." });
+    }
+
+    const { error } = await supabaseAdmin.from("feedback").insert({
+      user_id: userId,
+      email: email || req.user.email || null,
+      category: ["bug","idea","praise","other"].includes(category) ? category : "other",
+      rating: rating ?? null,
+      message: String(message).trim(),
+    });
+
+    if (error) {
+      console.error("/api/feedback insert error:", error);
+      return res.status(500).json({ error: "Could not save feedback" });
+    }
+
+    res.json({ ok: true });
+  } catch (e) {
+    console.error("/api/feedback error:", e);
+    res.status(500).json({ error: "Unexpected error" });
+  }
+});
+
 /* ----------------------------
    3) Health + Echo
 ----------------------------- */
@@ -691,6 +728,9 @@ app.get("/api/ltd-spots", async (_req, res) => {
     }
 
     const map = Object.fromEntries((data || []).map((r) => [r.tier, r.remaining]));
+
+    res.set("Cache-Control", "public, max-age=30, stale-while-revalidate=30");
+
     return res.json({ spots: map });
   } catch (e) {
     console.error("/api/ltd-spots unexpected:", e);
@@ -752,6 +792,8 @@ app.get("/api/me", requireUser, async (req, res) => {
     const usedSeconds = (trows || []).reduce((s, r) => s + (r.seconds_used || 0), 0);
     const capSeconds = Number(plan.maxTranscriptSeconds || 0);
 
+    res.set("Cache-Control", "no-store");
+
     res.json({
       user: {
         id: userId,
@@ -777,6 +819,101 @@ app.get("/api/me", requireUser, async (req, res) => {
   } catch (e) {
     console.error("/api/me error:", e);
     res.status(500).json({ error: "Failed to load account" });
+  }
+});
+
+app.get("/api/marketing/prefs", requireUser, async (req, res) => {
+  try {
+    const { data: prof, error } = await supabaseAdmin
+      .from("profiles")
+      .select("marketing_opt_in, marketing_opt_out_at, email")
+      .eq("id", req.user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("/api/marketing/prefs error:", error);
+      return res.status(500).json({ error: "Failed to load preferences" });
+    }
+
+    // Optional: precompute unsubscribe token for your email templates/UI
+    let unsubscribe_url = null;
+    try {
+      const token = jwt.sign(
+        { uid: req.user.id, email: prof?.email || req.user.email },
+        process.env.UNSUBSCRIBE_JWT_SECRET,
+        { expiresIn: "30d" }
+      );
+      const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
+      unsubscribe_url = `${origin}/api/marketing/unsubscribe?token=${encodeURIComponent(token)}`;
+    } catch {}
+
+    res.json({
+      ok: true,
+      marketing_opt_in: !!prof?.marketing_opt_in,
+      marketing_opt_out_at: prof?.marketing_opt_out_at || null,
+      unsubscribe_url,
+    });
+  } catch (e) {
+    console.error("/api/marketing/prefs exception:", e);
+    res.status(500).json({ error: "Unexpected error" });
+  }
+});
+
+app.post("/api/marketing/prefs", requireUser, async (req, res) => {
+  try {
+    const opt = !!req.body?.marketing_opt_in;
+    const patch = {
+      marketing_opt_in: opt,
+      marketing_opt_out_at: opt ? null : new Date().toISOString(),
+    };
+
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update(patch)
+      .eq("id", req.user.id);
+
+    if (error) {
+      console.error("/api/marketing/prefs update error:", error);
+      return res.status(500).json({ error: "Failed to update preferences" });
+    }
+    res.json({ ok: true, ...patch });
+  } catch (e) {
+    console.error("/api/marketing/prefs exception:", e);
+    res.status(500).json({ error: "Unexpected error" });
+  }
+});
+
+// One-click unsubscribe (link for email footers)
+app.get("/api/marketing/unsubscribe", async (req, res) => {
+  try {
+    const token = req.query?.token;
+    if (!token) return res.status(400).send("Missing token");
+
+    let payload;
+    try {
+      payload = jwt.verify(token, process.env.UNSUBSCRIBE_JWT_SECRET);
+    } catch {
+      return res.status(400).send("Invalid or expired token");
+    }
+
+    const userId = payload?.uid;
+    if (!userId) return res.status(400).send("Invalid token payload");
+
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ marketing_opt_in: false, marketing_opt_out_at: new Date().toISOString() })
+      .eq("id", userId);
+
+    if (error) {
+      console.error("/api/marketing/unsubscribe error:", error);
+      return res.status(500).send("Failed to update preference");
+    }
+
+    const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
+    return res.redirect(`${origin}/settings?unsub=success`);
+  } catch (e) {
+    console.error("/api/marketing/unsubscribe exception:", e);
+    res.status(500).send("Unexpected error");
   }
 });
 
@@ -874,6 +1011,10 @@ app.get("/__routes", (_req, res) => {
       })) || [];
   res.json(routes);
 });
+
+if (process.env.SENTRY_DSN_BACKEND) {
+  app.use(Sentry.errorHandler());
+}
 
 /* ----------------------------
    8.5) JSON 404 + error handler
