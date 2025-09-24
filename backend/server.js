@@ -1,7 +1,7 @@
 // backend/server.js
 import "dotenv/config";
 import express from "express";
-import cors from "cors";
+import cors from "./cors.js";
 import morgan from "morgan";
 import Stripe from "stripe";
 import rateLimit from "express-rate-limit";
@@ -283,39 +283,36 @@ app.use(hpp());
 app.use(compression());
 
 if (process.env.SENTRY_DSN_BACKEND) {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN_BACKEND,
-    tracesSampleRate: 0.2,   // tune later
-    profilesSampleRate: 0.2,
-    integrations: [nodeProfilingIntegration()],
-    environment: process.env.NODE_ENV || "development",
-  });
+  const usingV8 = typeof Sentry.expressIntegration === "function";
 
-  app.use(Sentry.requestHandler());
-  app.use(Sentry.tracingHandler());
+  if (usingV8) {
+    // v8 style
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN_BACKEND,
+      integrations: [
+        Sentry.httpIntegration(),
+        Sentry.expressIntegration({ app }),
+      ],
+      tracesSampleRate: 0.2,
+      environment: process.env.NODE_ENV || "development",
+    });
+    // v8 only needs error handler at the end (we add it near the bottom)
+  } else {
+    // v7 style
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN_BACKEND,
+      tracesSampleRate: 0.2,
+      environment: process.env.NODE_ENV || "development",
+    });
+    app.use(Sentry.Handlers.requestHandler());
+    // app.use(Sentry.Handlers.tracingHandler()); // only if using @sentry/tracing
+  }
 }
 
 /* ----------------------------
    2) Standard middleware (safe AFTER webhook)
 ----------------------------- */
-const allowed = new Set(
-  (process.env.SITE_URLS
-    ? process.env.SITE_URLS.split(",")
-    : [process.env.SITE_URL || "http://127.0.0.1:5173"]
-  ).map(s => s.replace(/\/+$/,""))
-);
-
-app.use(cors({
-  origin: (origin, cb) => {
-    // allow same-origin / curl / Postman
-    if (!origin) return cb(null, true);
-    const clean = origin.replace(/\/+$/,"");
-    return allowed.has(clean) ? cb(null, true) : cb(new Error("CORS blocked"), false);
-  },
-  methods: ["GET", "POST", "OPTIONS"],
-  credentials: false
-}));
-
+app.use(cors); // uses your ./cors.js allowlist (CORS_ALLOWLIST or SITE_URLS)
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -327,7 +324,11 @@ const betaLimiter = rateLimit({
 });
 
 app.get("/__cors", (_req, res) => {
-  res.json({ allowed: Array.from(allowed) });
+  const list = (process.env.CORS_ALLOWLIST || process.env.SITE_URLS || "")
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean);
+  res.json({ allowed: list });
 });
 
 // --- Beta signup (public, writes via admin + optional email) ---
@@ -713,6 +714,8 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true, env: process.env.NODE_ENV || "development", time: new Date().toISOString() });
 });
 
+app.get("/health", (_req, res) => res.status(200).send("ok"));
+
 /* ----------------------------
    4) Read LTD spots
 ----------------------------- */
@@ -1013,7 +1016,12 @@ app.get("/__routes", (_req, res) => {
 });
 
 if (process.env.SENTRY_DSN_BACKEND) {
-  app.use(Sentry.errorHandler());
+  const hasV8Err = typeof Sentry.expressErrorHandler === "function";
+  if (hasV8Err) {
+    app.use(Sentry.expressErrorHandler());     // v8
+  } else if (Sentry?.Handlers?.errorHandler) {
+    app.use(Sentry.Handlers.errorHandler());   // v7
+  }
 }
 
 /* ----------------------------
@@ -1054,7 +1062,6 @@ app.use((err, req, res, _next) => {
    9) Start server
 ----------------------------- */
 app.listen(PORT, () => {
-  console.log(
-    `✅ Server listening on http://127.0.0.1:${PORT} and http://localhost:${PORT}`
-  );
+  const publicUrl = (process.env.PUBLIC_API_URL || "").replace(/\/+$/, "");
+  console.log("✅ Server listening on", publicUrl || `:${PORT}`);
 });
