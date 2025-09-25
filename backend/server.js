@@ -1001,6 +1001,10 @@ app.post("/api/generate", requireUser, enforceLimits, async (req, res) => {
   }
 });
 
+app.get("/__boom", (_req, _res) => {
+  throw new Error("Test error: Sentry backend");
+});
+
 /* ----------------------------
    8) Routes debugger
 ----------------------------- */

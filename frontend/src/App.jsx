@@ -16,7 +16,6 @@ import Settings from "./pages/Settings.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import Terms from "./pages/Terms.jsx";
 import Privacy from "./pages/Privacy.jsx"
-import "./i18n.js";
 
 function App() {
   // preferred_language for logged-in users
