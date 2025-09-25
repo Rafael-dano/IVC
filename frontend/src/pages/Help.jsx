@@ -2,7 +2,7 @@
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import { useTranslation } from "react-i18next";
-import FeedbackBox from "../components/FeedbackBox";
+import FeedbackBox from "../components/FeedbackBox.jsx";
 
 export default function Help() {
   const { t } = useTranslation();
