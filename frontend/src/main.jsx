@@ -16,7 +16,7 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN_FRONTEND) {
     environment: import.meta.env.MODE,
   });
 }
-
+window.Sentry = Sentry;
 initAnalytics(); 
 
 createRoot(document.getElementById("root")).render(
