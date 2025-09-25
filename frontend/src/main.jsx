@@ -5,6 +5,7 @@ import App from './App.jsx'
 import "./i18n.js";
 import * as Sentry from "@sentry/react";
 import { initAnalytics } from "./analytics";
+import { initSentry } from "./sentry.client";
 
 if (import.meta.env.VITE_SENTRY_DSN_FRONTEND) {
   Sentry.init({
@@ -16,6 +17,7 @@ if (import.meta.env.VITE_SENTRY_DSN_FRONTEND) {
 }
 
 initAnalytics();
+initSentry();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

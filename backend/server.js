@@ -309,6 +309,14 @@ if (process.env.SENTRY_DSN_BACKEND) {
   }
 }
 
+app.use((req, _res, next) => {
+  if (req.user) {
+    Sentry.setUser({ id: req.user.id, email: req.user.email });
+    Sentry.setTag("plan", req.user.plan || "unknown");
+  }
+  next();
+});
+
 /* ----------------------------
    2) Standard middleware (safe AFTER webhook)
 ----------------------------- */
