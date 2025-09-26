@@ -2,29 +2,37 @@
 import posthog from "posthog-js";
 
 export function initPosthog() {
-  if (!import.meta.env.PROD) return; // only in prod builds
-  const key = import.meta.env.VITE_POSTHOG_KEY;
-  if (!key) return;
+  const key  = import.meta.env.VITE_POSTHOG_KEY;
+  const host = import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com";
+
+  // Expose for DevTools regardless, so you can run `posthog.capture(...)`
+  // @ts-ignore
+  window.posthog = posthog;
+
+  // Only fully init in production AND if a key is present
+  if (!import.meta.env.PROD || !key) {
+    console.info("[PostHog] disabled", {
+      prod: !!import.meta.env.PROD,
+      hasKey: !!key,
+    });
+    return;
+  }
 
   posthog.init(key, {
-    api_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com",
-    capture_pageview: true,        // capture initial pageview
-    autocapture: true,             // clicks, etc. (disable if you prefer)
+    api_host: host,
+    capture_pageview: true,
+    autocapture: true,
     persistence: "localStorage",
   });
 
-  // Expose for console testing (optional; remove later if you want)
-  // @ts-ignore
-  window.posthog = posthog;
+  console.info("[PostHog] initialized", { host });
 }
 
 export async function identifyFromSupabase(supabase) {
   try {
     const { data } = await supabase.auth.getUser();
-    const user = data?.user;
-    if (!user) return;
-
-    // Minimal PII: id + email (if your policy allows)
-    posthog.identify(user.id, { email: user.email });
+    const u = data?.user;
+    if (!u) return;
+    posthog.identify(u.id, { email: u.email });
   } catch {}
 }

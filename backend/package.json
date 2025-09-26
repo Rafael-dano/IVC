@@ -23,6 +23,7 @@
     "multer": "^2.0.2",
     "music-metadata": "^11.8.3",
     "openai": "^5.15.0",
+    "posthog-node": "^5.9.1",
     "resend": "^6.0.2",
     "stripe": "^18.5.0",
     "youtube-transcript": "^1.2.1"
