@@ -16,8 +16,10 @@ import Settings from "./pages/Settings.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import Terms from "./pages/Terms.jsx";
 import Privacy from "./pages/Privacy.jsx"
+import { usePageview } from "./hooks/usePageview";
 
 function App() {
+  usePageview();
   // preferred_language for logged-in users
   useEffect(() => {
     const applyHtmlAttrs = (lng) => {

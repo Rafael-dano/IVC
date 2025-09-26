@@ -5,6 +5,8 @@ import App from "./App.jsx";
 import "./i18n.js";
 import * as Sentry from "@sentry/react";
 import { initAnalytics } from "./analytics";
+import { initPosthog, identifyFromSupabase } from "./analytics/posthog";
+import { supabase } from "./api/supabaseClient";
 
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN_FRONTEND) {
   Sentry.init({
@@ -18,6 +20,9 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN_FRONTEND) {
 }
 window.Sentry = Sentry;
 initAnalytics(); 
+initPosthog();
+identifyFromSupabase(supabase);
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
