@@ -18,8 +18,12 @@ import Terms from "./pages/Terms.jsx";
 import Privacy from "./pages/Privacy.jsx"
 import { usePageview } from "./hooks/usePageview";
 
-function App() {
+function PageviewTracker() {
   usePageview();
+  return null;
+}
+
+function App() {
   // preferred_language for logged-in users
   useEffect(() => {
     const applyHtmlAttrs = (lng) => {
@@ -58,6 +62,7 @@ function App() {
 
   return (
     <Router>
+      <PageviewTracker />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/beta" element={<Beta />} />
