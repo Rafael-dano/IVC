@@ -23,6 +23,9 @@ initAnalytics();
 initPosthog();
 identifyFromSupabase(supabase);
 
+if (typeof window !== "undefined") {
+  window.supabase = supabase;   // handy for console testing
+}
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
