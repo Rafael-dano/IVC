@@ -765,6 +765,16 @@ app.post("/api/feedback", feedbackLimiter, requireUser, async (req, res) => {
   }
 });
 
+// --- PostHog smoke test (remove later) ---
+app.get("/__ph/test", (_req, res) => {
+  ph?.capture({
+    distinctId: "smoke",
+    event: "ph_server_test",
+    properties: { ts: Date.now() },
+  });
+  res.json({ ok: true });
+});
+
 /* ----------------------------
    3) Health + Echo
 ----------------------------- */
