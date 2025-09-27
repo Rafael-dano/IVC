@@ -25,6 +25,8 @@ import { requireUser, enforceLimits } from "./middleware/authAndLimits.js";
 import checkoutRoute from "./checkoutRoute.js";
 import { PLANS } from "./plans.js";
 import { sendBetaWelcomeEmail, sendPurchaseEmail } from "./email.js";
+import { ph } from "./server-analytics/posthog.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 5051;
@@ -160,7 +162,16 @@ app.post(
           } catch (e) {
             console.warn("sendPurchaseEmail (checkout) failed:", e?.message || e);
           }
-
+          ph?.capture({
+            distinctId: userId || session.customer || "anon",
+            event: "purchase_succeeded",
+            properties: {
+              mode: session.mode,             // "payment" or "subscription"
+              amount_total: session.amount_total || null,
+              currency: session.currency || null,
+              tier,
+            },
+          });
           break;
         }
 
@@ -222,7 +233,13 @@ app.post(
           } catch (e) {
             console.warn("sendPurchaseEmail (invoice.paid) failed:", e?.message || e);
           }
-
+          ph?.capture({
+            distinctId: userId || invoice.customer || "anon",
+            event: "subscription_renewed",
+            properties: {
+              period_end: invoice.lines?.data?.[0]?.period?.end || null,
+            },
+          });
           break;
         }
 
@@ -245,6 +262,10 @@ app.post(
               .update({ plan: "FREE", renews_at: null })
               .eq("id", userId);
           }
+          ph?.capture({
+            distinctId: userId || sub.customer || "anon",
+            event: "subscription_canceled",
+          });
           break;
         }
 
@@ -369,7 +390,11 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
     // } catch (e) {
     //   console.warn("welcome email send failed:", e?.message || e);
     // }
-
+    ph?.capture({
+      distinctId: cleanEmail || "anon",
+      event: "beta_signup_backend_saved",
+    });
+    
     return res.json({
       ok: true,
       next: "Please complete the Beta Agreement form to activate access."
@@ -476,6 +501,12 @@ app.post("/api/beta/activate", requireUser, async (req, res) => {
 
     const plus30 = new Date(); plus30.setDate(plus30.getDate() + 30);
 
+    ph?.capture({
+      distinctId: userId,
+      event: "beta_activated",
+      properties: { days: 30 },
+    });
+    
     await supabaseAdmin
       .from("profiles")
       .update({ plan: "BETA_FREE", beta_expires_at: plus30.toISOString(), beta_status: "APPROVED" })
@@ -535,6 +566,7 @@ app.get("/api/beta/status", requireUser, async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 // Upload & Transcribe (with plan enforcement + extension fix + MOV transcode)
 // ─────────────────────────────────────────────────────────────
+
 app.post(
   "/api/video/transcribe",
   requireUser,
@@ -566,6 +598,11 @@ app.post(
         await fs.copyFile(tmpPath, namedPath);
         await fs.unlink(tmpPath).catch(() => {});
       }
+      ph?.capture({
+        distinctId: req.user?.id || "anon",
+        event: "transcribe_started",
+        properties: { ext, route: "/api/video/transcribe" },
+      });
 
       // Decide if we must transcode
       const SUPPORTED = new Set([
@@ -651,6 +688,15 @@ app.post(
         text,
       });
 
+      ph?.capture({
+        distinctId: req.user?.id || "anon",
+        event: "transcribe_succeeded",
+        properties: {
+          seconds: durationSec,
+          approxWords: Math.max(1, Math.round(text.split(/\s+/).length)),
+        },
+      });
+      
       // 6) respond
       return res.json({
         ok: true,
@@ -663,6 +709,14 @@ app.post(
       });
 
     } catch (e) {
+      ph?.capture({
+        distinctId: req.user?.id || "anon",
+        event: "transcribe_failed",
+        properties: {
+          message: String(e?.message || "error").slice(0, 120),
+        },
+      });
+      
       console.error("/api/video/transcribe error:", e);
       if (
         String(e?.message || "").includes("Unrecognized file format") ||
@@ -1070,6 +1124,12 @@ app.use((err, req, res, _next) => {
   res.status(err.status || 500).json(payload);
 });
 
+async function gracefulExit() {
+  try { await ph?.shutdown(); } catch {}
+  process.exit(0);
+}
+process.on("SIGTERM", gracefulExit);
+process.on("SIGINT", gracefulExit);
 /* ----------------------------
    9) Start server
 ----------------------------- */

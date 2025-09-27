@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "../api/supabaseClient.js";
 import { httpJson } from "../api/http.js";
 import { track } from "../analytics";
+import posthog from "posthog-js";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 const BETA_FORM_URL = import.meta.env.VITE_BETA_FORM_URL;
@@ -58,6 +59,8 @@ export default function Beta() {
     e.preventDefault();
     setError("");
 
+    posthog.capture("beta_signup_submitted", { source });
+
     setSubmitting(true);
     try {
       const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -95,6 +98,8 @@ export default function Beta() {
         throw new Error(body.error || t("beta.genericError"));
       }
 
+    posthog.capture("beta_signup_succeeded");
+
       const guidance = body.next ?? t("beta.agreementDefault");
       const formUrl = await getBetaFormUrl();
 
@@ -120,6 +125,9 @@ export default function Beta() {
 
   async function checkOrActivate() {
     setError("");
+
+  posthog.capture("beta_activate_attempt");
+
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
@@ -132,6 +140,9 @@ export default function Beta() {
       const actBody = await actRes.json().catch(() => ({}));
   
       if (actRes.ok) {
+
+      posthog.capture("beta_activate_succeeded", { plan: actBody?.plan || "unknown" });
+
         setNextMessage(
           `Your plan is ${actBody.plan}. ${
             actBody.beta_expires_at ? `Beta expires: ${new Date(actBody.beta_expires_at).toLocaleString()}` : ""
@@ -157,6 +168,7 @@ export default function Beta() {
         throw new Error(stBody.error || "Could not fetch status");
       }
     } catch (e) {
+      posthog.capture("beta_activate_failed");
       setError(e.message || "Something went wrong");
     }
   }  
