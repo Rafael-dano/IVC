@@ -1,7 +1,7 @@
 // backend/server.js
 import "dotenv/config";
 import express from "express";
-import cors from "./cors.js";
+import cors, { getAllowlist } from "./cors.js";
 import morgan from "morgan";
 import Stripe from "stripe";
 import rateLimit from "express-rate-limit";
