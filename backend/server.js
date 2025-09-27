@@ -24,8 +24,8 @@ import { supabaseAdmin } from "./api/supabaseClient.js";
 import { requireUser, enforceLimits } from "./middleware/authAndLimits.js";
 import checkoutRoute from "./checkoutRoute.js";
 import { PLANS } from "./plans.js";
-import { sendBetaWelcomeEmail, sendPurchaseEmail } from "./email.js";
 import { ph } from "./server-analytics/posthog.js";
+import { sendWelcomeEmail,  sendMembershipThankYouEmail, sendLTDThankYouEmail,  sendReminderLTD,  sendReminderMonthly,  sendBetaWelcomeEmail } from "./email.js";
 
 
 const app = express();
@@ -150,19 +150,35 @@ app.post(
             await supabaseAdmin.rpc("decrement_spot", { p_tier: tier });
           }
 
-          // 🔔 Purchase email (best-effort; does not block webhook)
           try {
             const buyerEmail = session?.customer_details?.email || null;
+            const firstName =
+              session?.customer_details?.name?.split(" ")?.[0] ||
+              session?.customer_details?.name ||
+              "";
+          
             if (buyerEmail) {
-              await sendPurchaseEmail({
-                to: buyerEmail,
-                plan: isLTD ? "LTD" : "PRO",
-                tier: session.metadata?.tier || undefined,
-              });
+              const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
+              if (session.mode === "subscription") {
+                // Monthly/PRO
+                await sendMembershipThankYouEmail({
+                  to: buyerEmail,
+                  firstName,
+                  accountUrl: `${origin}/settings`
+                });
+              } else {
+                // LTD (one-time "payment")
+                await sendLTDThankYouEmail({
+                  to: buyerEmail,
+                  firstName,
+                  loginUrl: `${origin}/login`
+                });
+              }
             }
           } catch (e) {
-            console.warn("sendPurchaseEmail (checkout) failed:", e?.message || e);
+            console.warn("send purchase email failed:", e?.message || e);
           }
+          
           ph?.capture({
             distinctId: userId || session.customer || "anon",
             event: "purchase_succeeded",
@@ -197,43 +213,42 @@ app.post(
               .eq("id", userId);
           }          
 
-          // 🔔 Purchase/renewal email (best-effort)
-          try {
-            let buyerEmail = null;
+        // 🔔 Purchase/renewal email (best-effort)
+        try {
+          let buyerEmail = null;
 
-            // Prefer Stripe Customer lookup for subscription emails
-            if (invoice.customer) {
-              try {
-                const customer = await stripe.customers.retrieve(invoice.customer);
-                buyerEmail = customer?.email || null;
-              } catch (e) {
-                console.warn("retrieve customer for email failed:", e?.message || e);
-              }
+          // Prefer Stripe Customer lookup for subscription emails
+          if (invoice.customer) {
+            try {
+              const customer = await stripe.customers.retrieve(invoice.customer);
+              buyerEmail = customer?.email || null;
+            } catch (e) {
+              console.warn("retrieve customer for email failed:", e?.message || e);
             }
-
-            // Fallbacks
-            if (!buyerEmail) buyerEmail = invoice.customer_email || null;
-
-            if (!buyerEmail && userId) {
-              // only if you store `email` on profiles (optional)
-              const { data: profForEmail } = await supabaseAdmin
-                .from("profiles")
-                .select("email")
-                .eq("id", userId)
-                .maybeSingle();
-              buyerEmail = profForEmail?.email || null;
-            }
-
-            if (buyerEmail) {
-              await sendPurchaseEmail({
-                to: buyerEmail,
-                plan: "PRO",
-                tier: undefined,
-              });
-            }
-          } catch (e) {
-            console.warn("sendPurchaseEmail (invoice.paid) failed:", e?.message || e);
           }
+
+          // Fallbacks
+          if (!buyerEmail) buyerEmail = invoice.customer_email || null;
+          if (!buyerEmail && userId) {
+            const { data: profForEmail } = await supabaseAdmin
+              .from("profiles")
+              .select("email")
+              .eq("id", userId)
+              .maybeSingle();
+            buyerEmail = profForEmail?.email || null;
+          }
+
+          if (buyerEmail) {
+            const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
+            await sendMembershipThankYouEmail({
+              to: buyerEmail,
+              firstName: "", // optional: look up profile name if you store it
+              accountUrl: `${origin}/settings`,
+            });
+          }
+        } catch (e) {
+          console.warn("invoice.paid email failed:", e?.message || e);
+        }
           ph?.capture({
             distinctId: userId || invoice.customer || "anon",
             event: "subscription_renewed",
@@ -382,12 +397,18 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
       return res.status(500).json({ error: "Could not save signup" });
     }
 
-    // Optional: send welcome email
-    // try {
-    //   await sendBetaWelcomeEmail({ to: cleanEmail, name });
-    // } catch (e) {
-    //   console.warn("welcome email send failed:", e?.message || e);
-    // }
+    try {
+      await sendBetaWelcomeEmail({
+        to: cleanEmail,
+        firstName: name || "",
+        videoSubmissionUrl: process.env.BETA_VIDEO_SUBMIT_URL || (process.env.SITE_URL || "").replace(/\/+$/,"") + "/beta-video-submit",
+        betaEndDate: "September 30th, 2025",
+        ltdUrl: (process.env.SITE_URL || "").replace(/\/+$/,"") + "/ltd"
+      });
+    } catch (e) {
+      console.warn("welcome email send failed:", e?.message || e);
+    }
+    
     ph?.capture({
       distinctId: cleanEmail || "anon",
       event: "beta_signup_backend_saved",
@@ -771,6 +792,89 @@ app.get("/__ph/test", (_req, res) => {
     properties: { ts: Date.now() },
   });
   res.json({ ok: true });
+});
+
+// --- One-time welcome email after first login
+app.post("/api/email/welcome", requireUser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const firstName =
+      (req.user.user_metadata?.full_name ||
+        req.user.user_metadata?.name ||
+        req.user.user_metadata?.display_name ||
+        "").toString().trim().split(" ")[0] || "";
+
+    // Avoid duplicates
+    const { data: prof } = await supabaseAdmin
+      .from("profiles")
+      .select("welcome_sent_at, email")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (prof?.welcome_sent_at) return res.json({ ok: true, skipped: true });
+
+    const to = prof?.email || req.user.email;
+    await sendWelcomeEmail({
+      to,
+      firstName,
+      siteUrl: (process.env.SITE_URL || "").replace(/\/+$/, "")
+    });
+
+    await supabaseAdmin
+      .from("profiles")
+      .update({ welcome_sent_at: new Date().toISOString() })
+      .eq("id", userId);
+
+    res.json({ ok: true });
+  } catch (e) {
+    console.error("/api/email/welcome error:", e);
+    res.status(500).json({ error: "Failed to send welcome email" });
+  }
+});
+
+// --- Email smoke test (temporary; remove after testing) ---
+app.post("/__mail/test", express.json(), async (req, res) => {
+  try {
+    const secret = req.headers["x-debug-secret"];
+    if (!secret || secret !== process.env.MAIL_TEST_SECRET) return res.sendStatus(403);
+
+    const to = req.body?.to || process.env.MAIL_TO_TEST || null;
+    if (!to) return res.status(400).json({ error: "Missing 'to' email" });
+
+    await sendWelcomeEmail({ to, firstName: "Friend" });
+    await sendBetaWelcomeEmail({
+      to,
+      firstName: "Friend",
+      videoSubmissionUrl: "https://example.com/submit",
+      betaEndDate: "September 30th, 2025",
+      ltdUrl: (process.env.SITE_URL || "").replace(/\/+$/,"") + "/ltd",
+    });
+    await sendMembershipThankYouEmail({
+      to,
+      firstName: "Friend",
+      accountUrl: (process.env.SITE_URL || "").replace(/\/+$/,"") + "/settings"
+    });
+    await sendLTDThankYouEmail({
+      to,
+      firstName: "Friend",
+      loginUrl: (process.env.SITE_URL || "").replace(/\/+$/,"") + "/login"
+    });
+    await sendReminderLTD({
+      to,
+      firstName: "Friend",
+      deadlineDate: "Oct 15, 2025",
+      ltdUrl: (process.env.SITE_URL || "").replace(/\/+$/,"") + "/ltd"
+    });
+    await sendReminderMonthly({
+      to,
+      firstName: "Friend",
+      membershipUrl: (process.env.SITE_URL || "").replace(/\/+$/,"") + "/ltd"
+    });
+
+    return res.json({ ok: true });
+  } catch (e) {
+    return res.status(500).json({ error: e?.message || String(e) });
+  }
 });
 
 /* ----------------------------
