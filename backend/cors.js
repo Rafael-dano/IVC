@@ -33,10 +33,12 @@ const corsMw = cors({
     return cb(new Error(`CORS blocked for origin: ${origin}`), false);
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  // add X-Debug-Secret so the /__mail/test browser call works
+  allowedHeaders: ["Content-Type", "Authorization", "X-Debug-Secret", "x-debug-secret"],
   exposedHeaders: [],
-  credentials: true,     // 🔴 IMPORTANT: your frontend is using credentials: "include"
+  credentials: true,     // your frontend uses credentials
   maxAge: 86400,
+  optionsSuccessStatus: 204,
 });
 
 export default corsMw;

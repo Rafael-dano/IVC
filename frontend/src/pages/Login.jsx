@@ -1,8 +1,15 @@
+// frontend/src/pages/Login.jsx
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";
 import "./Auth.css";
 import { useTranslation } from "react-i18next";
+
+const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  (window?.location?.origin?.includes("localhost")
+    ? "http://127.0.0.1:5051"
+    : "https://api.ivcontent.com");
 
 export default function Login() {
   const { t } = useTranslation();
@@ -16,6 +23,22 @@ export default function Login() {
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
+  async function sendWelcomeOnce() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) return;
+      // fire-and-forget; server dedupes via welcome_sent_at
+      fetch(`${API_BASE}/api/email/welcome`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }).catch(() => {});
+    } catch {}
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -25,6 +48,10 @@ export default function Login() {
         password: form.password,
       });
       if (error) throw error;
+
+      // kick off welcome email (non-blocking)
+      sendWelcomeOnce();
+
       setLoading(false);
       navigate(from);
     } catch (err) {
@@ -97,4 +124,3 @@ export default function Login() {
     </div>
   );
 }
-
