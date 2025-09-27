@@ -1,7 +1,7 @@
 // backend/server.js
 import "dotenv/config";
 import express from "express";
-import cors from "./cors.js";
+import cors, { getAllowlist } from "./cors.js";
 import morgan from "morgan";
 import Stripe from "stripe";
 import rateLimit from "express-rate-limit";
@@ -99,6 +99,7 @@ async function transcodeWithFfmpeg(inputPath, outputPath, to = "mp3") {
   await execFileAsync(ffmpegPath, args);
   return outputPath;
 }
+
 
 /* ----------------------------
    1) Stripe Webhook (raw body) — must be BEFORE express.json()
@@ -342,6 +343,7 @@ app.use((req, _res, next) => {
    2) Standard middleware (safe AFTER webhook)
 ----------------------------- */
 app.use(cors); // uses your ./cors.js allowlist (CORS_ALLOWLIST or SITE_URLS)
+app.options("*", cors);
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -353,11 +355,7 @@ const betaLimiter = rateLimit({
 });
 
 app.get("/__cors", (_req, res) => {
-  const list = (process.env.CORS_ALLOWLIST || process.env.SITE_URLS || "")
-    .split(",")
-    .map(s => s.trim())
-    .filter(Boolean);
-  res.json({ allowed: list });
+  res.json({ allowed: getAllowlist() });
 });
 
 // --- Beta signup (public, writes via admin + optional email) ---
@@ -1107,6 +1105,12 @@ if (process.env.SENTRY_DSN_BACKEND) {
 
 // 404 for anything not matched above
 app.use((req, res, _next) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Vary", "Origin");
+  }
   res.status(404).json({
     error: "Not Found",
     method: req.method,
@@ -1114,16 +1118,18 @@ app.use((req, res, _next) => {
   });
 });
 
+
 // Central error handler (JSON)
 app.use((err, req, res, _next) => {
-  // Respect CORS for errors too
-  res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Vary", "Origin");
+  }
 
-  // Avoid leaking internals in production
   const isProd = (process.env.NODE_ENV || "development") === "production";
-  const payload = {
-    error: "Internal Server Error",
-  };
+  const payload = { error: "Internal Server Error" };
   if (!isProd) {
     payload.details = err?.message || String(err);
     payload.stack = err?.stack;
