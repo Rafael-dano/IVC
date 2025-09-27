@@ -1,7 +1,7 @@
 // backend/server.js
 import "dotenv/config";
 import express from "express";
-import corsMiddleware, { getAllowlist } from "./cors.js";
+import cors from "./cors.js";
 import morgan from "morgan";
 import Stripe from "stripe";
 import rateLimit from "express-rate-limit";
@@ -342,8 +342,8 @@ app.use((req, _res, next) => {
 /* ----------------------------
    2) Standard middleware (safe AFTER webhook)
 ----------------------------- */
-app.use(corsMiddleware);                    // handles normal + most preflights
-app.options("(.*)", corsMiddleware);        // Express 5: “match all” preflight
+app.use(cors);
+app.options(/.*/, cors);   
 app.use(morgan("dev"));
 app.use(express.json());
 
