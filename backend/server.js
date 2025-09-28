@@ -239,13 +239,13 @@ app.post(
           }
 
           if (buyerEmail) {
-            const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
             await sendMembershipThankYouEmail({
               to: buyerEmail,
-              firstName: "", // optional: look up profile name if you store it
-              accountUrl: `${origin}/settings`,
+              firstName: "Friend",    
+              accountUrl: (process.env.SITE_URL || "").replace(/\/+$/, "") + "/settings",
             });
           }
+          
         } catch (e) {
           console.warn("invoice.paid email failed:", e?.message || e);
         }
