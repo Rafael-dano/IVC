@@ -100,6 +100,25 @@ async function transcodeWithFfmpeg(inputPath, outputPath, to = "mp3") {
   return outputPath;
 }
 
+function daysAgoIso(days) {
+  const d = new Date();
+  d.setDate(d.getDate() - Number(days || 0));
+  return d.toISOString();
+}
+
+function firstNameOf(displayName) {
+  const n = (displayName || "").toString().trim();
+  return n ? n.split(" ")[0] : "Friend";
+}
+
+// Header guard for cron-like endpoints
+function requireTasksSecret(req, res, next) {
+  const secret = req.headers["x-tasks-secret"];
+  if (!secret || secret !== process.env.TASKS_SECRET) {
+    return res.sendStatus(403);
+  }
+  next();
+}
 
 /* ----------------------------
    1) Stripe Webhook (raw body) — must be BEFORE express.json()
@@ -874,6 +893,171 @@ app.post("/__mail/test", express.json(), async (req, res) => {
     return res.json({ ok: true });
   } catch (e) {
     return res.status(500).json({ error: e?.message || String(e) });
+  }
+});
+
+// --- Reminder: Lifetime Deal -----------------------------------------------
+app.post("/tasks/reminders/ltd", requireTasksSecret, async (req, res) => {
+  try {
+    const limit = Math.min(Number(req.query.limit) || 50, 200);
+    const minAgeDays = Number(process.env.REMINDER_MIN_AGE_DAYS || 3);
+    const cooldownDays = Number(process.env.REMINDER_COOLDOWN_DAYS || 7);
+
+    const minCreated = daysAgoIso(minAgeDays);
+    const cooldownSince = daysAgoIso(cooldownDays);
+
+    // Candidates: not paid, old enough, has email, (optional) not opted-out
+    const { data: candidates, error: candErr } = await supabaseAdmin
+      .from("profiles")
+      .select("id,email,display_name,plan,created_at,marketing_opt_in")
+      .in("plan", ["FREE", "BETA_FREE"])
+      .lte("created_at", minCreated)
+      .limit(1000);
+
+    if (candErr) {
+      console.error("LTD candidates error:", candErr);
+      return res.status(500).json({ error: "profiles query failed" });
+    }
+
+    const ids = (candidates || []).map((r) => r.id);
+    let recent = [];
+    if (ids.length) {
+      const { data: r } = await supabaseAdmin
+        .from("email_reminders")
+        .select("user_id")
+        .eq("kind", "ltd")
+        .gte("sent_at", cooldownSince)
+        .in("user_id", ids);
+      recent = r || [];
+    }
+    const recentSet = new Set(recent.map((x) => x.user_id));
+
+    const todo = [];
+    for (const r of candidates || []) {
+      if (!r.email) continue;
+      if (r.marketing_opt_in === false) continue; // respect opt-out
+      if (recentSet.has(r.id)) continue;
+      todo.push(r);
+      if (todo.length >= limit) break;
+    }
+
+    let sent = 0;
+    const errors = [];
+    for (const r of todo) {
+      try {
+        await sendReminderLTD({
+          to: r.email,
+          firstName: firstNameOf(r.display_name),
+          deadlineDate: process.env.REMINDER_LTD_DEADLINE || undefined,
+          ltdUrl:
+            process.env.LTD_URL ||
+            (process.env.SITE_URL || "").replace(/\/+$/, "") + "/ltd",
+        });
+
+        await supabaseAdmin.from("email_reminders").insert({
+          user_id: r.id,
+          kind: "ltd",
+          sent_at: new Date().toISOString(),
+        });
+
+        sent++;
+      } catch (e) {
+        errors.push({ id: r.id, email: r.email, err: String(e?.message || e) });
+      }
+    }
+
+    return res.json({
+      ok: true,
+      candidates: (candidates || []).length,
+      attempted: todo.length,
+      sent,
+      errors,
+    });
+  } catch (e) {
+    console.error("/tasks/reminders/ltd error:", e);
+    return res.status(500).json({ error: "Unexpected error" });
+  }
+});
+
+// --- Reminder: Monthly Membership ------------------------------------------
+app.post("/tasks/reminders/monthly", requireTasksSecret, async (req, res) => {
+  try {
+    const limit = Math.min(Number(req.query.limit) || 50, 200);
+    const minAgeDays = Number(process.env.REMINDER_MONTHLY_MIN_AGE_DAYS || 10);
+    const cooldownDays = Number(process.env.REMINDER_COOLDOWN_DAYS || 7);
+
+    const minCreated = daysAgoIso(minAgeDays);
+    const cooldownSince = daysAgoIso(cooldownDays);
+
+    // Candidates: still not paid, older than threshold
+    const { data: candidates, error: candErr } = await supabaseAdmin
+      .from("profiles")
+      .select("id,email,display_name,plan,created_at,marketing_opt_in")
+      .in("plan", ["FREE", "BETA_FREE"])
+      .lte("created_at", minCreated)
+      .limit(1000);
+
+    if (candErr) {
+      console.error("Monthly candidates error:", candErr);
+      return res.status(500).json({ error: "profiles query failed" });
+    }
+
+    const ids = (candidates || []).map((r) => r.id);
+    let recent = [];
+    if (ids.length) {
+      const { data: r } = await supabaseAdmin
+        .from("email_reminders")
+        .select("user_id")
+        .eq("kind", "monthly")
+        .gte("sent_at", cooldownSince)
+        .in("user_id", ids);
+      recent = r || [];
+    }
+    const recentSet = new Set(recent.map((x) => x.user_id));
+
+    const todo = [];
+    for (const r of candidates || []) {
+      if (!r.email) continue;
+      if (r.marketing_opt_in === false) continue;
+      if (recentSet.has(r.id)) continue;
+      todo.push(r);
+      if (todo.length >= limit) break;
+    }
+
+    let sent = 0;
+    const errors = [];
+    for (const r of todo) {
+      try {
+        await sendReminderMonthly({
+          to: r.email,
+          firstName: firstNameOf(r.display_name),
+          membershipUrl:
+            process.env.MEMBERSHIP_URL ||
+            (process.env.SITE_URL || "").replace(/\/+$/, "") + "/ltd",
+        });
+
+        await supabaseAdmin.from("email_reminders").insert({
+          user_id: r.id,
+          kind: "monthly",
+          sent_at: new Date().toISOString(),
+        });
+
+        sent++;
+      } catch (e) {
+        errors.push({ id: r.id, email: r.email, err: String(e?.message || e) });
+      }
+    }
+
+    return res.json({
+      ok: true,
+      candidates: (candidates || []).length,
+      attempted: todo.length,
+      sent,
+      errors,
+    });
+  } catch (e) {
+    console.error("/tasks/reminders/monthly error:", e);
+    return res.status(500).json({ error: "Unexpected error" });
   }
 });
 
