@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import "./LTD.css";
-import { startCheckout } from "../api/billing.js";
 import { httpJson } from "../api/http.js";
 import { useTranslation } from "react-i18next";
+import { startLTDCheckout, startProCheckout } from "../api/checkout";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 
@@ -44,16 +44,16 @@ export default function LTD() {
   }, []);
 
   const onBuy = async (tierKey) => {
-    try {
-      await startCheckout({ price: tierKey, mode: "payment" });
-    } catch (e) {
-      alert(e.message || t("ltd.checkoutFailed"));
-    }
-  };
+      try {
+        await startLTDCheckout(tierKey); // "LTD_99" | "LTD_149" | "LTD_199"
+      } catch (e) {
+        alert(e.message || t("ltd.checkoutFailed"));
+      }
+    };
 
   const onSubscribe = async () => {
     try {
-      await startCheckout({ price: "PRO", mode: "subscription" });
+      await startProCheckout();
     } catch (e) {
       alert(e.message || t("ltd.checkoutFailed"));
     }

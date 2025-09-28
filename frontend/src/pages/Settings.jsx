@@ -6,6 +6,7 @@ import { fetchMe, openBillingPortal } from "../api/account.js";
 import { useTranslation } from "react-i18next";
 import EmailPrefsSection from "../components/EmailPrefsSection";
 import CompanyBlock from "../components/CompanyBlock";
+import { revokeAnalytics } from "../analytics/consent";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -262,6 +263,13 @@ export default function Settings() {
           </button>
         </section>
       </div>
+      
+      <button
+          className="settings-btn secondary"
+          onClick={() => { revokeAnalytics(); alert("Analytics disabled. Reload to apply."); }}
+        >
+          Disable analytics / reset consent
+        </button>
 
       <a
         href="/help"

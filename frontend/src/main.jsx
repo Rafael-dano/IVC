@@ -4,9 +4,9 @@ import "./index.css";
 import App from "./App.jsx";
 import "./i18n.js";
 import * as Sentry from "@sentry/react";
-import { initAnalytics } from "./analytics";
-import { initPosthog, identifyFromSupabase } from "./analytics/posthog";
+import { initAnalytics } from "./analytics";import { ensureAnalyticsInitIfConsented } from "./analytics/consent";
 import { supabase } from "./api/supabaseClient";
+import CookieConsent from "./components/CookieConsent";
 
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN_FRONTEND) {
   Sentry.init({
@@ -19,9 +19,8 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN_FRONTEND) {
   });
 }
 window.Sentry = Sentry;
-initAnalytics(); 
-initPosthog();
-identifyFromSupabase(supabase);
+initAnalytics();
+ensureAnalyticsInitIfConsented(supabase);
 
 if (typeof window !== "undefined") {
   window.supabase = supabase;   // handy for console testing
@@ -33,7 +32,10 @@ createRoot(document.getElementById("root")).render(
       fallback={<div style={{ padding: 16 }}>Something went wrong. Please refresh.</div>}
       showDialog={false}
     >
-      <App />
+      <>
+        <App />
+        <CookieConsent />
+      </>
     </Sentry.ErrorBoundary>
   </StrictMode>
 );

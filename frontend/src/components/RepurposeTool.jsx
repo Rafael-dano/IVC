@@ -86,54 +86,54 @@ export default function RepurposeTool() {
     setLoading(true);
     setRepurposedText("");
     setIsCarousel(false);
-
+  
     try {
       if (COMING_SOON.has(format)) {
-        setRepurposedText('🚧 This feature is coming soon. Stay tuned!');
+        setRepurposedText("🚧 This feature is coming soon. Stay tuned!");
         return;
       }
-
-      // Special case: local video formats use file instead of textarea
+  
+      // Determine flow types
+      const isVideoFlow = (format === "video-summary" || format === "video-shorts-script");
+      const isCarouselFlow = (format === "carousel-generator");
       const requiresText =
         !NO_INPUT_REQUIRED.includes(format) &&
-        !(format === 'video-summary' || format === 'video-shorts-script');
-
+        !isVideoFlow;
+  
+      // Basic text requirement for text-only flows
       if (requiresText && !inputText.trim()) {
         setRepurposedText(t("repurpose.needInput"));
         return;
       }
-
+  
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setRepurposedText(t("repurpose.needLogin"));
         return;
       }
-
-      // ---- Local video formats ----
-      if (format === "video-summary" || format === "video-shorts-script") {
+  
+      // A) VIDEO FLOWS (require a file)
+      if (isVideoFlow) {
         if (!videoFile) {
           setRepurposedText("⚠️ Please choose a video file first (.mp4 recommended).");
           return;
         }
-      
+  
         setUploading(true);
         setUploadPct(0);
-      
+  
         let transcript = "";
         try {
           const { data: { session } } = await supabase.auth.getSession();
-      
           const resp = await uploadVideoWithProgress({
             file: videoFile,
             lang: transcriptLang,
             token: session?.access_token,
             onProgress: (pct) => setUploadPct(pct),
           });
-      
           transcript = resp?.text || "";
         } catch (e) {
           console.error(e);
-          // Friendly errors
           const status = e?.status;
           const msg = e?.json?.error || e.message || "Upload failed.";
           if (status === 402) {
@@ -143,86 +143,49 @@ export default function RepurposeTool() {
           } else {
             alert(msg);
           }
-          setUploading(false);
           return;
         } finally {
           setUploading(false);
         }
-      
+  
         if (!transcript.trim()) {
           setRepurposedText("⚠️ Transcription returned empty text.");
           return;
         }
-        
+  
+        // Build prompts for each video flow
         let prompt;
         if (format === "video-summary") {
           prompt = `
-You are a precise assistant. Using the video transcript below, produce:
-
-1) Key takeaways — 5–7 concise bullets.
-2) Short summary — one crisp paragraph (3–5 sentences).
-3) Action items / To-do — if the speaker mentions tasks or steps, list them clearly as checkboxes.
-4) Items / ingredients / tools — if the speaker mentions materials (e.g., groceries, parts, gear), list them as bullets.
-
-Respond in ${languageHint()}.
-
-Transcript:
-${transcript}
-          `.trim();
+  You are a precise assistant. Using the video transcript below, produce:
+  1) 5–7 key takeaways (bullets)
+  2) One short paragraph summary (3–5 sentences)
+  3) Action items as checkboxes when applicable
+  4) Materials/tools list when applicable
+  Respond in ${languageHint()}.
+  
+  Transcript:
+  ${transcript}`.trim();
         } else {
           prompt = `
-You are a creator coach. Using the video transcript below, write a 45–60 second vertical video script:
-- Hook in first line
-- 3–4 punchy points (short sentences)
-- Clear CTA in the last line
-- Keep it conversational and energetic
-- If the person lists steps or tools, weave them in naturally
-
-Respond in ${languageHint()}.
-
-Transcript:
-${transcript}
-          `.trim();
+  You are a creator coach. Using the transcript, write a 45–60 second vertical video script:
+  - Hook in first line
+  - 3–4 punchy points
+  - Clear CTA in the last line
+  - Conversational, energetic tone
+  Respond in ${languageHint()}.
+  
+  Transcript:
+  ${transcript}`.trim();
         }
-
+  
         const aiResponse = await generateContent(user.id, prompt);
         setRepurposedText(aiResponse);
         return;
       }
-
-      const { data: { session } } = await supabase.auth.getSession();
-      setUploading(true);
-      setUploadPct(0);
-      
-      let transcript;
-      try {
-        const resp = await uploadVideoWithProgress({
-          file: videoFile,
-          lang: transcriptLang,
-          token: session?.access_token,
-          onProgress: setUploadPct,
-        });
-        transcript = resp?.text || "";
-      } catch (e) {
-        if (e?.status === 402) {
-          alert("You’ve hit your monthly transcription limit for your plan.");
-        } else if (e?.status === 415) {
-          alert("Unsupported file. Try mp4/m4a/mp3/wav/ogg/webm — MOV is auto-converted.");
-        } else {
-          alert(e?.error || "Transcription failed.");
-        }
-        setUploading(false);
-        return;
-      }
-      setUploading(false);
-      
-      if (!transcript.trim()) {
-        setRepurposedText("⚠️ Transcription returned empty text.");
-        return;
-      }      
-
-      // ---- Carousel branch ----
-      if (format === "carousel-generator") {
+  
+      // B) TEXT-ONLY / CAROUSEL FLOWS (no file)
+      if (isCarouselFlow) {
         const prompt = `Create a carousel with 5 slides about: ${inputText || "any engaging topic"}. Respond in ${languageHint()}.`;
         const aiResponse = await generateContent(user.id, prompt);
         const slides = aiResponse.split("\n\n").map((chunk, i) => ({
@@ -233,17 +196,20 @@ ${transcript}
         setIsCarousel(true);
         return;
       }
-
-      // ---- Other text-based formats ----
+  
+      // Other text formats
       let prompt = "";
       if (format === "blog-to-email") {
         prompt = `Repurpose the following text into an email. Respond in ${languageHint()}.\n\n${inputText}`;
       } else if (format === "pinterest-caption") {
         prompt = `Repurpose the following text into a Pinterest caption. Respond in ${languageHint()}.\n\n${inputText}`;
+      } else if (format === "thread-expander") {
+        prompt = `Expand the following tweet/thread into a short blog-style post. Respond in ${languageHint()}.\n\n${inputText}`;
       } else {
+        // generic
         prompt = `Repurpose this text into ${format} format. Respond in ${languageHint()}.\n\n${inputText}`;
       }
-
+  
       const aiResponse = await generateContent(user.id, prompt);
       setRepurposedText(aiResponse);
     } catch (err) {
@@ -257,7 +223,7 @@ ${transcript}
       setLoading(false);
       outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  }
+  }  
 
   // Load saved state
   useEffect(() => {
@@ -376,7 +342,6 @@ async function uploadVideoWithProgress({ file, lang = "en", token, onProgress })
         <div className="repurpose-panel p-4 md:p-6 flex flex-col lg:flex-row gap-6">
           <div className="mb-2 text-sm format-chip">{chipText}</div>
 
-          {/* Input Section */}
           <div className="w-full lg:w-1/2">
             <textarea
               className="repurpose-textarea"
