@@ -1,0 +1,19 @@
+name: Send IVContent reminders
+
+on:
+  schedule:
+    - cron: "25 17 * * *"   # daily at 17:25 UTC
+  workflow_dispatch: {}      # lets you run it manually
+
+jobs:
+  ping-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: LTD reminder
+        run: |
+          curl -sS -X POST "https://api.ivcontent.com/tasks/reminders/ltd?limit=50" \
+            -H "x-tasks-secret: ${{ secrets.TASKS_SECRET }}"
+      - name: Monthly reminder
+        run: |
+          curl -sS -X POST "https://api.ivcontent.com/tasks/reminders/monthly?limit=50" \
+            -H "x-tasks-secret: ${{ secrets.TASKS_SECRET }}"
