@@ -1,4 +1,3 @@
-   // backend/plans.js
 export const PLANS = {
   FREE: {
     label: "FREE",
@@ -37,11 +36,9 @@ export const PLANS = {
     maxTranscriptSeconds: 30 * 60, 
   },
 };
-// backend/plans.js (append this at the end of the file)
 const isBeta = process.env.BETA_MODE === "1";
-// Temporarily boost FREE transcription minutes during beta:
 if (isBeta && PLANS?.FREE) {
-  PLANS.FREE.maxTranscriptSeconds = 30 * 60; // 30 minutes
+  PLANS.FREE.maxTranscriptSeconds = 30 * 60; 
 }
 
 export default PLANS;

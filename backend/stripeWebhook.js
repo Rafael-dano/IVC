@@ -1,4 +1,3 @@
-// backend/stripeWebhook.js
 import express from "express";
 import Stripe from "stripe";
 import { supabaseAdmin } from "./api/supabaseClient.js";
@@ -20,7 +19,6 @@ router.post("/stripe/webhook", express.raw({ type: "application/json" }), async 
     return res.sendStatus(400);
   }
 
-  // 👇 See events in the `stripe listen` terminal
   console.log("Stripe event:", event.type);
 
   try {
@@ -29,10 +27,9 @@ router.post("/stripe/webhook", express.raw({ type: "application/json" }), async 
         const session = event.data.object;
         const userId = session.metadata?.user_id;
         const tier   = session.metadata?.tier || "LTD";
-        const isLTD  = session.mode === "payment"; // one-time
+        const isLTD  = session.mode === "payment"; 
 
         if (userId && isLTD && session.payment_status === "paid") {
-          // ✅ Set plan to the LTD tier purchased
           await supabaseAdmin
             .from("profiles")
             .update({ plan: tier })
@@ -44,7 +41,7 @@ router.post("/stripe/webhook", express.raw({ type: "application/json" }), async 
 
       case "invoice.paid": {
         const invoice = event.data.object;
-        const userId = invoice.metadata?.user_id; // if you include metadata when creating subs
+        const userId = invoice.metadata?.user_id; 
         if (userId) {
           const renewsAt = new Date(invoice.lines.data[0].period.end * 1000).toISOString();
           await supabaseAdmin
@@ -68,7 +65,7 @@ router.post("/stripe/webhook", express.raw({ type: "application/json" }), async 
       }
 
       default:
-        // ignore others
+       
         break;
     }
 

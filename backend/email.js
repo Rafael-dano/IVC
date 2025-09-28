@@ -1,4 +1,3 @@
-// backend/email.js (ESM)
 import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -50,10 +49,6 @@ async function send({ to, subject, html }) {
     ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
   });
 }
-
-/* -------------------------------------------------
-   TEMPLATES (using your exact copy)
---------------------------------------------------*/
 
 export async function sendWelcomeEmail({ to, firstName, siteUrl }) {
   const subject = "Welcome to IVContent 🎉";

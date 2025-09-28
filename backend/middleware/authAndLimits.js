@@ -1,7 +1,6 @@
-// backend/middleware/authAndLimits.js
+
 import { supabaseAdmin } from "../api/supabaseClient.js";
 
-// Simple limits used by enforceLimits (match your plans)
 const PLAN_LIMITS = {
   FREE: 50,
   PRO: 1500,
@@ -32,14 +31,12 @@ async function ensureProfileRow(user) {
     }
 
     if (!prof) {
-      // brand-new profile
       await supabaseAdmin
         .from("profiles")
         .insert({ id, email, display_name: display, plan: "FREE" });
       return;
     }
 
-    // fill missing email if needed
     if (!prof.email && email) {
       await supabaseAdmin
         .from("profiles")
@@ -62,10 +59,8 @@ async function ensureBetaLifecycle(userId, userEmail) {
     const plan = String(profile?.plan || "FREE").toUpperCase();
     const nowIso = new Date().toISOString();
 
-    // Paid users: ignore
     if (plan.startsWith("LTD_") || plan === "PRO") return;
 
-    // Expire if needed
     if (plan === "BETA_FREE" && profile?.beta_expires_at) {
       if (new Date(profile.beta_expires_at).toISOString() < nowIso) {
         await supabaseAdmin
@@ -76,7 +71,6 @@ async function ensureBetaLifecycle(userId, userEmail) {
       return;
     }
 
-    // Auto-grant if email is in beta_signups and user is effectively FREE
     if (userEmail && (plan === "FREE" || !plan) && !profile?.beta_expires_at) {
       const { data: signedUp } = await supabaseAdmin
         .from("beta_signups")
@@ -114,10 +108,8 @@ export async function requireUser(req, res, next) {
 
     req.user = { id: data.user.id, email: data.user.email || null };
 
-    // 🔹 NEW: make sure a profiles row exists and has email
     await ensureProfileRow(data.user);
 
-    // existing logic
     await ensureBetaLifecycle(req.user.id, req.user.email);
 
     next();
@@ -133,7 +125,6 @@ export async function enforceLimits(req, res, next) {
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: "No user" });
 
-    // Plan
     const { data: profile, error: profErr } = await supabaseAdmin
       .from("profiles")
       .select("plan")
@@ -147,7 +138,6 @@ export async function enforceLimits(req, res, next) {
     const plan = profile?.plan || "FREE";
     const monthlyLimit = PLAN_LIMITS[plan] ?? PLAN_LIMITS.FREE;
 
-    // Usage (this month)
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
     const { data: usageRows, error: usageErr } = await supabaseAdmin

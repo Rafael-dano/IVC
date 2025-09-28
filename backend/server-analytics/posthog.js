@@ -1,4 +1,4 @@
-// backend/server-analytics/posthog.js
+
 import { PostHog } from "posthog-node";
 
 export const ph = process.env.POSTHOG_API_KEY
@@ -7,7 +7,6 @@ export const ph = process.env.POSTHOG_API_KEY
     })
   : null;
 
-// Tiny helper: always add `src: "backend"` to properties
 if (ph) {
   const orig = ph.capture.bind(ph);
   ph.capture = (evt) => {
@@ -18,7 +17,6 @@ if (ph) {
   };
 }
 
-// Optional wrapper if you prefer calling this elsewhere
 export function phCapture(evt) {
   try { ph?.capture(evt); } catch {}
 }

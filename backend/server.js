@@ -1,4 +1,3 @@
-// backend/server.js
 import "dotenv/config";
 import express from "express";
 import cors, { getAllowlist } from "./cors.js";
@@ -72,20 +71,17 @@ async function transcodeWithFfmpeg(inputPath, outputPath, to = "mp3") {
     throw new Error("ffmpeg binary not found. Ensure `ffmpeg-static` is installed.");
   }
 
-  // Choose args
   let args;
   if (to === "mp3") {
-    // Extract audio → mp3 (fast, cheap, widely supported)
     args = [
       "-y",
       "-i", inputPath,
-      "-vn",                 // no video
+      "-vn",        
       "-acodec", "libmp3lame",
-      "-q:a", "2",           // VBR quality (lower is better; 2 ~ high)
+      "-q:a", "2",           
       outputPath
     ];
   } else {
-    // Full transcode to MP4 (larger files; only use if you truly need video)
     args = [
       "-y",
       "-i", inputPath,
@@ -119,8 +115,8 @@ function requireTasksSecret(req, res, next) {
 
   if (!hdr || hdr !== want) {
     console.warn("Tasks secret mismatch", {
-      got: fp(hdr),        // short fingerprint of header
-      want: fp(want),      // short fingerprint of env
+      got: fp(hdr),        
+      want: fp(want),      
       lenGot: (hdr || "").length,
       lenWant: (want || "").length,
     });
@@ -129,9 +125,7 @@ function requireTasksSecret(req, res, next) {
   next();
 }
 
-/* ----------------------------
-   1) Stripe Webhook (raw body) — must be BEFORE express.json()
------------------------------ */
+/* 1) Stripe Webhook (raw body) — must be BEFORE express.json() */
 app.post(
   "/webhooks/stripe",
   express.raw({ type: "application/json" }),
@@ -172,7 +166,7 @@ app.post(
           if (userId && isLTD && session.payment_status === "paid") {
             await supabaseAdmin
               .from("profiles")
-              .update({ plan: tier, beta_expires_at: null }) // clear beta on LTD
+              .update({ plan: tier, beta_expires_at: null }) 
               .eq("id", userId);
           
             await supabaseAdmin.rpc("decrement_spot", { p_tier: tier });
@@ -211,7 +205,7 @@ app.post(
             distinctId: userId || session.customer || "anon",
             event: "purchase_succeeded",
             properties: {
-              mode: session.mode,             // "payment" or "subscription"
+              mode: session.mode,             
               amount_total: session.amount_total || null,
               currency: session.currency || null,
               tier,
@@ -241,7 +235,7 @@ app.post(
               .eq("id", userId);
           }          
 
-        // 🔔 Purchase/renewal email (best-effort)
+        // 🔔 Purchase/renewal email 
         try {
           let buyerEmail = null;
 
@@ -255,7 +249,6 @@ app.post(
             }
           }
 
-          // Fallbacks
           if (!buyerEmail) buyerEmail = invoice.customer_email || null;
           if (!buyerEmail && userId) {
             const { data: profForEmail } = await supabaseAdmin
@@ -382,9 +375,7 @@ app.use((req, _res, next) => {
   next();
 });
 
-/* ----------------------------
-   2) Standard middleware (safe AFTER webhook)
------------------------------ */
+/* 2) Standard middleware (safe AFTER webhook) */
 app.use(cors);
 app.options(/.*/, cors);   
 app.use(morgan("dev"));
@@ -401,7 +392,6 @@ app.get("/__cors", (_req, res) => {
   res.json({ allowed: getAllowlist() });
 });
 
-// --- Beta signup (public, writes via admin + optional email) ---
 app.post("/api/beta/signup", betaLimiter, async (req, res) => {
   try {
     const { email, name, source } = req.body || {};
@@ -610,9 +600,7 @@ app.get("/api/beta/status", requireUser, async (req, res) => {
   }
 });
 
-// ─────────────────────────────────────────────────────────────
 // Upload & Transcribe (with plan enforcement + extension fix + MOV transcode)
-// ─────────────────────────────────────────────────────────────
 
 app.post(
   "/api/video/transcribe",
@@ -673,7 +661,7 @@ app.post(
       // This is the file path we’ll send to OpenAI
       sendPath = inputForApi;
 
-      // --- PLAN ENFORCEMENT (duration + monthly minutes) ---
+      //PLAN ENFORCEMENT (duration + monthly minutes) 
       const durationSec = await getDurationSeconds(sendPath);
 
       const { data: profile } = await supabaseAdmin
@@ -720,13 +708,13 @@ app.post(
         return res.status(502).json({ error: "Transcription returned empty text" });
       }
 
-      // 5) record usage
+      // record usage
       await supabaseAdmin.from("transcript_usage").insert({
         user_id: userId,
         seconds_used: durationSec,
       });
 
-      // 5.5) OPTIONAL: store transcript text for history
+      // store transcript text for history
       await supabaseAdmin.from("transcripts").insert({
         user_id: userId,
         filename: originalName,
@@ -744,7 +732,7 @@ app.post(
         },
       });
       
-      // 6) respond
+      //respond
       return res.json({
         ok: true,
         filename: originalName,
@@ -812,7 +800,7 @@ app.post("/api/feedback", feedbackLimiter, requireUser, async (req, res) => {
   }
 });
 
-// --- PostHog smoke test (remove later) ---
+//  PostHog smoke test
 app.get("/__ph/test", (_req, res) => {
   ph?.capture({
     distinctId: "smoke",
@@ -822,7 +810,7 @@ app.get("/__ph/test", (_req, res) => {
   res.json({ ok: true });
 });
 
-// --- One-time welcome email after first login
+// One-time welcome email after first login
 app.post("/api/email/welcome", requireUser, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -860,7 +848,7 @@ app.post("/api/email/welcome", requireUser, async (req, res) => {
   }
 });
 
-// --- Email smoke test (temporary; remove after testing) ---
+// --- Email smoke test  
 app.post("/__mail/test", express.json(), async (req, res) => {
   try {
     const secret = req.headers["x-debug-secret"];
@@ -905,7 +893,7 @@ app.post("/__mail/test", express.json(), async (req, res) => {
   }
 });
 
-// --- Reminder: Lifetime Deal -----------------------------------------------
+// Reminder: Lifetime Deal 
 app.post("/tasks/reminders/ltd", requireTasksSecret, async (req, res) => {
   try {
     const limit = Math.min(Number(req.query.limit) || 50, 200);
@@ -915,7 +903,7 @@ app.post("/tasks/reminders/ltd", requireTasksSecret, async (req, res) => {
     const minCreated = daysAgoIso(minAgeDays);
     const cooldownSince = daysAgoIso(cooldownDays);
 
-    // Candidates: not paid, old enough, has email, (optional) not opted-out
+    // Candidates: not paid, old enough, has email,
     const { data: candidates, error: candErr } = await supabaseAdmin
       .from("profiles")
       .select("id,email,display_name,plan,created_at,marketing_opt_in")
@@ -988,7 +976,7 @@ app.post("/tasks/reminders/ltd", requireTasksSecret, async (req, res) => {
   }
 });
 
-// --- Reminder: Monthly Membership ------------------------------------------
+//Reminder: Monthly Membership 
 app.post("/tasks/reminders/monthly", requireTasksSecret, async (req, res) => {
   try {
     const limit = Math.min(Number(req.query.limit) || 50, 200);
@@ -1070,22 +1058,18 @@ app.post("/tasks/reminders/monthly", requireTasksSecret, async (req, res) => {
   }
 });
 
-/* ----------------------------
-   3) Health + Echo
------------------------------ */
+/* Health + Echo */
 app.get("/", (_req, res) => res.send("✅ Backend is working!"));
 app.post("/api/echo", (req, res) => res.json({ ok: true, received: req.body }));
 
-// --- Healthcheck (simple) ---
+// Healthcheck  
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, env: process.env.NODE_ENV || "development", time: new Date().toISOString() });
 });
 
 app.get("/health", (_req, res) => res.status(200).send("ok"));
 
-/* ----------------------------
-   4) Read LTD spots
------------------------------ */
+/* Read LTD spots */
 app.get("/api/ltd-spots", async (_req, res) => {
   try {
     const { data, error } = await supabaseAdmin
@@ -1108,9 +1092,7 @@ app.get("/api/ltd-spots", async (_req, res) => {
   }
 });
 
-/* ----------------------------
-   5) Account: /api/me  (plan + usage)
------------------------------ */
+/* Account: /api/me  (plan + usage)*/
 app.get("/api/me", requireUser, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -1179,7 +1161,6 @@ app.get("/api/me", requireUser, async (req, res) => {
         remaining,
         month_start: monthStart,
 
-        // NEW
         transcription_seconds_used: usedSeconds,
         transcription_seconds_limit: capSeconds,
         transcription_minutes_used: Math.round(usedSeconds / 60),
@@ -1205,7 +1186,7 @@ app.get("/api/marketing/prefs", requireUser, async (req, res) => {
       return res.status(500).json({ error: "Failed to load preferences" });
     }
 
-    // Optional: precompute unsubscribe token for your email templates/UI
+    //precompute unsubscribe token for your email templates/UI
     let unsubscribe_url = null;
     try {
       const token = jwt.sign(
@@ -1253,7 +1234,7 @@ app.post("/api/marketing/prefs", requireUser, async (req, res) => {
   }
 });
 
-// One-click unsubscribe (link for email footers)
+//link for email footers
 app.get("/api/marketing/unsubscribe", async (req, res) => {
   try {
     const token = req.query?.token;
@@ -1287,7 +1268,7 @@ app.get("/api/marketing/unsubscribe", async (req, res) => {
   }
 });
 
-// --- Billing portal (Stripe) ---
+//Billing portal
 app.post("/api/billing/portal", requireUser, async (req, res) => {
   try {
     const { data: prof } = await supabaseAdmin
@@ -1313,9 +1294,7 @@ app.post("/api/billing/portal", requireUser, async (req, res) => {
   }
 });
 
-/* ----------------------------
-   7) Checkout + Generate
------------------------------ */
+/* Checkout + Generate*/
 app.use(checkoutRoute);
 
 app.post("/api/generate", requireUser, enforceLimits, async (req, res) => {
@@ -1372,9 +1351,7 @@ app.get("/__boom", (_req, _res) => {
   throw new Error("Test error: Sentry backend");
 });
 
-/* ----------------------------
-   8) Routes debugger
------------------------------ */
+/* Routes debugger*/
 app.get("/__routes", (_req, res) => {
   const routes =
     app._router?.stack
@@ -1395,10 +1372,7 @@ if (process.env.SENTRY_DSN_BACKEND) {
   }
 }
 
-/* ----------------------------
-   8.5) JSON 404 + error handler
-   (place ABOVE app.listen)
------------------------------ */
+/* JSON 404 + error handler */
 
 // 404 for anything not matched above
 app.use((req, res, _next) => {
@@ -1443,9 +1417,8 @@ async function gracefulExit() {
 }
 process.on("SIGTERM", gracefulExit);
 process.on("SIGINT", gracefulExit);
-/* ----------------------------
-   9) Start server
------------------------------ */
+
+/* Start server*/
 app.listen(PORT, () => {
   const publicUrl = (process.env.PUBLIC_API_URL || "").replace(/\/+$/, "");
   console.log("✅ Server listening on", publicUrl || `:${PORT}`);

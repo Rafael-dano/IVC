@@ -1,4 +1,4 @@
-// backend/api/supabaseClient.js
+
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 
@@ -11,14 +11,11 @@ if (!url || !serviceRoleKey) {
   );
 }
 
-// Admin client (server-side only)
 export const supabaseAdmin = createClient(url, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
   db: { schema: "public" },
 });
 
-// 🔁 Back-compat: some files might import { supabase } from this module
-// We alias supabase -> supabaseAdmin to avoid breaking imports.
 export const supabase = supabaseAdmin;
 
 export default supabaseAdmin;

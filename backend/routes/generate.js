@@ -1,4 +1,3 @@
-// backend/routes/generate.js
 import express from "express";
 import openai from "../api/openaiClient.js";
 
