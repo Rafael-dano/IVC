@@ -18,6 +18,7 @@ import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { createHash } from "node:crypto";
 
 import openai from "./api/openaiClient.js";
 import { supabaseAdmin } from "./api/supabaseClient.js";
@@ -34,6 +35,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const execFileAsync = promisify(execFile);
 const jwt = jwtPkg.default ?? jwtPkg;
 const feedbackLimiter = rateLimit({ windowMs: 60_000, limit: 5 });
+const fp = (s) => (s ? createHash("sha256").update(String(s)).digest("hex").slice(0, 8) : "none");
 
 if (!process.env.UNSUBSCRIBE_JWT_SECRET) {
   console.error("FATAL: UNSUBSCRIBE_JWT_SECRET is not set. Add it to your .env / hosting env.");
@@ -111,10 +113,17 @@ function firstNameOf(displayName) {
   return n ? n.split(" ")[0] : "Friend";
 }
 
-// Header guard for cron-like endpoints
 function requireTasksSecret(req, res, next) {
-  const secret = req.headers["x-tasks-secret"];
-  if (!secret || secret !== process.env.TASKS_SECRET) {
+  const hdr = req.headers["x-tasks-secret"];
+  const want = process.env.TASKS_SECRET;
+
+  if (!hdr || hdr !== want) {
+    console.warn("Tasks secret mismatch", {
+      got: fp(hdr),        // short fingerprint of header
+      want: fp(want),      // short fingerprint of env
+      lenGot: (hdr || "").length,
+      lenWant: (want || "").length,
+    });
     return res.sendStatus(403);
   }
   next();
