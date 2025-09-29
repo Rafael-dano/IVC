@@ -2,12 +2,19 @@
 const API_BASE = (import.meta.env.VITE_API_BASE || "").replace(/\/+$/, "");
 
 export async function httpJson(pathOrUrl, opts = {}) {
+  const {
+    method,
+    headers: optHeaders,
+    credentials,
+    body: rawBody,
+    ...fetchOpts
+  } = opts;
   const isAbs = /^https?:\/\//i.test(pathOrUrl);
   const url = isAbs ? pathOrUrl : `${API_BASE}${pathOrUrl}`;
 
   // Default headers + JSON body support
-  const headers = { "Content-Type": "application/json", ...(opts.headers || {}) };
-  let body = opts.body;
+  const headers = { "Content-Type": "application/json", ...(optHeaders || {}) };
+  let body = rawBody
 
   // If body is a plain object, auto-JSON it
   if (body && typeof body === "object" && !(body instanceof FormData)) {
@@ -15,10 +22,11 @@ export async function httpJson(pathOrUrl, opts = {}) {
   }
 
   const res = await fetch(url, {
-    method: opts.method || (body ? "POST" : "GET"),
+    method: method || (body ? "POST" : "GET"),
     headers,
-    credentials: opts.credentials ?? "include", // include if you ever use cookies/session
+    credentials: credentials ?? "include", // include if you ever use cookies/session
     body,
+    ...fetchOpts,
   });
 
   if (res.ok) {
