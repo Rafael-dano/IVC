@@ -119,6 +119,7 @@ router.post("/api/checkout/pro", requireUser, async (req, res) => {
     const success_url = `${origin}/settings?checkout=success`;
     const cancel_url  = `${origin}/ltd?checkout=cancelled`;
 
+    // Validate stored customer against current Stripe mode
     const { customerId, email } = await resolveStripeCustomerId(req.user.id);
     const enableTax = /^(1|true|yes)$/i.test(process.env.STRIPE_TAX_ENABLED || "");
 
@@ -129,7 +130,7 @@ router.post("/api/checkout/pro", requireUser, async (req, res) => {
       cancel_url,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
-      customer_creation: "always",
+      // ✅ DO NOT include customer_creation in subscription mode
       ...(customerId ? { customer: customerId } : {}),
       ...(email && !customerId ? { customer_email: email } : {}),
       ...(enableTax ? { automatic_tax: { enabled: true } } : {}),
