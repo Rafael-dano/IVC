@@ -6,6 +6,7 @@ import { supabaseAdmin } from "./api/supabaseClient.js";
 const router = express.Router();
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
 if (!stripeSecretKey) {
   throw new Error("STRIPE_SECRET_KEY is missing in backend/.env");
 }
@@ -41,23 +42,26 @@ function sendCheckoutError(res, error, context) {
   return res.status(400).json({ error: message });
 }
 
-async function resolveCustomerOptions(user) {
-  const { data, error } = await supabaseAdmin
+async function resolveStripeCustomerId(userId) {
+  const { data: prof } = await supabaseAdmin
     .from("profiles")
-    .select("stripe_customer_id")
-    .eq("id", user.id)
+    .select("stripe_customer_id, email")
+    .eq("id", userId)
     .maybeSingle();
 
-  if (error) {
-    throw error;
-  }
+  let customerId = prof?.stripe_customer_id || null;
+  if (!customerId) return { customerId: null, email: prof?.email || null };
 
-  const stripeCustomerId = data?.stripe_customer_id;
-  if (stripeCustomerId) {
-    return { customer: stripeCustomerId };
+  try {
+    // If this throws resource_missing in the current mode (live), treat as null
+    await stripe.customers.retrieve(customerId);
+    return { customerId, email: prof?.email || null };
+  } catch (e) {
+    if (e?.raw?.code === "resource_missing") {
+      return { customerId: null, email: prof?.email || null };
+    }
+    throw e; // other errors bubble up
   }
-
-  return { customer_email: user.email };
 }
 
 function applyTaxIfEnabled(params) {
@@ -67,69 +71,76 @@ function applyTaxIfEnabled(params) {
   return params;
 }
 
-router.post("/api/checkout/ltd", requireUser, async (req, res) => {
+app.post("/api/checkout/ltd", requireUser, async (req, res) => {
   try {
     const { tier } = req.body || {};
-    const allowedTiers = ["LTD_99", "LTD_149", "LTD_199"];
-
-    if (!allowedTiers.includes(tier)) {
-      const error = new Error("Invalid or missing 'tier'.");
-      return sendCheckoutError(res, error, "/api/checkout/ltd validation");
-    }
-
-    const priceId = PRICE_IDS[tier];
+    const priceId = process.env[`STRIPE_PRICE_${tier}`]; // e.g. STRIPE_PRICE_LTD_199
     if (!priceId) {
-      const error = new Error(`Missing price configuration for tier ${tier}`);
-      return sendCheckoutError(res, error, "/api/checkout/ltd price");
+      return res.status(400).json({ error: "Unknown LTD tier" });
     }
 
-    const customerOptions = await resolveCustomerOptions(req.user);
+    const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
+    const success_url = `${origin}/settings?checkout=success`;
+    const cancel_url  = `${origin}/ltd?checkout=cancelled`;
 
-    const sessionParams = applyTaxIfEnabled({
+    // ✅ Validate stored customer against current Stripe mode
+    const { customerId, email } = await resolveStripeCustomerId(req.user.id);
+
+    const enableTax = /^(1|true|yes)$/i.test(process.env.STRIPE_TAX_ENABLED || "");
+
+    const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: SUCCESS_URL,
-      cancel_url: CANCEL_URL,
+      success_url,
+      cancel_url,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
+      customer_creation: "always",            // ensure a Customer always exists after
+      ...(customerId ? { customer: customerId } : {}),
+      ...(email && !customerId ? { customer_email: email } : {}),
+      ...(enableTax ? { automatic_tax: { enabled: true } } : {}),
       metadata: { user_id: req.user.id, tier },
-      ...customerOptions,
     });
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
-
     return res.json({ url: session.url });
-  } catch (error) {
-    return sendCheckoutError(res, error, "/api/checkout/ltd error");
+  } catch (e) {
+    console.error("/api/checkout/ltd error", e);
+    const msg = e?.raw?.message || e?.message || "Checkout session failed";
+    return res.status(400).json({ error: msg });
   }
 });
 
-router.post("/api/checkout/pro", requireUser, async (req, res) => {
+app.post("/api/checkout/pro", requireUser, async (req, res) => {
   try {
-    const priceId = PRICE_IDS.PRO;
-    if (!priceId) {
-      const error = new Error("Missing price configuration for PRO tier");
-      return sendCheckoutError(res, error, "/api/checkout/pro price");
-    }
+    const priceId = process.env.STRIPE_PRICE_PRO;
+    if (!priceId) return res.status(400).json({ error: "Missing STRIPE_PRICE_PRO" });
 
-    const customerOptions = await resolveCustomerOptions(req.user);
+    const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
+    const success_url = `${origin}/settings?checkout=success`;
+    const cancel_url  = `${origin}/ltd?checkout=cancelled`;
 
-    const sessionParams = applyTaxIfEnabled({
+    const { customerId, email } = await resolveStripeCustomerId(req.user.id);
+    const enableTax = /^(1|true|yes)$/i.test(process.env.STRIPE_TAX_ENABLED || "");
+
+    const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: SUCCESS_URL,
-      cancel_url: CANCEL_URL,
+      success_url,
+      cancel_url,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
-      metadata: { user_id: req.user.id, tier: "PRO" },
-      ...customerOptions,
+      customer_creation: "always",
+      ...(customerId ? { customer: customerId } : {}),
+      ...(email && !customerId ? { customer_email: email } : {}),
+      ...(enableTax ? { automatic_tax: { enabled: true } } : {}),
+      metadata: { user_id: req.user.id, plan: "PRO" },
     });
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
-
     return res.json({ url: session.url });
-  } catch (error) {
-    return sendCheckoutError(res, error, "/api/checkout/pro error");
+  } catch (e) {
+    console.error("/api/checkout/pro error", e);
+    const msg = e?.raw?.message || e?.message || "Checkout session failed";
+    return res.status(400).json({ error: msg });
   }
 });
 
