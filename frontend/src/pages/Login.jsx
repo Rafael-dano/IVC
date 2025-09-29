@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";
+import { httpJson } from "../api/http.js";
 import "./Auth.css";
 import { useTranslation } from "react-i18next";
 
@@ -29,7 +30,7 @@ export default function Login() {
       const token = session?.access_token;
       if (!token) return;
       // fire-and-forget; server dedupes via welcome_sent_at
-      fetch(`${API_BASE}/api/email/welcome`, {
+      httpJson(`${API_BASE}/api/email/welcome`, {
         method: "POST",
         headers: {
           "content-type": "application/json",

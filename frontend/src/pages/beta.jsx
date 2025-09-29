@@ -1,4 +1,3 @@
-// src/pages/Beta.jsx
 import { useEffect, useMemo, useState } from "react";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
@@ -85,7 +84,7 @@ export default function Beta() {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
 
-      const res = await fetch(`${API_BASE}/api/beta/signup`, {
+      const body = await httpJson(`${API_BASE}/api/beta/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,12 +92,8 @@ export default function Beta() {
         },
         body: JSON.stringify({ email: cleanEmail, name: displayName, source }),
       });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(body.error || t("beta.genericError"));
-      }
 
-    posthog.capture("beta_signup_succeeded");
+      posthog.capture("beta_signup_succeeded");
 
       const guidance = body.next ?? t("beta.agreementDefault");
       const formUrl = await getBetaFormUrl();
@@ -133,15 +128,16 @@ export default function Beta() {
       const token = sessionData?.session?.access_token;
   
       // try activate (idempotent)
-      const actRes = await fetch(`${API_BASE}/api/beta/activate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      });
-      const actBody = await actRes.json().catch(() => ({}));
-  
-      if (actRes.ok) {
+      try {
+        const actBody = await httpJson(`${API_BASE}/api/beta/activate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      posthog.capture("beta_activate_succeeded", { plan: actBody?.plan || "unknown" });
+        posthog.capture("beta_activate_succeeded", { plan: actBody?.plan || "unknown" });
 
         setNextMessage(
           `Your plan is ${actBody.plan}. ${
@@ -150,23 +146,19 @@ export default function Beta() {
         );
         setOk(true);
         return;
-      }
-  
+    } catch (e) {
+      // activation failed; fall through to status check
+    }
+
       // If not approved yet, show status
-      const stRes = await fetch(`${API_BASE}/api/beta/status`, {
+      const stBody = await httpJson(`${API_BASE}/api/beta/status`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const stBody = await stRes.json().catch(() => ({}));
-  
-      if (stRes.ok) {
-        setNextMessage(
-          `Status: plan ${stBody.plan}${
-            stBody.beta_expires_at ? `, beta expires ${new Date(stBody.beta_expires_at).toLocaleString()}` : ""
-          }. If you already submitted the form, give it a minute and try Activate again.`
-        );
-      } else {
-        throw new Error(stBody.error || "Could not fetch status");
-      }
+      setNextMessage(
+        `Status: plan ${stBody.plan}${
+          stBody.beta_expires_at ? `, beta expires ${new Date(stBody.beta_expires_at).toLocaleString()}` : ""
+        }. If you already submitted the form, give it a minute and try Activate again.`
+      );
     } catch (e) {
       posthog.capture("beta_activate_failed");
       setError(e.message || "Something went wrong");

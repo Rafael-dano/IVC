@@ -263,13 +263,6 @@ export default function Settings() {
           </button>
         </section>
       </div>
-      
-      <button
-          className="settings-btn secondary"
-          onClick={() => { revokeAnalytics(); alert("Analytics disabled. Reload to apply."); }}
-        >
-          Disable analytics / reset consent
-        </button>
 
       <a
         href="/help"
@@ -284,6 +277,12 @@ export default function Settings() {
       )}
       <EmailPrefsSection />
       <CompanyBlock />  
+      <button
+          className="settings-btn secondary"
+          onClick={() => { revokeAnalytics(); alert("Analytics disabled. Reload to apply."); }}
+        >
+          Disable analytics / reset consent
+        </button>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../api/supabaseClient";
+import { httpJson } from "../api/http.js";
+
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 
 export default function EmailPrefsSection() {
@@ -14,11 +16,9 @@ export default function EmailPrefsSection() {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
-      const res = await fetch(`${API_BASE}/api/marketing/prefs`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const body = await httpJson(`${API_BASE}/api/marketing/prefs`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || "Failed to load prefs");
       setOptIn(!!body.marketing_opt_in);
     } catch (e) {
       setMessage(e.message || "Failed to load preferences.");
@@ -33,18 +33,15 @@ export default function EmailPrefsSection() {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
-      const res = await fetch(`${API_BASE}/api/marketing/prefs`, {
+      const body = await httpJson(`${API_BASE}/api/marketing/prefs`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ marketing_opt_in: newValue }),
+        body: { marketing_opt_in: newValue },
       });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || "Failed to save");
       setMessage(newValue ? "✅ Preferences saved." : "✅ Unsubscribed from newsletters.");
-      setOptIn(newValue);
+      setOptIn(!!body.marketing_opt_in);
     } catch (e) {
       setMessage(e.message || "Could not save preferences.");
     } finally {

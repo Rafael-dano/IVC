@@ -1,6 +1,6 @@
-// src/hooks/useAccount.js
 import { useEffect, useState } from "react";
 import { supabase } from "../api/supabaseClient.js";
+import { httpJson } from "../api/http.js";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 
@@ -8,11 +8,10 @@ async function fetchMeWithRetry(token, attempts = 2) {
   let lastErr;
   for (let i = 0; i < attempts; i++) {
     try {
-      const r = await fetch(`${API_BASE}/api/me`, {
+      return await httpJson(`${API_BASE}/api/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!r.ok) throw new Error(`/api/me ${r.status}`);
-      return await r.json();
+      
     } catch (e) {
       lastErr = e;
       await new Promise(res => setTimeout(res, 250)); // tiny backoff

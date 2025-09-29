@@ -1,5 +1,5 @@
-// src/components/FeedbackBox.jsx
 import { useState } from "react";
+import { httpJson } from "../api/http.js";
 import { supabase } from "../api/supabaseClient";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
@@ -16,7 +16,7 @@ export default function FeedbackBox() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Please sign in first.");
 
-      const res = await fetch(`${API_BASE}/api/feedback`, {
+      await httpJson(`${API_BASE}/api/feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,8 +24,6 @@ export default function FeedbackBox() {
         },
         body: JSON.stringify({ category, rating, message }),
       });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body.error || "Could not send feedback");
       setMessage("");
       setStatus({ loading: false, msg: "✅ Thanks! We received your feedback." });
     } catch (e) {
