@@ -1,0 +1,27 @@
+/* 
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+  # ⚠️ Start with this relaxed CSP. If anything breaks, comment out CSP,
+  # deploy, then tighten gradually.
+  Content-Security-Policy: default-src 'self';
+    img-src 'self' https: data:;
+    style-src 'self' 'unsafe-inline';
+    script-src 'self' 'unsafe-inline' https://js.stripe.com;
+    connect-src 'self' https://api.ivcontent.com https://us.i.posthog.com https://*.sentry.io;
+    frame-src https://js.stripe.com https://www.youtube.com;
+    frame-ancestors 'none';
+    base-uri 'none';
+    upgrade-insecure-requests
+
+/index.html
+  Cache-Control: no-cache
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.ico
+  Cache-Control: public, max-age=604800
