@@ -71,7 +71,7 @@ function applyTaxIfEnabled(params) {
   return params;
 }
 
-app.post("/api/checkout/ltd", requireUser, async (req, res) => {
+ router.post("/api/checkout/ltd", requireUser, async (req, res) => {
   try {
     const { tier } = req.body || {};
     const priceId = process.env[`STRIPE_PRICE_${tier}`]; // e.g. STRIPE_PRICE_LTD_199
@@ -110,7 +110,7 @@ app.post("/api/checkout/ltd", requireUser, async (req, res) => {
   }
 });
 
-app.post("/api/checkout/pro", requireUser, async (req, res) => {
+router.post("/api/checkout/pro", requireUser, async (req, res) => {
   try {
     const priceId = process.env.STRIPE_PRICE_PRO;
     if (!priceId) return res.status(400).json({ error: "Missing STRIPE_PRICE_PRO" });
