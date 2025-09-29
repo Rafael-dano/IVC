@@ -380,6 +380,7 @@ app.use(cors);
 app.options(/.*/, cors);   
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(checkoutRoute);
 
 const betaLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
@@ -1294,7 +1295,7 @@ app.post("/api/billing/portal", requireUser, async (req, res) => {
   }
 });
 
-// --- NEW: Stripe Checkout endpoints (LTD + PRO) ---
+// NEW: Stripe Checkout endpoints (LTD + PRO) 
 app.post("/api/checkout/ltd", requireUser, async (req, res) => {
   try {
     const { tier } = req.body || {};
