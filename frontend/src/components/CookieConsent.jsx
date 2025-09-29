@@ -25,13 +25,23 @@ export default function CookieConsent() {
       <div className="mt-3 flex gap-2 justify-end">
         <button
           className="px-3 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-sm"
-          onClick={() => { setAnalyticsConsent("denied"); setShow(false); }}
+          onClick={() => {
+            setAnalyticsConsent("denied");
+            try { localStorage.setItem("ivc-consent", "denied"); } catch {}
+            window.dispatchEvent(new Event("ivc:consent-denied"));
+            setShow(false);
+          }}
         >
           Decline
         </button>
         <button
           className="px-3 py-2 rounded-md bg-cyan-400 text-black hover:bg-cyan-300 font-semibold text-sm"
-          onClick={() => { grantAnalytics(supabase); setShow(false); }}
+          onClick={() => {
+            grantAnalytics(supabase);               // your existing PostHog gate
+            try { localStorage.setItem("ivc-consent", "accepted"); } catch {}
+            window.dispatchEvent(new Event("ivc:consent-accepted")); // Sentry listens
+            setShow(false);
+          }}
         >
           Accept
         </button>
