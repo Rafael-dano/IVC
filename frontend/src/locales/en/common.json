@@ -245,7 +245,7 @@
       },
       "pro": {
         "name": "Pro Creator",
-        "price": "$13/mo",
+        "price": "$15/mo",
         "description": "Unlock higher limits, brand voices, and collaboration features.",
         "cta": "Get launch notification",
         "benefits": {
@@ -285,7 +285,7 @@
     "soldOut": "Sold out",
     "loadingSpots": "Loading spots…",
     "spotsLeft": "{{count}} spots left",
-    "goPro": "Go Pro — $13 / month",
+    "goPro": "Go Pro — $15 / month",
     "videoTitle": "Video Walkthrough",
     "errPrefix": ""
   },

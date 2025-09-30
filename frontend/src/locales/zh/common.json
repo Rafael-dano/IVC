@@ -240,7 +240,7 @@
       },
       "pro": {
         "name": "Pro Creator",
-        "price": "$13/月",
+        "price": "$15/月",
         "description": "解锁更高上限、品牌语音与协同功能。",
         "cta": "接收上线通知",
         "benefits": {
@@ -280,7 +280,7 @@
     "soldOut": "已售罄",
     "loadingSpots": "正在加载名额…",
     "spotsLeft": "剩余 {{count}} 个名额",
-    "goPro": "升级 Pro — $13 / 月",
+    "goPro": "升级 Pro — $15 / 月",
     "videoTitle": "演示视频",
     "errPrefix": ""
   },

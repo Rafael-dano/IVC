@@ -240,7 +240,7 @@
       },
       "pro": {
         "name": "Pro Creator",
-        "price": "$13/月",
+        "price": "$15/月",
         "description": "より高い上限、ブランドボイス、コラボ機能を解放。",
         "cta": "ローンチ通知を受け取る",
         "benefits": {
@@ -280,7 +280,7 @@
     "soldOut": "売り切れ",
     "loadingSpots": "席数を読み込み中…",
     "spotsLeft": "残り {{count}} 席",
-    "goPro": "Pro に移行 — $13 / 月",
+    "goPro": "Pro に移行 — $15 / 月",
     "videoTitle": "ビデオツアー",
     "errPrefix": ""
   },

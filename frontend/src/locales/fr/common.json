@@ -240,7 +240,7 @@
       },
       "pro": {
         "name": "Pro Creator",
-        "price": "$13/mois",
+        "price": "$15/mois",
         "description": "Débloquez des limites plus élevées, des voix de marque et la collaboration.",
         "cta": "Recevoir l’alerte de lancement",
         "benefits": {
@@ -280,7 +280,7 @@
     "soldOut": "Épuisé",
     "loadingSpots": "Chargement des places…",
     "spotsLeft": "{{count}} places restantes",
-    "goPro": "Passer à Pro — 13 $ / mois",
+    "goPro": "Passer à Pro — 15 $ / mois",
     "videoTitle": "Présentation vidéo",
     "errPrefix": ""
   },

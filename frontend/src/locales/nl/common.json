@@ -240,7 +240,7 @@
       },
       "pro": {
         "name": "Pro Creator",
-        "price": "$13/maand",
+        "price": "$15/maand",
         "description": "Ontgrendel hogere limieten, merkstemmen en samenwerking.",
         "cta": "Lanceringmelding ontvangen",
         "benefits": {
@@ -280,7 +280,7 @@
     "soldOut": "Uitverkocht",
     "loadingSpots": "Plekken laden…",
     "spotsLeft": "{{count}} plekken over",
-    "goPro": "Ga naar Pro — $13 / maand",
+    "goPro": "Ga naar Pro — $15 / maand",
     "videoTitle": "Videorondleiding",
     "errPrefix": ""
   },
