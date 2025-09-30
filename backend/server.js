@@ -1,6 +1,6 @@
 import "dotenv/config";
 import express from "express";
-import cors, { getAllowlist } from "./cors.js";
+import corsMw, { isOriginAllowed, cleanOrigin } from "./cors.js";
 import morgan from "morgan";
 import Stripe from "stripe";
 import rateLimit from "express-rate-limit";
@@ -1459,28 +1459,22 @@ if (process.env.SENTRY_DSN_BACKEND) {
 // 404 for anything not matched above
 app.use((req, res, _next) => {
   const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
+  if (origin && isOriginAllowed(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", cleanOrigin(origin));
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Vary", "Origin");
   }
-  res.status(404).json({
-    error: "Not Found",
-    method: req.method,
-    path: req.path,
-  });
+  res.status(404).json({ error: "Not Found", method: req.method, path: req.path });
 });
 
-
-// Central error handler (JSON)
+// Error handler:
 app.use((err, req, res, _next) => {
   const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
+  if (origin && isOriginAllowed(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", cleanOrigin(origin));
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Vary", "Origin");
   }
-
   const isProd = (process.env.NODE_ENV || "development") === "production";
   const payload = { error: "Internal Server Error" };
   if (!isProd) {
@@ -1488,7 +1482,6 @@ app.use((err, req, res, _next) => {
     payload.stack = err?.stack;
     payload.path = req.path;
   }
-
   console.error("❌ Unhandled error:", err);
   res.status(err.status || 500).json(payload);
 });

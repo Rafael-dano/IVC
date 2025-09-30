@@ -50,7 +50,7 @@ export function isOriginAllowed(origin) {
     const { hostname } = new URL(o);
     if (ALLOW_ANY_VERCEL_APP && hostname.endsWith(".vercel.app")) return true;
     if (EXTRA_SUFFIXES.length && hostMatchesSuffixes(hostname)) return true;
-  } catch (_e) {}
+  } catch {}
 
   return false;
 }
@@ -62,8 +62,7 @@ const corsMw = cors({
     cb(new Error(`CORS blocked for origin: ${origin}`), false);
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Debug-Secret", "x-debug-secret"],
-  exposedHeaders: [],
+  // ⬇️ omit allowedHeaders so cors reflects Access-Control-Request-Headers dynamically
   credentials: true,
   maxAge: 86400,
   optionsSuccessStatus: 204,
