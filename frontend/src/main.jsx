@@ -1,3 +1,4 @@
+// src/main.jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -51,7 +52,7 @@ window.addEventListener("ivc:consent-accepted", () => {
 
 window.Sentry = Sentry;
 
-// Your analytics init remains gated by your consent util
+// Analytics is also consent-gated
 initAnalytics();
 ensureAnalyticsInitIfConsented(supabase);
 
@@ -62,14 +63,16 @@ if (typeof window !== "undefined") {
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Sentry.ErrorBoundary
-      fallback={<div style={{ padding: 16 }}>Something went wrong. Please refresh.</div>}
-      showDialog={false}
-    >
-      <>
-        <App />
-        <CookieConsent />
-      </>
-    </Sentry.ErrorBoundary>
+    <HelmetProvider>
+      <Sentry.ErrorBoundary
+        fallback={<div style={{ padding: 16 }}>Something went wrong. Please refresh.</div>}
+        showDialog={false}
+      >
+        <>
+          <App />
+          <CookieConsent />
+        </>
+      </Sentry.ErrorBoundary>
+    </HelmetProvider>
   </StrictMode>
 );
