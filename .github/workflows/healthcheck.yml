@@ -3,15 +3,19 @@ name: healthcheck
 on:
   schedule:
     - cron: "*/30 * * * *"   # every 30 minutes
-  workflow_dispatch:         # allow manual run from the Actions tab
+  workflow_dispatch:         # allow manual run from Actions
 
 jobs:
   ping:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Hit frontend
+      - name: Hit frontend (HEAD)
         run: |
-          curl -I --max-time 10 https://ivcontent.com || exit 1
-      - name: Hit backend /health
+          curl -I -f --retry 2 --retry-all-errors --max-time 15 https://ivcontent.com > /dev/null
+      - name: Hit backend /health (expects ok:true)
         run: |
-          curl -sS --max-time 10 https://api.ivcontent.com/health | grep -q '"ok":true'
+          curl -fsS --retry 2 --retry-all-errors --max-time 15 https://api.ivcontent.com/health | grep -q '"ok":true'
+      - name: Hit LTD spots (basic JSON check)
+        run: |
+          curl -fsS --retry 2 --retry-all-errors --max-time 15 https://api.ivcontent.com/api/ltd-spots | grep -q '"spots"'

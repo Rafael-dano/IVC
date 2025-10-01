@@ -4,20 +4,18 @@
     <loc>https://ivcontent.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <lastmod>2025-09-30</lastmod>
   </url>
   <url>
     <loc>https://ivcontent.com/ltd</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <lastmod>2025-09-30</lastmod>
   </url>
   <url>
     <loc>https://ivcontent.com/help</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://ivcontent.com/settings</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
+    <lastmod>2025-09-30</lastmod>
   </url>
 </urlset>

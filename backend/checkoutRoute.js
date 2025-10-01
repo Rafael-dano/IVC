@@ -64,6 +64,30 @@ async function resolveStripeCustomerId(userId) {
   }
 }
 
+async function ensureStripeCustomerId(userId) {
+  const { customerId, email } = await resolveStripeCustomerId(userId);
+  if (customerId) return customerId;
+
+  const { data: prof } = await supabaseAdmin
+    .from("profiles")
+    .select("email, display_name")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const created = await stripe.customers.create({
+    email: prof?.email || email || undefined,
+    name: prof?.display_name || undefined,
+    metadata: { user_id: userId },
+  });
+
+  await supabaseAdmin
+    .from("profiles")
+    .update({ stripe_customer_id: created.id, updated_at: new Date().toISOString() })
+    .eq("id", userId);
+
+  return created.id;
+}
+
 function applyTaxIfEnabled(params) {
   if (TAX_ENABLED) {
     params.automatic_tax = { enabled: true };
@@ -141,6 +165,24 @@ router.post("/api/checkout/pro", requireUser, async (req, res) => {
   } catch (e) {
     console.error("/api/checkout/pro error", e);
     const msg = e?.raw?.message || e?.message || "Checkout session failed";
+    return res.status(400).json({ error: msg });
+  }
+});
+
+router.post("/api/billing/portal", requireUser, async (req, res) => {
+  try {
+    const customerId = await ensureStripeCustomerId(req.user.id);
+    const return_url = `${SITE_URL}/settings`;
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url,
+    });
+
+    return res.json({ url: session.url });
+  } catch (e) {
+    console.error("/api/billing/portal error:", e);
+    const msg = e?.raw?.message || e?.message || "Could not create billing portal session";
     return res.status(400).json({ error: msg });
   }
 });
