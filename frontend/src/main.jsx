@@ -5,7 +5,6 @@ import "./index.css";
 import App from "./App.jsx";
 import "./i18n.js";
 import * as Sentry from "@sentry/react";
-import { HelmetProvider } from "react-helmet-async";
 import { initAnalytics } from "./analytics";
 import { ensureAnalyticsInitIfConsented, getAnalyticsConsent } from "./analytics/consent";
 import { supabase } from "./api/supabaseClient";

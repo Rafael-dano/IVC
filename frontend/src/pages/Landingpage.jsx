@@ -1,8 +1,8 @@
 // src/pages/Landingpage.jsx
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Helmet } from "react-helmet-async";
 import "./Landingpage.css";
+import Seo from "../components/Seo";
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -142,32 +142,12 @@ export default function LandingPage() {
 
   return (
     <div className="landing-page">
-      <Helmet>
-        <title>IVContent – Repurpose your content fast</title>
-        <meta name="description" content="Turn videos, tweets, and notes into blogs, emails, and shorts in minutes. Multilingual. Built for creators. 4 Content Creators" />
-        <link rel="canonical" href="https://ivcontent.com/" />
-
-        <meta property="og:type" content="website" />
-       <meta property="og:url" content="https://ivcontent.com/" />
-        <meta property="og:title" content="IVContent – Repurpose your content fast" />
-        <meta property="og:description" content="Turn videos, tweets, and notes into blogs, emails, and shorts in minutes." />
-        <meta property="og:image" content="https://ivcontent.com/og.jpg" />
-
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="IVContent – Repurpose your content fast" />
-        <meta name="twitter:description" content="Turn videos, tweets, and notes into blogs, emails, and shorts in minutes." />
-        <meta name="twitter:image" content="https://ivcontent.com/og.jpg" />
-
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "IVContent",
-            url: "https://ivcontent.com",
-            logo: "https://ivcontent.com/logo.png",
-          })}
-        </script>
-      </Helmet>
+      <Seo
+        title="IVContent – Repurpose your content fast"
+        description="Turn videos, tweets, and notes into blogs, emails, and shorts in minutes. Multilingual. Built for creators."
+        url="https://ivcontent.com/"
+        image="https://ivcontent.com/og.jpg"
+      />
       <header className="landing-hero">
         <div className="landing-hero-content">
           <span className="hero-badge">{t("landing.heroHighlight")}</span>
