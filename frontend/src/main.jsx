@@ -62,7 +62,6 @@ if (typeof window !== "undefined") {
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <HelmetProvider>
       <Sentry.ErrorBoundary
         fallback={<div style={{ padding: 16 }}>Something went wrong. Please refresh.</div>}
         showDialog={false}
@@ -72,6 +71,5 @@ createRoot(document.getElementById("root")).render(
           <CookieConsent />
         </>
       </Sentry.ErrorBoundary>
-    </HelmetProvider>
   </StrictMode>
 );

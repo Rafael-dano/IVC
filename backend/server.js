@@ -376,8 +376,8 @@ app.use((req, _res, next) => {
 });
 
 /* 2) Standard middleware (safe AFTER webhook) */
-app.use(cors);
-app.options(/.*/, cors);   
+app.use(corsMw);
+app.options(/.*/, corsMw);  
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(checkoutRoute);
@@ -390,8 +390,8 @@ const betaLimiter = rateLimit({
 });
 
 app.get("/__cors", (_req, res) => {
-  res.json({ allowed: getAllowlist() });
-});
+    res.json({ ok: true });
+  });
 
 app.post("/api/beta/signup", betaLimiter, async (req, res) => {
   try {
@@ -1272,19 +1272,32 @@ app.get("/api/marketing/unsubscribe", async (req, res) => {
 //Billing portal
 app.post("/api/billing/portal", requireUser, async (req, res) => {
   try {
+    // Look up profile
     const { data: prof } = await supabaseAdmin
       .from("profiles")
-      .select("stripe_customer_id")
+      .select("stripe_customer_id, email, display_name")
       .eq("id", req.user.id)
       .maybeSingle();
 
-  if (!prof?.stripe_customer_id) {
-      return res.status(400).json({ error: "No Stripe customer found." });
+    let customerId = prof?.stripe_customer_id || null;
+
+    // Create a Stripe customer if missing
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: prof?.email || req.user.email || undefined,
+        name: prof?.display_name || undefined,
+        metadata: { user_id: req.user.id },
+      });
+      customerId = customer.id;
+      await supabaseAdmin
+        .from("profiles")
+        .update({ stripe_customer_id: customerId })
+        .eq("id", req.user.id);
     }
 
     const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
     const portal = await stripe.billingPortal.sessions.create({
-      customer: prof.stripe_customer_id,
+      customer: customerId,
       return_url: `${origin}/settings`,
     });
 
