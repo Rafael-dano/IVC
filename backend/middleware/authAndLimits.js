@@ -5,9 +5,10 @@ import { isPaidPlan } from "../plans.js";
 const PLAN_LIMITS = {
   FREE: 50,
   PRO: 1500,
-  LTD_99: 2000,
-  LTD_149: 2500,
-  LTD_199: 3000,
+  LTD_99: 1500,
+  LTD_149: 1500,
+  ANNUAL: 1500,
+  LTD_400: 1500,
 };
 
 async function ensureProfileRow(user) {

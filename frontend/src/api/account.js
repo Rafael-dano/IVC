@@ -1,6 +1,13 @@
-// frontend/src/api/account.js
+
 import { supabase } from "../api/supabaseClient.js";
-const API_BASE = import.meta.env.VITE_API_BASE || "";
+
+const ENV = (() => {
+  if (typeof import.meta !== "undefined" && import.meta?.env) return import.meta.env;
+  if (typeof process !== "undefined" && process?.env) return process.env;
+  return {};
+})();
+
+const API_BASE = (ENV.VITE_API_BASE || ENV.API_BASE || "").replace(/\/+$/, "");
 
 // Small helper using fetch directly so we can read error bodies
 async function httpJsonRaw(url, opts = {}) {
@@ -76,35 +83,4 @@ export async function openLifetime400() {
 
   if (!url) throw new Error("Checkout URL missing.");
   window.location.href = url;
-}
-
-function redirectToCheckout(envKey) {
-  const checkoutUrl = import.meta.env[envKey];
-  if (!checkoutUrl) {
-    throw new Error(`Checkout link missing. Please configure ${envKey}.`);
-  }
-
-  window.location.href = checkoutUrl;
-}
-
-export function openAnnualCheckout() {
-  redirectToCheckout("VITE_CHECKOUT_ANNUAL");
-}
-
-export function openAnnualPromo(tierKey) {
-  const lookup = {
-    annual_99: "VITE_CHECKOUT_ANNUAL_99",
-    annual_149: "VITE_CHECKOUT_ANNUAL_149",
-  };
-
-  const envKey = lookup[tierKey];
-  if (!envKey) {
-    throw new Error("Unknown annual promo tier");
-  }
-
-  redirectToCheckout(envKey);
-}
-
-export function openLifetime400() {
-  redirectToCheckout("VITE_CHECKOUT_LIFETIME_400");
 }

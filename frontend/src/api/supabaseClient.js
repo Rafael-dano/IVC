@@ -1,7 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 
-const url = import.meta.env.VITE_SUPABASE_URL;
-const anon = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const ENV = (() => {
+  if (typeof import.meta !== "undefined" && import.meta?.env) return import.meta.env;
+  if (typeof process !== "undefined" && process?.env) return process.env;
+  return {};
+})();
+
+const url = ENV.VITE_SUPABASE_URL || ENV.SUPABASE_URL;
+const anon = ENV.VITE_SUPABASE_ANON_KEY || ENV.SUPABASE_ANON_KEY;
 
 // If env vars are missing, provide a no-op supabase shim so the app doesn't crash
 let supabase;

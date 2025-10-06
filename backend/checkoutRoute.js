@@ -38,16 +38,17 @@ const PRO_PRICE_BY_REGION = {
   MX: process.env.STRIPE_PRICE_PRO_MXN,
 };
 const ANNUAL_PRICE_BY_REGION = {
-  DEFAULT: process.env.STRIPE_PRICE_ANNUAL_USD,
+  DEFAULT: process.env.STRIPE_PRICE_ANNUAL || process.env.STRIPE_PRICE_ANNUAL_USD,
   US: process.env.STRIPE_PRICE_ANNUAL_USD,
   BR: process.env.STRIPE_PRICE_ANNUAL_BRL,
   MX: process.env.STRIPE_PRICE_ANNUAL_MXN,
 };
-const ANNUAL_PROMO = {
-  ANNUAL_99:  process.env.STRIPE_PRICE_LTD99,
-  ANNUAL_149: process.env.STRIPE_PRICE_LTD149,
+const ANNUAL_PROMO_PRICE_BY_CODE = {
+  ANNUAL_99: process.env.STRIPE_PRICE_ANNUAL_PROMO_99 || process.env.STRIPE_PRICE_LTD99,
+  ANNUAL_149: process.env.STRIPE_PRICE_ANNUAL_PROMO_149 || process.env.STRIPE_PRICE_LTD149,
 };
-const LTD_400_PRICE = process.env.STRIPE_PRICE_LTD400;
+const DEFAULT_ANNUAL_PROMO_PRICE = process.env.STRIPE_PRICE_ANNUAL_PROMO || null;
+const LIFETIME_400_PRICE = process.env.STRIPE_PRICE_LIFETIME_400 || process.env.STRIPE_PRICE_LTD400;
 
 // Monthly PRO
 router.post("/api/checkout/pro", requireUser, async (req, res) => {
@@ -102,11 +103,12 @@ router.post("/api/checkout/annual", requireUser, async (req, res) => {
 });
 
 // Limited ANNUAL promos ($99/$149, USD only)
-router.post("/api/checkout/annual/promo", requireUser, async (req, res) => {
+async function handleAnnualPromoCheckout(req, res) {
   try {
-    const tier = String(req.body?.tier || "").toUpperCase(); // ANNUAL_99 | ANNUAL_149
-    const priceId = ANNUAL_PROMO[tier];
-    if (!priceId) return res.status(400).json({ error: "Unknown promo tier" });
+    const rawCode = String(req.body?.code || req.body?.tier || "").trim();
+    const code = rawCode.toUpperCase();
+    const priceId = ANNUAL_PROMO_PRICE_BY_CODE[code] || (!code && DEFAULT_ANNUAL_PROMO_PRICE);
+    if (!priceId) return res.status(400).json({ error: "Unknown annual promo code" });
     const { customerId, email } = await resolveStripeCustomerId(req.user.id);
     const session = await stripe.checkout.sessions.create(applyTax({
       mode: "subscription",
@@ -118,20 +120,23 @@ router.post("/api/checkout/annual/promo", requireUser, async (req, res) => {
       billing_address_collection: "auto",
       ...(customerId ? { customer: customerId } : {}),
       ...(email && !customerId ? { customer_email: email } : {}),
-      metadata: { user_id: req.user.id, plan: "ANNUAL", tier }, // decrement in webhook
+      metadata: { user_id: req.user.id, plan: "ANNUAL", ...(code ? { code } : {}) },
     }));
     res.json({ url: session.url });
   } catch (e) {
-    console.error("/api/checkout/annual/promo error", e);
+    console.error("/api/checkout/annual-promo error", e);
     res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });
   }
-});
+}
+
+router.post("/api/checkout/annual-promo", requireUser, handleAnnualPromoCheckout);
+router.post("/api/checkout/annual/promo", requireUser, handleAnnualPromoCheckout);
 
 // Lifetime $400 one-time
-router.post("/api/checkout/ltd", requireUser, async (req, res) => {
+router.post("/api/checkout/lifetime-400", requireUser, async (req, res) => {
   try {
-    const priceId = LTD_400_PRICE;
-    if (!priceId) return res.status(400).json({ error: "Missing STRIPE_PRICE_LTD400" });
+    const priceId = LIFETIME_400_PRICE;
+    if (!priceId) return res.status(400).json({ error: "Missing STRIPE_PRICE_LIFETIME_400" });
     const { customerId, email } = await resolveStripeCustomerId(req.user.id);
     const session = await stripe.checkout.sessions.create(applyTax({
       mode: "payment",
@@ -147,7 +152,7 @@ router.post("/api/checkout/ltd", requireUser, async (req, res) => {
     }));
     res.json({ url: session.url });
   } catch (e) {
-    console.error("/api/checkout/ltd error", e);
+    console.error("/api/checkout/lifetime-400 error", e);
     res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });
   }
 });

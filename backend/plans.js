@@ -9,31 +9,37 @@ export const PLANS = {
     label: "LTD (99)",
     monthlyRequests: 4_000,
     maxTokens: 10_000_000,
-    maxTranscriptSeconds: 3 * 60 * 60,
+    maxTranscriptSeconds: 5 * 60 * 60,
   },
   LTD_149: {
     label: "LTD (149)",
     monthlyRequests: 5_000,
     maxTokens: 10_000_000,
-    maxTranscriptSeconds: 3 * 60 * 60,
+    maxTranscriptSeconds: 5 * 60 * 60,
   },
-  LTD_199: {
-    label: "LTD (199)",
-    monthlyRequests: 10_000,
+  LTD_400: {
+    label: "LTD (400)",
+    monthlyRequests: 20_000,
     maxTokens: 10_000_000,
-    maxTranscriptSeconds: 3 * 60 * 60,
+    maxTranscriptSeconds: 5 * 60 * 60,
+  },
+  ANNUAL: {
+    label: "ANNUAL",
+    monthlyRequests: 4_000,
+    maxTokens: 10_000_000,
+    maxTranscriptSeconds: 5 * 60 * 60,
   },
   PRO: {
     label: "PRO",
     monthlyRequests: 4_000,
-    maxTokens: 3_000_000,
+    maxTokens: 10_000_000,
     maxTranscriptSeconds: 5 * 60 * 60,
   },
   BETA_FREE: {
     name: "Beta Free",
-    monthlyRequests: 5_000,
-    maxTokens: 10_000_000,
-    maxTranscriptSeconds: 30 * 60, 
+    monthlyRequests: 2_000,
+    maxTokens: 1_000_000,
+    maxTranscriptSeconds: 30 * 60,
   },
 };
 const isBeta = process.env.BETA_MODE === "1";

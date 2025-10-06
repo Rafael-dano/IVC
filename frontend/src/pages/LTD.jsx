@@ -12,7 +12,8 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 const TIERS = [
   { key: "LTD_99",  label: "First 99 spots at $99" },
   { key: "LTD_149", label: "Next 149 spots at $149" },
-  { key: "LTD_199", label: "Last 199 spots at $199" },
+  { key: "LTD_400", label: "Lifetime access 50 spots at $400" },
+  { key: "Annual", label: "$160 for Annual membership"}
 ];
 
 export default function LTD() {
@@ -45,7 +46,7 @@ export default function LTD() {
 
   const onBuy = async (tierKey) => {
       try {
-        await startLTDCheckout(tierKey); // "LTD_99" | "LTD_149" | "LTD_199"
+        await startLTDCheckout(tierKey); // "LTD_99" | "LTD_149" | "LTD_400"
       } catch (e) {
         alert(e.message || t("ltd.checkoutFailed"));
       }
