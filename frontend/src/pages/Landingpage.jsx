@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Landingpage.css";
 import Seo from "../components/Seo";
+import { openAnnualCheckout, openAnnualPromo, openLifetime400, } from "../api/account";
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -99,46 +100,85 @@ export default function LandingPage() {
 
   const pricingTiers = [
     {
-      key: "starter",
-      name: t("landing.pricing.starter.name"),
-      price: t("landing.pricing.starter.price"),
-      description: t("landing.pricing.starter.description"),
-      cta: t("landing.pricing.starter.cta"),
-      link: "/beta",
+      key: "annual",
+      name: t("landing.pricing.annual.name"),
+      price: t("landing.pricing.annual.price"),
+      description: t("landing.pricing.annual.description"),
+      cta: t("landing.pricing.annual.cta"),
       benefits: [
-        t("landing.pricing.starter.benefits.b1"),
-        t("landing.pricing.starter.benefits.b2"),
-        t("landing.pricing.starter.benefits.b3"),
+        t("landing.pricing.annual.benefits.b1"),
+        t("landing.pricing.annual.benefits.b2"),
+        t("landing.pricing.annual.benefits.b3"),
       ],
     },
     {
-      key: "pro",
-      name: t("landing.pricing.pro.name"),
-      price: t("landing.pricing.pro.price"),
-      description: t("landing.pricing.pro.description"),
-      cta: t("landing.pricing.pro.cta"),
-      link: "/signup",
+      key: "annual_99",
+      name: t("landing.pricing.annual_99.name"),
+      price: t("landing.pricing.annual_99.price"),
+      description: t("landing.pricing.annual_99.description"),
+      cta: t("landing.pricing.annual_99.cta"),
       benefits: [
-        t("landing.pricing.pro.benefits.b1"),
-        t("landing.pricing.pro.benefits.b2"),
-        t("landing.pricing.pro.benefits.b3"),
-      ],
-    },
-    {
-      key: "ltd",
-      name: t("landing.pricing.ltd.name"),
-      price: t("landing.pricing.ltd.price"),
-      description: t("landing.pricing.ltd.description"),
-      cta: t("landing.pricing.ltd.cta"),
-      link: "/ltd",
-      benefits: [
-        t("landing.pricing.ltd.benefits.b1"),
-        t("landing.pricing.ltd.benefits.b2"),
-        t("landing.pricing.ltd.benefits.b3"),
+        t("landing.pricing.annual_99.benefits.b1"),
+        t("landing.pricing.annual_99.benefits.b2"),
+        t("landing.pricing.annual_99.benefits.b3"),
       ],
       featured: true,
     },
+    {
+      key: "annual_149",
+      name: t("landing.pricing.annual_149.name"),
+      price: t("landing.pricing.annual_149.price"),
+      description: t("landing.pricing.annual_149.description"),
+      cta: t("landing.pricing.annual_149.cta"),
+      benefits: [
+        t("landing.pricing.annual_149.benefits.b1"),
+        t("landing.pricing.annual_149.benefits.b2"),
+        t("landing.pricing.annual_149.benefits.b3"),
+      ],
+      featured: true,
+    },
+    {
+      key: "lifetime",
+      name: "Lifetime Access",
+      price: "$400 one-time",
+      description: "Pay once and unlock IVContent forever.",
+      cta: "Unlock lifetime access",
+      benefits: [
+        "Every current and future tool included",
+        "Unlimited projects forever",
+        "VIP feature requests and roadmap input",
+        "Members-only founder community",
+      ],
+    },
   ];
+
+  const handlePricingCta = async (tierKey) => {
+    try {
+      switch (tierKey) {
+        case "annual":
+          await openAnnualCheckout();
+          break;
+        case "annual_99":
+          await openAnnualPromo("annual_99");
+          break;
+        case "annual_149":
+          await openAnnualPromo("annual_149");
+          break;
+        case "lifetime":
+          await openLifetime400();
+          break;
+        default:
+          throw new Error("Unknown pricing tier");
+      }
+    } catch (e) {
+      const message =
+        e?.message ||
+        t("landing.checkoutError", {
+          defaultValue: "We couldn't open the checkout. Please try again.",
+        });
+      alert(message);
+    }
+  };
 
   return (
     <div className="landing-page">
@@ -289,9 +329,13 @@ export default function LandingPage() {
                   <li key={index}>{benefit}</li>
                 ))}
               </ul>
-              <Link to={tier.link} className="pricing-cta">
+              <button
+                type="button"
+                className="pricing-cta"
+                onClick={() => handlePricingCta(tier.key)}
+              >
                 {tier.cta}
-              </Link>
+                </button>
             </article>
           ))}
         </div>

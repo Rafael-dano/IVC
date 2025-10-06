@@ -1,5 +1,6 @@
 
 import { supabaseAdmin } from "../api/supabaseClient.js";
+import { isPaidPlan } from "../plans.js";
 
 const PLAN_LIMITS = {
   FREE: 50,
@@ -59,7 +60,7 @@ async function ensureBetaLifecycle(userId, userEmail) {
     const plan = String(profile?.plan || "FREE").toUpperCase();
     const nowIso = new Date().toISOString();
 
-    if (plan.startsWith("LTD_") || plan === "PRO") return;
+    if (isPaidPlan(plan)) return;
 
     if (plan === "BETA_FREE" && profile?.beta_expires_at) {
       if (new Date(profile.beta_expires_at).toISOString() < nowIso) {

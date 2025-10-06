@@ -23,7 +23,7 @@ import openai from "./api/openaiClient.js";
 import { supabaseAdmin } from "./api/supabaseClient.js";
 import { requireUser, enforceLimits } from "./middleware/authAndLimits.js";
 import checkoutRoute from "./checkoutRoute.js";
-import { PLANS } from "./plans.js";
+import { PLANS, isPaidPlan } from "./plans.js";
 import { ph } from "./server-analytics/posthog.js";
 import { sendWelcomeEmail,  sendMembershipThankYouEmail, sendLTDThankYouEmail,  sendReminderLTD,  sendReminderMonthly,  sendBetaWelcomeEmail } from "./email.js";
 
@@ -481,7 +481,7 @@ app.post("/api/beta/confirm-google", express.json(), async (req, res) => {
 
     // Don’t downgrade paid plans
     const plan = String(prof.plan || "FREE").toUpperCase();
-    if (plan.startsWith("LTD_") || plan === "PRO") {
+    if (isPaidPlan(plan)) {
       return res.json({ ok: true, plan, detail: "Paid plan detected. No change." });
     }
 
@@ -519,7 +519,7 @@ app.post("/api/beta/activate", requireUser, async (req, res) => {
       .maybeSingle();
 
     const plan = String(prof?.plan || "FREE").toUpperCase();
-    if (plan.startsWith("LTD_") || plan === "PRO") {
+    if (isPaidPlan(plan)) {
       return res.json({ ok: true, plan }); // already paid
     }
     if (plan === "BETA_FREE" && prof?.beta_expires_at) {
@@ -1307,90 +1307,6 @@ app.post("/api/billing/portal", requireUser, async (req, res) => {
     res.status(500).json({ error: "Could not create billing portal session" });
   }
 });
-
-// NEW: Stripe Checkout endpoints (LTD + PRO) 
-app.post("/api/checkout/ltd", requireUser, async (req, res) => {
-  try {
-    const { tier } = req.body || {};
-    const allowed = new Set(["LTD_99", "LTD_149", "LTD_199"]);
-    if (!allowed.has(tier)) {
-      return res.status(400).json({ error: "Invalid or missing 'tier'." });
-    }
-
-    const priceEnvKey = `STRIPE_PRICE_${tier}`;
-    const priceId = process.env[priceEnvKey];
-    if (!priceId) {
-      return res.status(500).json({ error: `Missing env ${priceEnvKey}` });
-    }
-
-    // Prefer using existing Stripe customer if present
-    const { data: prof } = await supabaseAdmin
-      .from("profiles")
-      .select("stripe_customer_id")
-      .eq("id", req.user.id)
-      .maybeSingle();
-
-    const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
-    const success_url = `${origin}/settings?checkout=success`;
-    const cancel_url  = `${origin}/ltd?checkout=cancelled`;
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer: prof?.stripe_customer_id || undefined,
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url,
-      cancel_url,
-      metadata: { user_id: req.user.id, tier },
-      allow_promotion_codes: true,
-      billing_address_collection: "auto",
-      automatic_tax: { enabled: true },
-    });
-
-    return res.json({ url: session.url });
-  } catch (e) {
-    console.error("/api/checkout/ltd error:", e);
-    return res.status(500).json({ error: "Checkout session failed" });
-  }
-});
-
-app.post("/api/checkout/pro", requireUser, async (req, res) => {
-  try {
-    const priceId = process.env.STRIPE_PRICE_PRO;
-    if (!priceId) {
-      return res.status(500).json({ error: "Missing env STRIPE_PRICE_PRO" });
-    }
-
-    const { data: prof } = await supabaseAdmin
-      .from("profiles")
-      .select("stripe_customer_id")
-      .eq("id", req.user.id)
-      .maybeSingle();
-
-    const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
-    const success_url = `${origin}/settings?checkout=success`;
-    const cancel_url  = `${origin}/ltd?checkout=cancelled`;
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      customer: prof?.stripe_customer_id || undefined,
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url,
-      cancel_url,
-      metadata: { user_id: req.user.id, plan: "PRO" },
-      allow_promotion_codes: true,
-      billing_address_collection: "auto",
-      automatic_tax: { enabled: true },
-    });
-
-    return res.json({ url: session.url });
-  } catch (e) {
-    console.error("/api/checkout/pro error:", e);
-    return res.status(500).json({ error: "Checkout session failed" });
-  }
-});
-
-/* Checkout + Generate*/
-app.use(checkoutRoute);
 
 app.post("/api/generate", requireUser, enforceLimits, async (req, res) => {
   try {

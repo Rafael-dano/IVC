@@ -138,7 +138,7 @@
     "a1": "IVContent is a content repurposing tool that helps you transform one piece of content into multiple formats for different platforms — saving you time, boosting reach, and helping you stay consistent.",
     "q2": "How do I start using it?",
     "a2": "Simply sign up for an account, choose a tool from the dashboard, paste your content, and click “Repurpose.”",
-    "q3": "What does the Lifetime Deal include?",
+    "q3": "What does the Limited-time deal include?",
     "a3": "The LTD gives you unlimited access to all current tools and future features, forever — with no monthly fees.",
     "q4": "Can I upgrade later?",
     "a4": "Yes! If you start with a monthly plan, you can upgrade to yearly or lifetime at any time from your account settings.",
@@ -154,7 +154,7 @@
     "heroBullet2": "Multilingual outputs across 12 languages.",
     "heroBullet3": "Designed for creators, agencies, and repurposing pros.",
     "cta": "Join the Beta",
-    "heroSecondaryCta": "Explore Lifetime Deal",
+    "heroSecondaryCta": "Explore Limited-time deal",
     "heroCardTitle": "Automate your repurposing workflow",
     "heroCardBody": "Drop in your long-form content and generate ready-to-post assets tailored to every channel.",
     "heroCardTag1": "AI drafts",
@@ -230,39 +230,39 @@
     },
     "pricingLabel": "Pricing",
     "pricingTitle": "Choose your launch plan",
-    "pricingSubtitle": "Start free during beta and upgrade when you’re ready. Lifetime deals remain until spots sell out.",
+    "pricingSubtitle": "Start free during beta and upgrade when you’re ready. Limited-time deals remain until spots sell out.",
     "pricing": {
-      "starter": {
-        "name": "Beta Starter",
-        "price": "$0",
-        "description": "Request access and explore IVContent during the beta period.",
-        "cta": "Join the beta",
+      "annual": {
+        "name": "Creator Annual Membership",
+        "price": "$160 / year",
+        "description": "Full access to every IVContent workflow with annual billing after your trial.",
+        "cta": "Join with annual billing",
         "benefits": {
-          "b1": "Limited-time free access while beta is open",
-          "b2": "5 AI repurpose runs each week",
-          "b3": "Private community feedback sessions"
+          "b1": "Unlimited projects and repurposed outputs",
+          "b2": "All new AI tools and updates included",
+          "b3": "Priority creator success support"
         }
       },
-      "pro": {
-        "name": "Pro Creator",
-        "price": "$15/mo",
-        "description": "Unlock higher limits, brand voices, and collaboration features.",
-        "cta": "Get launch notification",
+      "annual_99": {
+        "name": "Founding Member – $99",
+        "price": "$99 for your first year",
+        "description": "Limited launch pricing for the first creators who back IVContent.",
+        "cta": "Claim the $99 founder rate",
         "benefits": {
-          "b1": "Unlimited repurpose runs",
-          "b2": "Saved templates & brand voice presets",
-          "b3": "Team workspaces (coming soon)"
+          "b1": "Lock in $99 for 12 months of full access. ",
+          "b2": "Early access to new drops and automations",
+          "b3": "Founding member price forever (unless YOU cancel the membership)"
         }
       },
-      "ltd": {
-        "name": "Lifetime Deal",
-        "price": "$99, $149, or $199",
-        "description": "One-time payment for lifetime access. Spots are capped and go fast.",
-        "cta": "View LTD tiers",
+      "annual_149": {
+        "name": "Launch Special – $149",
+        "price": "$149 for your first year",
+        "description": "Missed the founder spots? Save $10 for joining the 149 club",
+        "cta": "Start for $149",
         "benefits": {
           "b1": "All current & future features included",
           "b2": "Priority roadmap requests",
-          "b3": "Access to LTD-only community"
+          "b3": "The Price will go up but NOT FOR YOU!!!(unless you cancel membership)"
         }
       }
     },
@@ -277,7 +277,7 @@
   },
 
   "ltd": {
-    "title": "Lifetime Deal Access 🚀",
+    "title": "Limited-time deal Access 🚀",
     "sub": "Secure your spot before it's gone! Once a tier sells out, the next one unlocks.",
     "joinBeta": "Join Beta Testing",
     "spotsError": "Spots not loading. Try again.",
@@ -316,7 +316,7 @@
     "privacyNote": "We’ll use your email only for beta updates. You can unsubscribe anytime.",
     "inTitle": "You’re in!",
     "inDesc": "Thanks for confirming your interest. Beta access activates after you finish the agreement.",
-    "backToLTD": "Back to Lifetime Deals",
+    "backToLTD": "Back to Limited-time deals",
     "agreementNotice": "Beta access activates after you complete the agreement. We’ll open it in a new tab.",
     "agreementDefault": "Almost there! Complete the Beta Agreement in the tab that just opened to activate your access.",
     "agreementReminder": "If the form didn’t appear, use the button above to reopen it.",

@@ -38,7 +38,13 @@ export const PLANS = {
 };
 const isBeta = process.env.BETA_MODE === "1";
 if (isBeta && PLANS?.FREE) {
-  PLANS.FREE.maxTranscriptSeconds = 30 * 60; 
+  PLANS.FREE.maxTranscriptSeconds = 30 * 60;
+}
+
+// treat PRO, ANNUAL, and any LTD_* as paid
+export function isPaidPlan(plan) {
+  const p = String(plan || "").toUpperCase();
+  return p === "PRO" || p === "ANNUAL" || p.startsWith("LTD_");
 }
 
 export default PLANS;

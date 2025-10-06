@@ -4,6 +4,7 @@ import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import RepurposeTool from '../components/RepurposeTool.jsx';
 import { fetchMe } from '../api/account.js';
+import { isPaid } from '../utils/plan.js';
 import { useTranslation } from "react-i18next";
 import "./Dashboard.css";
 
@@ -24,9 +25,9 @@ export default function Dashboard() {
   }, []);
 
   const plan = String(account?.user?.plan || "FREE").toUpperCase();
-  const isProOrLTD = /^PRO|LTD/.test(plan);
+  const isPaidPlan = isPaid(plan);
   const displayName = account?.user?.display_name?.trim();
-  const titleText = isProOrLTD && displayName ? displayName : t("dashboard.title");
+  const titleText = isPaidPlan && displayName ? displayName : t("dashboard.title");
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} font-sans`}>
@@ -62,11 +63,11 @@ function UsageBubble({ account }) {
   const minsLeft  = Math.max(0, minsLimit - minsUsed);
   const minsPct   = minsLimit ? Math.min(100, Math.round((minsUsed / minsLimit) * 100)) : 0;
 
-  const isProOrLTD = /^PRO|LTD/.test(plan);
+  const isPaidPlan = isPaid(plan);
   const hasAnyLimit = (tokensLimit > 0) || (minsLimit > 0);
 
   // FREE (or zero limits): show upgrade nudge
-  if (!isProOrLTD || !hasAnyLimit) {
+  if (!isPaidPlan || !hasAnyLimit) {
     return (
       <div className="ml-auto shrink-0 rounded-2xl px-4 py-3 bg-white/10 backdrop-blur border border-white/15 shadow-sm">
         <div className="text-xs uppercase tracking-wide opacity-75 mb-1">{plan}</div>
@@ -89,7 +90,7 @@ function UsageBubble({ account }) {
     );
   }
 
-  // PRO/LTD bubble with bars
+  // Paid bubble with bars
   const Bar = ({ pct }) => (
     <div className="h-1.5 w-full rounded bg-white/15 overflow-hidden">
       <div

@@ -3,11 +3,13 @@ import { useAccount } from "../hooks/useAccount.js";
 import { openBillingPortal } from "../api/account.js";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import { isPaid } from "../utils/plan.js";
 
 export default function Header() {
   const { t } = useTranslation();
   const { loading, account } = useAccount();
   const planKey = (account?.user?.plan || "FREE").toUpperCase();
+  const isPaidPlan = isPaid(planKey);
 
   return (
     <header className="w-full px-6 py-4 flex flex-col sm:flex-row items-center justify-between bg-gray-800 text-white shadow-md">
@@ -21,7 +23,7 @@ export default function Header() {
             <span className="px-2 py-1 rounded-full bg-gray-100/10 border border-white/20">
               {planKey}
             </span>
-            {planKey === "PRO" && (
+            {isPaidPlan && (
               <button
                 className="px-2 py-1 rounded border border-white/20 hover:bg-white/10 transition"
                 onClick={() => openBillingPortal().catch(err => alert(err.message))}

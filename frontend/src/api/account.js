@@ -34,3 +34,77 @@ export async function openBillingPortal() {
   if (!url) throw new Error("Portal URL missing.");
   window.location.href = url;
 }
+
+export async function openAnnualCheckout(region) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Please log in first.");
+
+  const body = region ? { region } : {};
+  const { url } = await httpJsonRaw(`${API_BASE}/api/checkout/annual`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${session.access_token}` },
+    body: JSON.stringify(body),
+  });
+
+  if (!url) throw new Error("Checkout URL missing.");
+  window.location.href = url;
+}
+
+export async function openAnnualPromo(code) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Please log in first.");
+  if (!code) throw new Error("Promo code required.");
+
+  const { url } = await httpJsonRaw(`${API_BASE}/api/checkout/annual-promo`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${session.access_token}` },
+    body: JSON.stringify({ code }),
+  });
+
+  if (!url) throw new Error("Checkout URL missing.");
+  window.location.href = url;
+}
+
+export async function openLifetime400() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Please log in first.");
+
+  const { url } = await httpJsonRaw(`${API_BASE}/api/checkout/lifetime-400`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+
+  if (!url) throw new Error("Checkout URL missing.");
+  window.location.href = url;
+}
+
+function redirectToCheckout(envKey) {
+  const checkoutUrl = import.meta.env[envKey];
+  if (!checkoutUrl) {
+    throw new Error(`Checkout link missing. Please configure ${envKey}.`);
+  }
+
+  window.location.href = checkoutUrl;
+}
+
+export function openAnnualCheckout() {
+  redirectToCheckout("VITE_CHECKOUT_ANNUAL");
+}
+
+export function openAnnualPromo(tierKey) {
+  const lookup = {
+    annual_99: "VITE_CHECKOUT_ANNUAL_99",
+    annual_149: "VITE_CHECKOUT_ANNUAL_149",
+  };
+
+  const envKey = lookup[tierKey];
+  if (!envKey) {
+    throw new Error("Unknown annual promo tier");
+  }
+
+  redirectToCheckout(envKey);
+}
+
+export function openLifetime400() {
+  redirectToCheckout("VITE_CHECKOUT_LIFETIME_400");
+}
