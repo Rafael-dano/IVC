@@ -12,6 +12,29 @@ function successUrl() { return `${SITE_ORIGIN}/settings?checkout=success`; }
 function cancelUrl()  { return `${SITE_ORIGIN}/ltd?checkout=cancelled`; }
 function applyTax(obj) { return TAX_ENABLED ? { ...obj, automatic_tax: { enabled: true } } : obj; }
 
+async function createCheckoutSession(params, { allowRedirects = false } = {}) {
+  const base = applyTax({
+    ...params,
+    automatic_payment_methods: {
+      enabled: true,
+      ...(allowRedirects ? { allow_redirects: "always" } : {}),
+    },
+  });
+
+  try {
+    return await stripe.checkout.sessions.create(base);
+  } catch (e) {
+    if (e?.raw?.code === "parameter_unknown" && e?.raw?.param === "automatic_payment_methods") {
+      const fallback = applyTax({
+        ...params,
+        payment_method_types: ["card"],
+      });
+      return await stripe.checkout.sessions.create(fallback);
+    }
+    throw e;
+  }
+}
+
 async function resolveStripeCustomerId(userId) {
   const { data: prof } = await supabaseAdmin
     .from("profiles")
@@ -49,6 +72,12 @@ const ANNUAL_PROMO_PRICE_BY_CODE = {
 };
 const DEFAULT_ANNUAL_PROMO_PRICE = process.env.STRIPE_PRICE_ANNUAL_PROMO || null;
 const LIFETIME_400_PRICE = process.env.STRIPE_PRICE_LIFETIME_400 || process.env.STRIPE_PRICE_LTD400;
+const LTD_PRICE_BY_TIER = {
+  LTD_99: process.env.STRIPE_PRICE_LTD99,
+  LTD_149: process.env.STRIPE_PRICE_LTD149,
+  LTD_199: process.env.STRIPE_PRICE_LTD199,
+  LTD_400: LIFETIME_400_PRICE,
+};
 
 // Monthly PRO
 router.post("/api/checkout/pro", requireUser, async (req, res) => {
@@ -57,18 +86,17 @@ router.post("/api/checkout/pro", requireUser, async (req, res) => {
     const priceId = PRO_PRICE_BY_REGION[region] || PRO_PRICE_BY_REGION.DEFAULT;
     if (!priceId) return res.status(400).json({ error: "Missing PRO prices" });
     const { customerId, email } = await resolveStripeCustomerId(req.user.id);
-    const session = await stripe.checkout.sessions.create(applyTax({
+    const session = await createCheckoutSession({
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: successUrl(),
       cancel_url: cancelUrl(),
-      automatic_payment_methods: { enabled: true }, // cards + wallets
       allow_promotion_codes: true,
       billing_address_collection: "auto",
       ...(customerId ? { customer: customerId } : {}),
       ...(email && !customerId ? { customer_email: email } : {}),
       metadata: { user_id: req.user.id, plan: "PRO" },
-    }));
+    });
     res.json({ url: session.url });
   } catch (e) {
     console.error("/api/checkout/pro error", e);
@@ -83,18 +111,17 @@ router.post("/api/checkout/annual", requireUser, async (req, res) => {
     const priceId = ANNUAL_PRICE_BY_REGION[region] || ANNUAL_PRICE_BY_REGION.DEFAULT;
     if (!priceId) return res.status(400).json({ error: "Missing ANNUAL prices" });
     const { customerId, email } = await resolveStripeCustomerId(req.user.id);
-    const session = await stripe.checkout.sessions.create(applyTax({
+    const session = await createCheckoutSession({
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: successUrl(),
       cancel_url: cancelUrl(),
-      automatic_payment_methods: { enabled: true }, // cards + wallets
       allow_promotion_codes: true,
       billing_address_collection: "auto",
       ...(customerId ? { customer: customerId } : {}),
       ...(email && !customerId ? { customer_email: email } : {}),
       metadata: { user_id: req.user.id, plan: "ANNUAL" },
-    }));
+    });
     res.json({ url: session.url });
   } catch (e) {
     console.error("/api/checkout/annual error", e);
@@ -110,18 +137,17 @@ async function handleAnnualPromoCheckout(req, res) {
     const priceId = ANNUAL_PROMO_PRICE_BY_CODE[code] || (!code && DEFAULT_ANNUAL_PROMO_PRICE);
     if (!priceId) return res.status(400).json({ error: "Unknown annual promo code" });
     const { customerId, email } = await resolveStripeCustomerId(req.user.id);
-    const session = await stripe.checkout.sessions.create(applyTax({
+    const session = await createCheckoutSession({
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: successUrl(),
       cancel_url: cancelUrl(),
-      automatic_payment_methods: { enabled: true }, // cards + wallets
       allow_promotion_codes: true,
       billing_address_collection: "auto",
       ...(customerId ? { customer: customerId } : {}),
       ...(email && !customerId ? { customer_email: email } : {}),
       metadata: { user_id: req.user.id, plan: "ANNUAL", ...(code ? { code } : {}) },
-    }));
+    });
     res.json({ url: session.url });
   } catch (e) {
     console.error("/api/checkout/annual-promo error", e);
@@ -138,21 +164,48 @@ router.post("/api/checkout/lifetime-400", requireUser, async (req, res) => {
     const priceId = LIFETIME_400_PRICE;
     if (!priceId) return res.status(400).json({ error: "Missing STRIPE_PRICE_LIFETIME_400" });
     const { customerId, email } = await resolveStripeCustomerId(req.user.id);
-    const session = await stripe.checkout.sessions.create(applyTax({
+    const session = await createCheckoutSession({
       mode: "payment",
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: successUrl(),
       cancel_url: cancelUrl(),
-      automatic_payment_methods: { enabled: true, allow_redirects: "always" },
       allow_promotion_codes: true,
       billing_address_collection: "auto",
       ...(customerId ? { customer: customerId } : {}),
       ...(email && !customerId ? { customer_email: email } : {}),
       metadata: { user_id: req.user.id, tier: "LTD_400" },
-    }));
+    }, { allowRedirects: true });
     res.json({ url: session.url });
   } catch (e) {
     console.error("/api/checkout/lifetime-400 error", e);
+    res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });
+  }
+});
+
+router.post("/api/checkout/ltd", requireUser, async (req, res) => {
+  try {
+    const tierRaw = String(req.body?.tier || req.body?.plan || "").toUpperCase();
+    if (!tierRaw.startsWith("LTD_")) return res.status(400).json({ error: "Unknown LTD tier" });
+
+    const priceId = LTD_PRICE_BY_TIER[tierRaw];
+    if (!priceId) return res.status(400).json({ error: "Tier not available" });
+
+    const { customerId, email } = await resolveStripeCustomerId(req.user.id);
+    const session = await createCheckoutSession({
+      mode: "payment",
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: successUrl(),
+      cancel_url: cancelUrl(),
+      allow_promotion_codes: true,
+      billing_address_collection: "auto",
+      ...(customerId ? { customer: customerId } : {}),
+      ...(email && !customerId ? { customer_email: email } : {}),
+      metadata: { user_id: req.user.id, tier: tierRaw },
+    }, { allowRedirects: true });
+
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error("/api/checkout/ltd error", e);
     res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });
   }
 });
