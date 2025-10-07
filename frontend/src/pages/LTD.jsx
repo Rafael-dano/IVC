@@ -6,6 +6,7 @@ import "./LTD.css";
 import { httpJson } from "../api/http.js";
 import { useTranslation } from "react-i18next";
 import { startLTDCheckout, startProCheckout } from "../api/checkout";
+import { openAnnualCheckout } from "../api/account.js";
 
 const TIERS = [
   { key: "LTD_99",  label: "First 99 spots at $99" },
@@ -43,12 +44,16 @@ export default function LTD() {
   }, []);
 
   const onBuy = async (tierKey) => {
-      try {
-        await startLTDCheckout(tierKey); // "LTD_99" | "LTD_149" | "LTD_400"
-      } catch (e) {
-        alert(e.message || t("ltd.checkoutFailed"));
+    try {
+      if (tierKey === "Annual") {
+        await openAnnualCheckout();
+        return;
       }
-    };
+      await startLTDCheckout(tierKey); // "LTD_99" | "LTD_149" | "LTD_400"
+    } catch (e) {
+      alert(e.message || t("ltd.checkoutFailed"));
+    }
+  };
 
   const onSubscribe = async () => {
     try {

@@ -50,10 +50,13 @@ async function normalizeLineItemsForMode(mode, lineItems = []) {
 
 async function createCheckoutSession(params, { allowRedirects = false } = {}) {
   const line_items = await normalizeLineItemsForMode(params.mode, params.line_items);
-
-  const base = applyTax({
+  const shared = {
     ...params,
     ...(line_items ? { line_items } : {}),
+  };
+
+  const base = applyTax({
+    ...shared,
     automatic_payment_methods: {
       enabled: true,
       ...(allowRedirects ? { allow_redirects: "always" } : {}),
@@ -65,7 +68,7 @@ async function createCheckoutSession(params, { allowRedirects = false } = {}) {
   } catch (e) {
     if (e?.raw?.code === "parameter_unknown" && e?.raw?.param === "automatic_payment_methods") {
       const fallback = applyTax({
-        ...params,
+        ...shared,
         payment_method_types: ["card"],
       });
       return await stripe.checkout.sessions.create(fallback);
@@ -112,9 +115,6 @@ const ANNUAL_PROMO_PRICE_BY_CODE = {
 const DEFAULT_ANNUAL_PROMO_PRICE = process.env.STRIPE_PRICE_ANNUAL_PROMO || null;
 const LIFETIME_400_PRICE = process.env.STRIPE_PRICE_LIFETIME_400 || process.env.STRIPE_PRICE_LTD400;
 const LTD_PRICE_BY_TIER = {
-  LTD_99: process.env.STRIPE_PRICE_LTD99,
-  LTD_149: process.env.STRIPE_PRICE_LTD149,
-  LTD_199: process.env.STRIPE_PRICE_LTD199,
   LTD_400: LIFETIME_400_PRICE,
 };
 
