@@ -10,11 +10,50 @@ const SITE_ORIGIN = (process.env.SITE_URL || "").replace(/\/+$/, "");
 
 function successUrl() { return `${SITE_ORIGIN}/settings?checkout=success`; }
 function cancelUrl()  { return `${SITE_ORIGIN}/ltd?checkout=cancelled`; }
-function applyTax(obj) { return TAX_ENABLED ? { ...obj, automatic_tax: { enabled: true } } : obj; }
+function applyTax(obj) {
+  if (!TAX_ENABLED) return obj;
+  const automatic = { automatic_tax: { enabled: true } };
+  const update = { customer_update: { ...(obj.customer_update || {}), address: "auto" } };
+  return { ...obj, ...automatic, ...update };
+}
+
+async function normalizeLineItemsForMode(mode, lineItems = []) {
+  if (mode !== "payment" || !Array.isArray(lineItems) || lineItems.length === 0) {
+    return lineItems;
+  }
+
+  const normalized = await Promise.all(
+    lineItems.map(async (item) => {
+      if (!item?.price || item.price_data) return item;
+
+      const price = await stripe.prices.retrieve(item.price);
+      if (price.type !== "recurring") return item;
+
+      if (!price.unit_amount || !price.currency || !price.product) {
+        throw new Error("Recurring price lacks data required for one-time checkout");
+      }
+
+      const productId = typeof price.product === "string" ? price.product : price.product.id;
+      const { price: _ignoredPrice, ...rest } = item;
+      return {
+        ...rest,
+        price_data: {
+          currency: price.currency,
+          unit_amount: price.unit_amount,
+          product: productId,
+        },
+      };
+    })
+  );
+  return normalized;
+}
 
 async function createCheckoutSession(params, { allowRedirects = false } = {}) {
+  const line_items = await normalizeLineItemsForMode(params.mode, params.line_items);
+
   const base = applyTax({
     ...params,
+    ...(line_items ? { line_items } : {}),
     automatic_payment_methods: {
       enabled: true,
       ...(allowRedirects ? { allow_redirects: "always" } : {}),
