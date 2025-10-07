@@ -46,8 +46,7 @@ export default function Terms() {
       <section className="prose prose-neutral max-w-none">
         <h2 id="s1">1. Agreement to Terms</h2>
         <p>
-          By accessing or using IVContent (the “Service”), you agree to be bound by these Terms of Service (“Terms”).
-          If you do not agree, do not use the Service.
+        By clicking ‘Sign Up’, ‘Subscribe’, completing a purchase, or otherwise using our Service, you acknowledge that you have read, understood, and agree to these Terms
         </p>
 
         <h2 id="s2">2. Who We Are</h2>
@@ -65,8 +64,9 @@ export default function Terms() {
         <ul>
           <li><strong>Plans.</strong> We may offer free, beta, subscription, and lifetime-deal (“LTD”) plans. Plan features and limits are described in-app and may change.</li>
           <li><strong>LTD.</strong> LTD is a one-time purchase granting ongoing access to the features and limits available to LTD holders, which may evolve over time. LTDs are non-renewing.</li>
-          <li><strong>Pricing &amp; Taxes.</strong> Prices may change. You authorize us (and our payment processor) to charge your payment method for due amounts, including applicable taxes.</li>
-          <li><strong>Refunds.</strong> Except where required by law, payments are non-refundable.</li>
+          <li><strong>Pricing &amp; Taxes.</strong> Prices may change. You authorize us (and our payment processor) to charge your payment method for due amounts, including applicable taxes. All payments are final. We do not provide refunds for unused time or non-usage of the service.</li>
+          <li><strong>Refunds.</strong> No Refunds! All Sales are Final, Except where required by law, payments are non-refundable. </li>
+          <li><strong>Cancellation</strong> You may cancel at any time; cancellation stops future charges, but previously paid fees are non-refundable.</li>
         </ul>
 
         <h2 id="s5">5. Acceptable Use</h2>
@@ -142,6 +142,17 @@ export default function Terms() {
         <p>
           Questions? Email us at <a className="underline" href="mailto:ivcontent.com@gmail.com">ivcontent.com@gmail.com</a>.
         </p>
+        <button 
+          onClick={() => {
+            // Store confirmation
+            localStorage.setItem('tosAccepted', 'true');
+            // Redirect to correct Stripe checkout URL
+            window.location.href = stripeCheckoutUrlForSelectedPlan;
+          }}
+          className="tos-accept-btn"
+        >
+          ✅ Yes, I Accept Terms
+        </button>
       </section>
     </main>
   );

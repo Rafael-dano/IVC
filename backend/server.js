@@ -149,75 +149,95 @@ app.post(
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object;
-          const userId = session.metadata?.user_id;
-          const tier = session.metadata?.tier || "LTD";
-          const isLTD = session.mode === "payment";
-
-          // capture Stripe customer id on first checkout
-          const customerId = session.customer;
-          if (userId && customerId) {
+        
+          const userId    = session.metadata?.user_id || null;
+          const planTag   = (session.metadata?.plan || "").toUpperCase();   // "PRO" | "ANNUAL"
+          const promoTier = (session.metadata?.tier || "").toUpperCase();   // "ANNUAL_99" | "ANNUAL_149" | "LTD_400"
+        
+          const isSubscription = session.mode === "subscription";
+          const isOneTime      = session.mode === "payment";
+        
+          // Persist Stripe customer id on first successful checkout
+          if (userId && session.customer) {
             await supabaseAdmin
               .from("profiles")
-              .update({ stripe_customer_id: customerId })
+              .update({ stripe_customer_id: session.customer })
               .eq("id", userId);
           }
-
-          // LTD plan flip + stock decrement
-          if (userId && isLTD && session.payment_status === "paid") {
+        
+          // Lifetime one-time deal: LTD_400
+          if (isOneTime && promoTier === "LTD_400" && session.payment_status === "paid" && userId) {
             await supabaseAdmin
               .from("profiles")
-              .update({ plan: tier, beta_expires_at: null }) 
+              .update({ plan: "LTD_400", beta_expires_at: null })
               .eq("id", userId);
-          
-            await supabaseAdmin.rpc("decrement_spot", { p_tier: tier });
+        
+            // limited stock decrement
+            await supabaseAdmin.rpc("decrement_spot", { p_tier: "LTD_400" });
           }
-
+        
+          // Subscriptions: PRO or ANNUAL (includes limited annual cohorts)
+          if (isSubscription && userId) {
+            const planFinal = planTag === "ANNUAL" ? "ANNUAL" : "PRO";
+        
+            await supabaseAdmin
+              .from("profiles")
+              .update({ plan: planFinal, beta_expires_at: null })
+              .eq("id", userId);
+        
+            // If it was one of the limited annual promos, decrement that bucket
+            if (promoTier === "ANNUAL_99" || promoTier === "ANNUAL_149") {
+              await supabaseAdmin.rpc("decrement_spot", { p_tier: promoTier });
+            }
+          }
+        
+          // Purchase emails (best-effort)
           try {
             const buyerEmail = session?.customer_details?.email || null;
             const firstName =
               session?.customer_details?.name?.split(" ")?.[0] ||
               session?.customer_details?.name ||
               "";
-          
+        
             if (buyerEmail) {
               const origin = (process.env.SITE_URL || "").replace(/\/+$/, "");
-              if (session.mode === "subscription") {
-                // Monthly/PRO
+              if (isSubscription) {
                 await sendMembershipThankYouEmail({
                   to: buyerEmail,
                   firstName,
-                  accountUrl: `${origin}/settings`
+                  accountUrl: `${origin}/settings`,
                 });
-              } else {
-                // LTD (one-time "payment")
+              } else if (isOneTime && promoTier === "LTD_400" && session.payment_status === "paid") {
                 await sendLTDThankYouEmail({
                   to: buyerEmail,
                   firstName,
-                  loginUrl: `${origin}/login`
+                  loginUrl: `${origin}/login`,
                 });
               }
             }
           } catch (e) {
-            console.warn("send purchase email failed:", e?.message || e);
+            console.warn("purchase email failed:", e?.message || e);
           }
-          
+        
+          // Analytics
           ph?.capture({
             distinctId: userId || session.customer || "anon",
             event: "purchase_succeeded",
             properties: {
-              mode: session.mode,             
+              mode: session.mode,
               amount_total: session.amount_total || null,
               currency: session.currency || null,
-              tier,
+              planTag,
+              promoTier,
             },
           });
           break;
-        }
+        }        
 
         case "invoice.paid": {
           const invoice = event.data.object;
-          let userId = invoice.metadata?.user_id;
-
+        
+          let userId = invoice.metadata?.user_id || null;
           if (!userId && invoice.customer) {
             const { data: prof } = await supabaseAdmin
               .from("profiles")
@@ -226,59 +246,53 @@ app.post(
               .maybeSingle();
             userId = prof?.id || null;
           }
-
+        
+          const planTag  = (invoice.metadata?.plan || "").toUpperCase(); // "PRO" | "ANNUAL"
+          const planFinal = planTag === "ANNUAL" ? "ANNUAL" : "PRO";
+        
           if (userId && invoice.lines?.data?.[0]?.period?.end) {
             const renewsAt = new Date(invoice.lines.data[0].period.end * 1000).toISOString();
             await supabaseAdmin
               .from("profiles")
-              .update({ plan: "PRO", renews_at: renewsAt, beta_expires_at: null }) // clear beta on PRO
+              .update({ plan: planFinal, renews_at: renewsAt, beta_expires_at: null })
               .eq("id", userId);
-          }          
-
-        // 🔔 Purchase/renewal email 
-        try {
-          let buyerEmail = null;
-
-          // Prefer Stripe Customer lookup for subscription emails
-          if (invoice.customer) {
-            try {
-              const customer = await stripe.customers.retrieve(invoice.customer);
-              buyerEmail = customer?.email || null;
-            } catch (e) {
-              console.warn("retrieve customer for email failed:", e?.message || e);
+          }
+        
+          // Renewal email (best-effort)
+          try {
+            let buyerEmail = invoice.customer_email || null;
+            if (!buyerEmail && invoice.customer) {
+              try {
+                const customer = await stripe.customers.retrieve(invoice.customer);
+                buyerEmail = customer?.email || null;
+              } catch {}
             }
+            if (!buyerEmail && userId) {
+              const { data: p } = await supabaseAdmin
+                .from("profiles")
+                .select("email")
+                .eq("id", userId)
+                .maybeSingle();
+              buyerEmail = p?.email || null;
+            }
+            if (buyerEmail) {
+              await sendMembershipThankYouEmail({
+                to: buyerEmail,
+                firstName: "Friend",
+                accountUrl: (process.env.SITE_URL || "").replace(/\/+$/, "") + "/settings",
+              });
+            }
+          } catch (e) {
+            console.warn("invoice.paid email failed:", e?.message || e);
           }
-
-          if (!buyerEmail) buyerEmail = invoice.customer_email || null;
-          if (!buyerEmail && userId) {
-            const { data: profForEmail } = await supabaseAdmin
-              .from("profiles")
-              .select("email")
-              .eq("id", userId)
-              .maybeSingle();
-            buyerEmail = profForEmail?.email || null;
-          }
-
-          if (buyerEmail) {
-            await sendMembershipThankYouEmail({
-              to: buyerEmail,
-              firstName: "Friend",    
-              accountUrl: (process.env.SITE_URL || "").replace(/\/+$/, "") + "/settings",
-            });
-          }
-          
-        } catch (e) {
-          console.warn("invoice.paid email failed:", e?.message || e);
-        }
+        
           ph?.capture({
             distinctId: userId || invoice.customer || "anon",
             event: "subscription_renewed",
-            properties: {
-              period_end: invoice.lines?.data?.[0]?.period?.end || null,
-            },
+            properties: { period_end: invoice.lines?.data?.[0]?.period?.end || null },
           });
           break;
-        }
+        }        
 
         case "customer.subscription.deleted": {
           const sub = event.data.object;

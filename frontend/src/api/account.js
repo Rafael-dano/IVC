@@ -1,4 +1,4 @@
-
+// frontend/src/api/account.js
 import { supabase } from "../api/supabaseClient.js";
 
 const ENV = (() => {
@@ -7,11 +7,14 @@ const ENV = (() => {
   return {};
 })();
 
-const API_BASE = (ENV.VITE_API_BASE || ENV.API_BASE || "").replace(/\/+$/, "");
+const API_BASE_RAW = ENV.VITE_API_BASE || ENV.API_BASE || "";
+const API_BASE = API_BASE_RAW.replace(/\/+$/, ""); // may be "" to use same-origin /api/*
 
-// Small helper using fetch directly so we can read error bodies
 async function httpJsonRaw(url, opts = {}) {
-  const res = await fetch(url, { ...opts, headers: { "content-type": "application/json", ...(opts.headers || {}) }});
+  const res = await fetch(url, {
+    ...opts,
+    headers: { "content-type": "application/json", ...(opts.headers || {}) },
+  });
   let body = null;
   try { body = await res.json(); } catch {}
   if (!res.ok) {
@@ -21,66 +24,61 @@ async function httpJsonRaw(url, opts = {}) {
   return body || {};
 }
 
-export async function fetchMe() {
+async function authed(url, init = {}) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Please log in first.");
-  return httpJsonRaw(`${API_BASE}/api/me`, {
-    headers: { Authorization: `Bearer ${session.access_token}` },
+  return httpJsonRaw(url, {
+    ...init,
+    headers: { ...(init.headers || {}), Authorization: `Bearer ${session.access_token}` },
   });
 }
 
+export async function fetchMe() {
+  return authed(`${API_BASE}/api/me`);
+}
+
 export async function openBillingPortal() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Please log in first.");
-
-  const { url } = await httpJsonRaw(`${API_BASE}/api/billing/portal`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${session.access_token}` },
-  });
-
+  const { url } = await authed(`${API_BASE}/api/billing/portal`, { method: "POST" });
   if (!url) throw new Error("Portal URL missing.");
   window.location.href = url;
 }
 
-export async function openAnnualCheckout(region) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Please log in first.");
-
+/** Monthly PRO — region-aware (US, BR, MX). POST body: { region?: "US"|"BR"|"MX" } */
+export async function openProCheckout(region) {
   const body = region ? { region } : {};
-  const { url } = await httpJsonRaw(`${API_BASE}/api/checkout/annual`, {
+  const { url } = await authed(`${API_BASE}/api/checkout/pro`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${session.access_token}` },
     body: JSON.stringify(body),
   });
-
   if (!url) throw new Error("Checkout URL missing.");
   window.location.href = url;
 }
 
-export async function openAnnualPromo(code) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Please log in first.");
-  if (!code) throw new Error("Promo code required.");
-
-  const { url } = await httpJsonRaw(`${API_BASE}/api/checkout/annual-promo`, {
+/** Regular Annual ($160) — region-aware (US, BR, MX). POST body: { region?: "US"|"BR"|"MX" } */
+export async function openAnnualCheckout(region) {
+  const body = region ? { region } : {};
+  const { url } = await authed(`${API_BASE}/api/checkout/annual`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${session.access_token}` },
+    body: JSON.stringify(body),
+  });
+  if (!url) throw new Error("Checkout URL missing.");
+  window.location.href = url;
+}
+
+/** Limited Annual cohorts (USD only) — code: "ANNUAL_99" | "ANNUAL_149" */
+export async function openAnnualPromo(code) {
+  if (!code) throw new Error("Promo code required.");
+  const { url } = await authed(`${API_BASE}/api/checkout/annual-promo`, {
+    method: "POST",
     body: JSON.stringify({ code }),
   });
-
   if (!url) throw new Error("Checkout URL missing.");
   window.location.href = url;
 }
 
+/** Lifetime $400 (USD one-time) */
 export async function openLifetime400() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Please log in first.");
-
-  const { url } = await httpJsonRaw(`${API_BASE}/api/checkout/lifetime-400`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${session.access_token}` },
-  });
-
+  const { url } = await authed(`${API_BASE}/api/checkout/lifetime-400`, { method: "POST" });
   if (!url) throw new Error("Checkout URL missing.");
   window.location.href = url;
 }
