@@ -5,10 +5,8 @@ import "./beta.css";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../api/supabaseClient.js";
 import { httpJson } from "../api/http.js";
-import { track } from "../analytics";
 import posthog from "posthog-js";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 const BETA_FORM_URL = import.meta.env.VITE_BETA_FORM_URL;
 const BETA_FORM_EMAIL_ENTRY = import.meta.env.VITE_BETA_FORM_EMAIL_ENTRY;
 
@@ -84,12 +82,10 @@ export default function Beta() {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
 
-      const body = await httpJson(`${API_BASE}/api/beta/signup`, {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const body = await httpJson("/api/beta/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers,
         body: JSON.stringify({ email: cleanEmail, name: displayName, source }),
       });
 
@@ -121,20 +117,16 @@ export default function Beta() {
   async function checkOrActivate() {
     setError("");
 
-  posthog.capture("beta_activate_attempt");
+    posthog.capture("beta_activate_attempt");
 
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
-  
       // try activate (idempotent)
       try {
-        const actBody = await httpJson(`${API_BASE}/api/beta/activate`, {
+        const actBody = await httpJson("/api/beta/activate", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         posthog.capture("beta_activate_succeeded", { plan: actBody?.plan || "unknown" });
@@ -151,7 +143,7 @@ export default function Beta() {
     }
 
       // If not approved yet, show status
-      const stBody = await httpJson(`${API_BASE}/api/beta/status`, {
+      const stBody = await httpJson("/api/beta/status", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNextMessage(

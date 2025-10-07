@@ -7,8 +7,6 @@ import { httpJson } from "../api/http.js";
 import { useTranslation } from "react-i18next";
 import { startLTDCheckout, startProCheckout } from "../api/checkout";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
-
 const TIERS = [
   { key: "LTD_99",  label: "First 99 spots at $99" },
   { key: "LTD_149", label: "Next 149 spots at $149" },
@@ -25,7 +23,7 @@ export default function LTD() {
   async function loadSpots(signal) {
     try {
       setErr("");
-      const json = await httpJson(`${API_BASE}/api/ltd-spots`, { signal });
+      const json = await httpJson("/api/ltd-spots", { signal });
       setSpots(json.spots || {});
     } catch (e) {
       if (e.name !== "AbortError") setErr(t("ltd.spotsError"));

@@ -2,8 +2,6 @@ import { useState } from "react";
 import { httpJson } from "../api/http.js";
 import { supabase } from "../api/supabaseClient";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
-
 export default function FeedbackBox() {
   const [category, setCategory] = useState("idea");
   const [rating, setRating] = useState(5);
@@ -16,10 +14,9 @@ export default function FeedbackBox() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Please sign in first.");
 
-      await httpJson(`${API_BASE}/api/feedback`, {
+      await httpJson("/api/feedback", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ category, rating, message }),

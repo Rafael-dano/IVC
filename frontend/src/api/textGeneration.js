@@ -15,7 +15,7 @@ export async function generateContent(_userId, prompt, format = "repurpose") {
     headers: {
       "Authorization": `Bearer ${session.access_token}`,
     },
-    body: { prompt, format },
+    body: JSON.stringify({ prompt, format }),
   });
   
   return data.result;

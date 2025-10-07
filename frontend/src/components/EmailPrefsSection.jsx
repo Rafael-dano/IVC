@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "../api/supabaseClient";
 import { httpJson } from "../api/http.js";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
-
 export default function EmailPrefsSection() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -16,7 +14,7 @@ export default function EmailPrefsSection() {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
-      const body = await httpJson(`${API_BASE}/api/marketing/prefs`, {
+      const body = await httpJson("/api/marketing/prefs", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOptIn(!!body.marketing_opt_in);
@@ -33,12 +31,12 @@ export default function EmailPrefsSection() {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
-      const body = await httpJson(`${API_BASE}/api/marketing/prefs`, {
+      const body = await httpJson("/api/marketing/prefs", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: { marketing_opt_in: newValue },
+        body: JSON.stringify({ marketing_opt_in: newValue }),
       });
       setMessage(newValue ? "✅ Preferences saved." : "✅ Unsubscribed from newsletters.");
       setOptIn(!!body.marketing_opt_in);

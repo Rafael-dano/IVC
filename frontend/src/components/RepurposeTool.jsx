@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { generateContent } from '../api/textGeneration.js';
 import { supabase } from '../api/supabaseClient.js';
+import { apiUrl } from "../api/http.js";
 import { jsPDF } from "jspdf";
 import "./Repurpose.css";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
 import LANGS from "../i18nLangs";
-
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:5051";
 
 export default function RepurposeTool() {
   const { t } = useTranslation();
@@ -297,7 +296,7 @@ async function uploadVideoWithProgress({ file, lang = "en", token, onProgress })
     form.append("lang", lang);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${API_BASE}/api/video/transcribe`, true);
+    xhr.open("POST", apiUrl("/api/video/transcribe"), true);
     if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
     xhr.upload.onprogress = (e) => {

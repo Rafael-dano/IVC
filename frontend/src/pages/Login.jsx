@@ -6,12 +6,6 @@ import { httpJson } from "../api/http.js";
 import "./Auth.css";
 import { useTranslation } from "react-i18next";
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE ||
-  (window?.location?.origin?.includes("localhost")
-    ? "http://127.0.0.1:5051"
-    : "https://api.ivcontent.com");
-
 export default function Login() {
   const { t } = useTranslation();
   const [form, setForm] = useState({ email: "", password: "" });
@@ -30,10 +24,9 @@ export default function Login() {
       const token = session?.access_token;
       if (!token) return;
       // fire-and-forget; server dedupes via welcome_sent_at
-      httpJson(`${API_BASE}/api/email/welcome`, {
+      httpJson("/api/email/welcome", {
         method: "POST",
         headers: {
-          "content-type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }).catch(() => {});

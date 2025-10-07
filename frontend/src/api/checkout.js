@@ -7,9 +7,10 @@ export async function startLTDCheckout(tier = "LTD_400") {
   const token = session?.access_token;
   if (!token) throw new Error("Not signed in");
 
-  const body = await httpJson(`/api/checkout/ltd`, {
+  const body = await httpJson("/api/checkout/ltd", {
+    method: "POST",
     headers: { Authorization: `Bearer ${token}` },
-    body: { tier }, // 👈 pass the string, not a bare variable
+    body: JSON.stringify({ tier }),
   });
 
   if (!body?.url) throw new Error("No checkout URL returned");
@@ -21,7 +22,7 @@ export async function startProCheckout() {
   const token = session?.access_token;
   if (!token) throw new Error("Not signed in");
 
-  const body = await httpJson(`/api/checkout/pro`, {
+  const body = await httpJson("/api/checkout/pro", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
