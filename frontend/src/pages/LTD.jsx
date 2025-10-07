@@ -6,13 +6,32 @@ import "./LTD.css";
 import { httpJson } from "../api/http.js";
 import { useTranslation } from "react-i18next";
 import { startLTDCheckout, startProCheckout } from "../api/checkout";
-import { openAnnualCheckout } from "../api/account.js";
+import { openAnnualCheckout, openAnnualPromo } from "../api/account.js";
 
 const TIERS = [
-  { key: "LTD_99",  label: "First 99 spots at $99" },
-  { key: "LTD_149", label: "Next 149 spots at $149" },
-  { key: "LTD_400", label: "Lifetime access 50 spots at $400" },
-  { key: "Annual", label: "$160 for Annual membership"}
+  {
+    key: "ANNUAL_PROMO_99",
+    spotKey: "LTD_99",
+    label: "First 99 spots at $99 (first year)",
+    checkout: () => openAnnualPromo("annual_99"),
+  },
+  {
+    key: "ANNUAL_PROMO_149",
+    spotKey: "LTD_149",
+    label: "Next 149 spots at $149 (first year)",
+    checkout: () => openAnnualPromo("annual_149"),
+  },
+  {
+    key: "LTD_400",
+    spotKey: "LTD_400",
+    label: "Lifetime access 50 spots at $400",
+    checkout: () => startLTDCheckout("LTD_400"),
+  },
+  {
+    key: "ANNUAL",
+    label: "$160 for Annual membership",
+    checkout: () => openAnnualCheckout(),
+  },
 ];
 
 export default function LTD() {
@@ -43,13 +62,12 @@ export default function LTD() {
     };
   }, []);
 
-  const onBuy = async (tierKey) => {
+  const onBuy = async (tier) => {
     try {
-      if (tierKey === "Annual") {
-        await openAnnualCheckout();
-        return;
+      if (typeof tier.checkout !== "function") {
+        throw new Error("Checkout unavailable");
       }
-      await startLTDCheckout(tierKey); // "LTD_99" | "LTD_149" | "LTD_400"
+      await tier.checkout();
     } catch (e) {
       alert(e.message || t("ltd.checkoutFailed"));
     }
@@ -82,14 +100,15 @@ export default function LTD() {
 
         <section className="ltd-pricing-grid">
           {TIERS.map((tTier) => {
-            const remaining = spots[tTier.key];
+            const spotKey = tTier.spotKey || tTier.key;
+            const remaining = spots[spotKey];
             const soldOut = typeof remaining === "number" && remaining <= 0;
 
             return (
               <button
                 key={tTier.key}
                 className={`ltd-button ${soldOut ? "ltd-button--disabled" : ""}`}
-                onClick={() => onBuy(tTier.key)}
+                onClick={() => onBuy(tTier)}
                 disabled={soldOut || loading}
                 title={soldOut ? t("ltd.soldOut") : undefined}
               >
