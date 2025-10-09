@@ -2,16 +2,16 @@ export const PLANS = {
   FREE: {
     label: "FREE",
     monthlyRequests: 50,
-    maxTokens: 100_000, 
-    maxTranscriptSeconds: 15 * 60,        
+    maxTokens: 100_000,
+    maxTranscriptSeconds: 15 * 60,
   },
-  LTD_99: {
+  ANNUAL_99: {
     label: "LTD (99)",
     monthlyRequests: 4_000,
     maxTokens: 10_000_000,
     maxTranscriptSeconds: 5 * 60 * 60,
   },
-  LTD_149: {
+  ANNUAL_149: {
     label: "LTD (149)",
     monthlyRequests: 5_000,
     maxTokens: 10_000_000,
@@ -50,7 +50,7 @@ if (isBeta && PLANS?.FREE) {
 // treat PRO, ANNUAL, and any LTD_* as paid
 export function isPaidPlan(plan) {
   const p = String(plan || "").toUpperCase();
-  return p === "PRO" || p === "ANNUAL" || p.startsWith("LTD_");
+  return p === "PRO" || p === "ANNUAL" || p.startsWith("ANNUAL_") || p.startsWith("LTD_");
 }
 
 export default PLANS;

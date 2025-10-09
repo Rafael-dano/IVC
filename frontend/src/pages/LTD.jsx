@@ -11,14 +11,14 @@ import { openAnnualCheckout, openAnnualPromo } from "../api/account.js";
 const TIERS = [
   {
     key: "ANNUAL_PROMO_99",
-    spotKey: "LTD_99",
-    label: "First 99 spots at $99 (first year)",
+    spotKey: "ANNUAL_99",
+    label: "First 99 spots at $99 per year, for life",
     checkout: () => openAnnualPromo("annual_99"),
   },
   {
     key: "ANNUAL_PROMO_149",
-    spotKey: "LTD_149",
-    label: "Next 149 spots at $149 (first year)",
+    spotKey: "ANNUAL_149",
+    label: "Next 149 spots at $149 per year, for life",
     checkout: () => openAnnualPromo("annual_149"),
   },
   {

@@ -5,8 +5,8 @@ import { isPaidPlan } from "../plans.js";
 const PLAN_LIMITS = {
   FREE: 50,
   PRO: 1500,
-  LTD_99: 1500,
-  LTD_149: 1500,
+  Annual_99: 1500,
+  Annual_149: 1500,
   ANNUAL: 1500,
   LTD_400: 1500,
 };

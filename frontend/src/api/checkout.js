@@ -1,7 +1,7 @@
 import { supabase } from "../api/supabaseClient";
 import { httpJson } from "./http.js";
 
-// LTD: tier must be one of your backend plan keys, e.g. LTD_99, LTD_149, LTD_199, LTD_400
+// LTD: tier must be one of your backend plan keys, e.g. LTD_400
 export async function startLTDCheckout(tier = "LTD_400") {
   const { data: { session } } = await supabase.auth.getSession();
   const token = session?.access_token;
