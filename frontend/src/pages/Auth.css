@@ -49,6 +49,23 @@
     margin-top: .75rem;
   }
   
+  .auth-terms-row {
+    font-size: .85rem;
+    color: #c9cdd1;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px;
+    padding: .75rem;
+    line-height: 1.4;
+  }
+
+  .auth-terms-status {
+    font-size: .9rem;
+    font-weight: 600;
+    color: #34d399;
+    text-align: center;
+  }
+  
   /* input */
   .auth-input {
     width: 100%;

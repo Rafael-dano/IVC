@@ -56,3 +56,12 @@ export async function openLifetime400() {
   if (!url) throw new Error("Checkout URL missing.");
   window.location.href = url;
 }
+
+export async function deleteAccount() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Please log in first.");
+  return httpJson("/api/account", {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+}

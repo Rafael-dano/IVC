@@ -21,6 +21,12 @@ export default function CookieConsent() {
     >
       <div className="text-sm leading-5">
         We use cookies/analytics (PostHog) to improve IVContent. Accept to enable analytics. You can change this later in Settings.
+        <a
+          href="/privacy"
+          className="ml-1 underline text-cyan-200 hover:text-cyan-100"
+        >
+          Read our Privacy Policy.
+        </a>
       </div>
       <div className="mt-3 flex gap-2 justify-end">
         <button

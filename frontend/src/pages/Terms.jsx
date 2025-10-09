@@ -1,9 +1,38 @@
 // src/pages/Terms.jsx
 import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const effectiveDate = "September 19, 2025"; // update when you publish
 
 export default function Terms() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const storedForm = (() => {
+    if (typeof window === "undefined") return undefined;
+    try {
+      const draft = sessionStorage.getItem("signupForm");
+      return draft ? JSON.parse(draft) : undefined;
+    } catch (err) {
+      console.error("Unable to read stored signup draft", err);
+      return undefined;
+    }
+  })();
+
+  const formState = location.state?.form ?? storedForm;
+
+  const handleAccept = () => {
+    try {
+      sessionStorage.setItem("signupAgreedToTerms", "true");
+      if (formState) {
+        sessionStorage.setItem("signupForm", JSON.stringify(formState));
+      }
+    } catch (err) {
+      console.error("Unable to persist agreement", err);
+    }
+    navigate("/signup", { state: { agreedToTerms: true, form: formState } });
+  };
+
   useEffect(() => {
     document.title = "Terms of Service — IVContent";
   }, []);
@@ -56,7 +85,7 @@ export default function Terms() {
 
         <h2 id="s3">3. Accounts &amp; Eligibility</h2>
         <p>
-          You must be at least 13 (or the age of digital consent in your region) to use the Service. You are responsible for safeguarding your
+          You must be at least 16 (or the age of digital consent in your region) to use the Service. You are responsible for safeguarding your
           account credentials and for all activity under your account.
         </p>
 
@@ -142,18 +171,15 @@ export default function Terms() {
         <p>
           Questions? Email us at <a className="underline" href="mailto:ivcontent.com@gmail.com">ivcontent.com@gmail.com</a>.
         </p>
-        <button 
-          onClick={() => {
-            // Store confirmation
-            localStorage.setItem('tosAccepted', 'true');
-            // Redirect to correct Stripe checkout URL
-            window.location.href = stripeCheckoutUrlForSelectedPlan;
-          }}
-          className="tos-accept-btn"
+        </section>
+      <div className="mt-12 flex justify-center">
+        <button
+          onClick={handleAccept}
+          className="w-full max-w-lg rounded-xl bg-purple-600 px-6 py-4 text-lg font-semibold text-white shadow-lg transition hover:bg-purple-700"
         >
-          ✅ Yes, I Accept Terms
+          Yes, I agree and accept the Terms of Service
         </button>
-      </section>
+        </div>
     </main>
   );
 }

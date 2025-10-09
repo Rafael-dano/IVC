@@ -1,8 +1,7 @@
-// src/pages/Settings.jsx
 import { useEffect, useState } from "react";
 import { supabase } from "../api/supabaseClient.js";
 import "./Settings.css";
-import { fetchMe, openBillingPortal } from "../api/account.js";
+import { deleteAccount, fetchMe, openBillingPortal } from "../api/account.js";
 import { useTranslation } from "react-i18next";
 import EmailPrefsSection from "../components/EmailPrefsSection";
 import CompanyBlock from "../components/CompanyBlock";
@@ -17,6 +16,7 @@ export default function Settings() {
   const [account, setAccount] = useState(null);
   const [portalBusy, setPortalBusy] = useState(false);
   const [unsubbed, setUnsubbed] = useState(false);
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -111,6 +111,24 @@ export default function Settings() {
       window.location.href = "/login";
     } catch {
       window.location.href = "/login";
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (deleteBusy) return;
+    const confirmed = window.confirm(t("settings.deleteConfirm"));
+    if (!confirmed) return;
+    try {
+      setDeleteBusy(true);
+      await deleteAccount();
+      await supabase.auth.signOut();
+      alert(t("settings.deleteSuccess"));
+      window.location.href = "/";
+    } catch (e) {
+      console.error("deleteAccount error:", e);
+      alert(e?.message || t("settings.deleteError"));
+    } finally {
+      setDeleteBusy(false);
     }
   }
 
@@ -258,8 +276,12 @@ export default function Settings() {
           <button onClick={logout} className="settings-btn secondary">
             {t("settings.logout")}
           </button>
-          <button disabled className="settings-btn danger">
-            {t("settings.deleteSoon")}
+          <button
+            onClick={handleDeleteAccount}
+            className="settings-btn danger"
+            disabled={deleteBusy}
+          >
+            {deleteBusy ? t("settings.deleting") : t("settings.delete")}
           </button>
         </section>
       </div>

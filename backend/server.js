@@ -1188,6 +1188,121 @@ app.get("/api/me", requireUser, async (req, res) => {
   }
 });
 
+app.delete("/api/account", requireUser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userEmail = req.user.email || null;
+
+    // Fetch profile once so we can clean up related integrations
+    const { data: profile, error: profileErr } = await supabaseAdmin
+      .from("profiles")
+      .select("stripe_customer_id")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (profileErr) {
+      console.error("/api/account profile error:", profileErr);
+    }
+
+    const stripeCustomerId = profile?.stripe_customer_id || null;
+
+    if (stripeCustomerId) {
+      try {
+        const statusesToCancel = new Set(["active", "trialing", "past_due", "unpaid"]);
+        let startingAfter = undefined;
+        while (true) {
+          const list = await stripe.subscriptions.list({
+            customer: stripeCustomerId,
+            status: "all",
+            limit: 100,
+            ...(startingAfter ? { starting_after: startingAfter } : {}),
+          });
+
+          for (const sub of list.data || []) {
+            if (statusesToCancel.has(sub.status)) {
+              await stripe.subscriptions.cancel(sub.id, {
+                cancellation_details: {
+                  comment: "User deleted their account from settings",
+                },
+              });
+            }
+          }
+
+          if (!list.has_more) break;
+          const last = list.data?.[list.data.length - 1];
+          if (!last?.id) break;
+          startingAfter = last.id;
+        }
+      } catch (stripeErr) {
+        console.error("/api/account stripe cancel error:", stripeErr);
+      }
+    }
+
+    const tablesToWipe = [
+      "transcripts",
+      "transcript_usage",
+      "usage_events",
+      "feedback",
+      "email_reminders",
+      "user_usage",
+    ];
+
+    for (const table of tablesToWipe) {
+      try {
+        const { error } = await supabaseAdmin.from(table).delete().eq("user_id", userId);
+        if (error) {
+          console.warn(`/api/account delete ${table} error:`, error.message || error);
+        }
+      } catch (e) {
+        console.warn(`/api/account delete ${table} exception:`, e?.message || e);
+      }
+    }
+
+    if (userEmail) {
+      try {
+        const { error } = await supabaseAdmin
+          .from("beta_signups")
+          .delete()
+          .eq("email", userEmail.toLowerCase());
+        if (error) {
+          console.warn("/api/account delete beta_signups error:", error.message || error);
+        }
+      } catch (e) {
+        console.warn("/api/account delete beta_signups exception:", e?.message || e);
+      }
+    }
+
+    const { error: profileDeleteErr } = await supabaseAdmin
+      .from("profiles")
+      .delete()
+      .eq("id", userId);
+
+    if (profileDeleteErr) {
+      console.warn("/api/account delete profile error:", profileDeleteErr.message || profileDeleteErr);
+    }
+
+    const { error: authDeleteErr } = await supabaseAdmin.auth.admin.deleteUser(userId);
+
+    if (authDeleteErr) {
+      console.error("/api/account auth delete error:", authDeleteErr);
+      return res.status(500).json({ error: "Failed to delete authentication user" });
+    }
+
+    ph?.capture({
+      distinctId: userId,
+      event: "account_deleted",
+      properties: {
+        hasStripeCustomer: !!stripeCustomerId,
+      },
+    });
+
+    res.json({ ok: true });
+  } catch (e) {
+    console.error("/api/account delete error:", e);
+    res.status(500).json({ error: "Failed to delete account" });
+  }
+});
+
 app.get("/api/marketing/prefs", requireUser, async (req, res) => {
   try {
     const { data: prof, error } = await supabaseAdmin
