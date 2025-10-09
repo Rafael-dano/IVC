@@ -245,7 +245,7 @@
       },
       "annual_99": {
         "name": "Founding Member – $99",
-        "price": "$99 for your first year",
+        "price": "$99 per year, for life",
         "description": "Limited launch pricing for the first creators who back IVContent.",
         "cta": "Claim the $99 founder rate",
         "benefits": {
@@ -256,7 +256,7 @@
       },
       "annual_149": {
         "name": "Launch Special – $149",
-        "price": "$149 for your first year",
+        "price": "$149 per year, for life",
         "description": "Missed the founder spots? Save $10 for joining the 149 club",
         "cta": "Start for $149",
         "benefits": {

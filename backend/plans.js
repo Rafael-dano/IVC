@@ -6,13 +6,13 @@ export const PLANS = {
     maxTranscriptSeconds: 15 * 60,
   },
   ANNUAL_99: {
-    label: "LTD (99)",
+    label: "ANNUAL (99)",
     monthlyRequests: 4_000,
     maxTokens: 10_000_000,
     maxTranscriptSeconds: 5 * 60 * 60,
   },
   ANNUAL_149: {
-    label: "LTD (149)",
+    label: "ANNUAL (149)",
     monthlyRequests: 5_000,
     maxTokens: 10_000_000,
     maxTranscriptSeconds: 5 * 60 * 60,
