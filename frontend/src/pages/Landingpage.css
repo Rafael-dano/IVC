@@ -1,10 +1,122 @@
 .landing-page {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     background: #05040b;
     color: #f8fafc;
     font-family: "Inter", "Segoe UI", sans-serif;
   }
   
+  .landing-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.9rem clamp(1.5rem, 6vw, 6rem);
+    background: rgba(5, 4, 11, 0.9);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    backdrop-filter: blur(12px);
+  }
+
+  .landing-logo {
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    color: #f8fafc;
+    text-decoration: none;
+  }
+
+  .landing-logo span {
+    color: #22d3ee;
+  }
+
+  .landing-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .landing-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .landing-nav-links a {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: rgba(226, 232, 240, 0.85);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .landing-nav-links a:hover {
+    color: #22d3ee;
+  }
+
+  .landing-nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .landing-nav-login {
+    padding: 0.5rem 1.1rem;
+    font-weight: 500;
+    border-radius: 999px;
+    color: rgba(226, 232, 240, 0.85);
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .landing-nav-login:hover {
+    color: #f8fafc;
+    border-color: rgba(226, 232, 240, 0.25);
+    background: rgba(148, 163, 184, 0.08);
+  }
+
+  .landing-nav-signup {
+    padding: 0.55rem 1.3rem;
+    border-radius: 999px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #05040b;
+    background: linear-gradient(135deg, #22d3ee, #6366f1);
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .landing-nav-signup:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(99, 102, 241, 0.35);
+  }
+
+  .landing-navbar select {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .landing-navbar select:focus {
+    border-color: rgba(34, 211, 238, 0.8);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.2);
+    outline: none;
+  }
+
+  .landing-main {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
   .landing-hero {
     display: flex;
     flex-wrap: wrap;
@@ -541,6 +653,31 @@
   }
   
   @media (max-width: 960px) {
+    .landing-navbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+      padding: 0.8rem clamp(1rem, 8vw, 4rem);
+    }
+
+    .landing-nav-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+
+    .landing-nav-links,
+    .landing-nav-auth {
+      justify-content: space-between;
+    }
+
+    .landing-nav-login,
+    .landing-nav-signup,
+    .landing-navbar select {
+      width: 100%;
+      text-align: center;
+    }
+
     .landing-hero {
       padding: clamp(3rem, 10vw, 5rem) clamp(1.25rem, 4vw, 3rem);
     }

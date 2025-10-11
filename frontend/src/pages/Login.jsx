@@ -13,14 +13,40 @@ export default function Login() {
   const [sending, setSending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || "/app";
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  async function sendWelcomeOnce() {
+  async function ensureProfile(userFromSignIn = null) {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      let user = userFromSignIn;
+      if (!user) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        user = sessionData?.session?.user || null;
+      }
+      if (!user) return;
+      const displayName =
+        user.user_metadata?.display_name ||
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        "";
+      const cleanedName = (displayName || "").toString().trim();
+      await supabase
+        .from("profiles")
+        .upsert({ id: user.id, display_name: cleanedName || null });
+    } catch (err) {
+      console.warn("Failed to ensure profile after login:", err?.message || err);
+    }
+  }
+
+  async function sendWelcomeOnce(sessionFromSignIn = null) {
+    try {
+      let session = sessionFromSignIn;
+      if (!session) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        session = sessionData?.session || null;
+      }
       const token = session?.access_token;
       if (!token) return;
       // fire-and-forget; server dedupes via welcome_sent_at
@@ -37,14 +63,15 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({
         email: form.email,
         password: form.password,
       });
       if (error) throw error;
 
+      ensureProfile(signInData?.user);
       // kick off welcome email (non-blocking)
-      sendWelcomeOnce();
+      sendWelcomeOnce(signInData?.session || null);
 
       setLoading(false);
       navigate(from);

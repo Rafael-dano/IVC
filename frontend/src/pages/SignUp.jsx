@@ -77,22 +77,28 @@ export default function SignUp() {
       });
       if (error) throw error;
 
-      if (!data.session) {
-        alert(t("auth.signup.checkEmail"));
-        setLoading(false);
-        navigate("/login");
-        return;
+      const { error: resendError } = await supabase.auth.resend({
+        type: "signup",
+        email: form.email,
+        options: { emailRedirectTo: `${siteUrl}/login` },
+      });
+      if (resendError) {
+        console.warn("Failed to queue confirmation email:", resendError.message || resendError);
       }
 
-      await supabase.from("profiles").upsert({
-        id: data.user.id,
-        display_name: form.name,
-      });
+      if (data.session) {
+        try {
+          await supabase.auth.signOut();
+        } catch (signOutErr) {
+          console.warn("Failed to clear immediate session after signup:", signOutErr);
+        }
+      }
 
       sessionStorage.removeItem("signupForm");
       sessionStorage.removeItem("signupAgreedToTerms");
       setLoading(false);
-      navigate("/settings");
+      alert(t("auth.signup.checkEmail"));
+      navigate("/login");
     } catch (err) {
       alert(err.message || t("auth.signup.error"));
       setLoading(false);

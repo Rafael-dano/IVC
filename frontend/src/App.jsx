@@ -64,13 +64,20 @@ function App() {
     <Router>
       <PageviewTracker />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/beta" element={<Beta />} />
         <Route path="/ltd" element={<LTD />} />
         <Route path="/help" element={<Help />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/quick-start" element={<QuickStart />} />
-        <Route path="/landingPage" element={<LandingPage />} />
+        <Route
+          path="/app"
+          element={(
+            <RequireAuth>
+              <Dashboard />
+            </RequireAuth>
+          )}
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
