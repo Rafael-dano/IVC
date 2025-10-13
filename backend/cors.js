@@ -30,10 +30,18 @@ const STATIC_ORIGINS = [
   process.env.PUBLIC_SITE_URL,
   process.env.RENDER_EXTERNAL_URL,
   process.env.NEXT_PUBLIC_SITE_URL,
+  process.env.NEXT_PUBLIC_VERCEL_URL,
   process.env.VERCEL_BRANCH_URL,
+  process.env.VERCEL_URL,
 ];
 
-for (const origin of STATIC_ORIGINS.map((v) => cleanOrigin(v)).filter(Boolean)) {
+function ensureProtocol(origin) {
+  if (!origin) return "";
+  if (/^https?:\/\//i.test(origin)) return origin;
+  return `https://${origin}`;
+}
+
+for (const origin of STATIC_ORIGINS.map((v) => cleanOrigin(ensureProtocol(v))).filter(Boolean)) {
   ALLOWLIST.add(origin);
 }
 
