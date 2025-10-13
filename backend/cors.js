@@ -15,13 +15,41 @@ export function cleanOrigin(v) {
 /** Build allowlist from env (comma-separated) */
 const LIST_VARS = [process.env.CORS_ALLOWLIST, process.env.SITE_URLS].filter(Boolean);
 
-const ALLOWLIST = new Set(
-  LIST_VARS
+const EXACT_ALLOWLIST = new Set();
+const WILDCARD_PATTERNS = new Set();
+const WILDCARD_REGEXES = [];
+
+/** Convert a wildcard origin pattern (using "*") to a RegExp */
+function wildcardToRegex(pattern) {
+  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`^${escaped.replace(/\\\*/g, ".*")}$`, "i");
+}
+
+function addAllowlistEntry(raw) {
+  if (!raw) return;
+  const normalized = cleanOrigin(ensureProtocol(raw.trim()));
+  if (!normalized) return;
+
+  // Support wildcard patterns like "https://ivc-*.vercel.app"
+  if (normalized.includes("*")) {
+    WILDCARD_PATTERNS.add(normalized);
+    try {
+      WILDCARD_REGEXES.push(wildcardToRegex(normalized));
+    } catch (err) {
+      console.warn(`Invalid CORS wildcard pattern ignored: ${normalized}`, err);
+    }
+    return;
+  }
+
+  EXACT_ALLOWLIST.add(normalized);
+}
+
+LIST_VARS
   .join(",")
-    .split(",")
-    .map((s) => cleanOrigin(s.trim()))
-    .filter(Boolean)
-);
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean)
+  .forEach(addAllowlistEntry);
 
 const STATIC_ORIGINS = [
   process.env.SITE_URL,
@@ -41,9 +69,7 @@ function ensureProtocol(origin) {
   return `https://${origin}`;
 }
 
-for (const origin of STATIC_ORIGINS.map((v) => cleanOrigin(ensureProtocol(v))).filter(Boolean)) {
-  ALLOWLIST.add(origin);
-}
+STATIC_ORIGINS.forEach(addAllowlistEntry);
 
 /** Optional: allow any *.vercel.app previews if explicitly enabled */
 const ALLOW_ANY_VERCEL_APP =
@@ -78,7 +104,8 @@ function hostMatchesSuffixes(host) {
 export function isOriginAllowed(origin) {
   if (!origin) return true; // server-to-server, curl, health checks, etc.
   const o = cleanOrigin(origin);
-  if (ALLOWLIST.has(o)) return true;
+  if (EXACT_ALLOWLIST.has(o)) return true;
+  if (WILDCARD_REGEXES.some((re) => re.test(o))) return true;
 
   try {
     const { hostname } = new URL(o);
@@ -106,5 +133,5 @@ export default corsMw;
 
 /** For your /__cors debug route */
 export function getAllowlist() {
-  return Array.from(ALLOWLIST);
+  return [...EXACT_ALLOWLIST, ...WILDCARD_PATTERNS];
 }
