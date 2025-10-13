@@ -1,15 +1,14 @@
 // src/pages/Dashboard.jsx
-import { useEffect, useState } from 'react';
-import Header from '../components/Header.jsx';
-import Footer from '../components/Footer.jsx';
-import RepurposeTool from '../components/RepurposeTool.jsx';
-import { fetchMe } from '../api/account.js';
-import { isPaid } from '../utils/plan.js';
+import { useEffect, useState } from "react";
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
+import RepurposeTool from "../components/RepurposeTool.jsx";
+import { fetchMe } from "../api/account.js";
+import { isPaid } from "../utils/plan.js";
 import { useTranslation } from "react-i18next";
 import "./Dashboard.css";
 
 export default function Dashboard() {
-  const [darkMode, setDarkMode] = useState(true);
   const [account, setAccount] = useState(null); // { user, usage }
   const { t } = useTranslation();
 
@@ -30,12 +29,12 @@ export default function Dashboard() {
   const titleText = isPaidPlan && displayName ? displayName : t("dashboard.title");
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} font-sans`}>
-      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+    <div className="page-shell dashboard-page">
+      <Header />
 
-      <main className="max-w-6xl mx-auto px-4 py-12">
+      <main className="page-content">
         <div className="dashboard-header">
-          <h2 className="text-3xl font-bold mb-6 text-center">
+          <h2 className="dashboard-title">
             {titleText}
           </h2>
           <UsageBubble account={account} />
@@ -51,6 +50,8 @@ export default function Dashboard() {
 
 function UsageBubble({ account }) {
   if (!account?.user?.plan) return null;
+
+  const { t } = useTranslation();
 
   const plan = String(account.user.plan || "FREE").toUpperCase();
   const tokensLimit = account?.usage?.month_tokens_limit ?? 0;
@@ -69,20 +70,14 @@ function UsageBubble({ account }) {
   // FREE (or zero limits): show upgrade nudge
   if (!isPaidPlan || !hasAnyLimit) {
     return (
-      <div className="ml-auto shrink-0 rounded-2xl px-4 py-3 bg-white/10 backdrop-blur border border-white/15 shadow-sm">
-        <div className="text-xs uppercase tracking-wide opacity-75 mb-1">{plan}</div>
-        <div className="text-sm font-medium mb-2">Unlock transcription & higher token limits</div>
-        <div className="flex gap-2">
-          <a
-            href="/LTD"
-            className="inline-flex items-center px-3 py-1.5 rounded-lg bg-cyan-400 text-black text-sm font-semibold hover:bg-cyan-300 transition"
-          >
+      <div className="usage-bubble usage-bubble--free">
+        <div className="usage-bubble__plan">{plan}</div>
+        <div className="usage-bubble__nudge">{t("dashboard.upgradeNudge") || "Unlock transcription & higher token limits"}</div>
+        <div className="usage-bubble__cta">
+          <a href="/LTD" className="usage-bubble__btn usage-bubble__btn--primary">
             Upgrade
           </a>
-          <a
-            href="/settings"
-            className="inline-flex items-center px-3 py-1.5 rounded-lg bg-white/10 text-white text-sm hover:bg-white/20 border border-white/15 transition"
-          >
+          <a href="/settings" className="usage-bubble__btn usage-bubble__btn--ghost">
             View Plan
           </a>
         </div>
@@ -92,26 +87,26 @@ function UsageBubble({ account }) {
 
   // Paid bubble with bars
   const Bar = ({ pct }) => (
-    <div className="h-1.5 w-full rounded bg-white/15 overflow-hidden">
-      <div
-        className={`h-1.5 ${pct > 90 ? 'bg-red-500' : pct > 70 ? 'bg-amber-400' : 'bg-emerald-500'}`}
+    <div className="usage-bubble__bar">
+      <span
+        className={`usage-bubble__bar-fill ${pct > 90 ? 'is-critical' : pct > 70 ? 'is-warning' : 'is-ok'}`}
         style={{ width: `${pct}%` }}
       />
     </div>
   );
 
   return (
-    <div className="ml-auto shrink-0 rounded-2xl px-4 py-3 bg-white/10 backdrop-blur border border-white/15 shadow-sm">
-      <div className="text-xs uppercase tracking-wide opacity-75 mb-2">{plan}</div>
-      <div className="grid grid-cols-2 gap-3 min-w-[320px]">
+    <div className="usage-bubble">
+      <div className="usage-bubble__plan">{plan}</div>
+      <div className="usage-bubble__row">
         <div>
-          <div className="text-xs opacity-80 mb-1">Transcription</div>
-          <div className="text-[11px] opacity-70 mb-1">{minsUsed} / {minsLimit} mins used</div>
+        <div className="usage-bubble__section-title">Transcription</div>
+        <div className="usage-bubble__meta">{minsUsed} / {minsLimit} mins used</div>
           <Bar pct={minsPct} />
         </div>
         <div>
-          <div className="text-xs opacity-80 mb-1">Tokens</div>
-          <div className="text-[11px] opacity-70 mb-1">
+          <div className="usage-bubble__section-title">Tokens</div>
+          <div className="usage-bubble__meta">
             {tokensUsed.toLocaleString()} / {tokensLimit.toLocaleString()} used
           </div>
           <Bar pct={tokensPct} />

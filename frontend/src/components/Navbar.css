@@ -1,20 +1,72 @@
-.navbar a {
-    text-decoration: none;
-  }
-  .navbar .pill {
-    display: inline-flex;
-    align-items: center;
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-nav__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  background: rgba(15, 23, 42, 0.6);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  text-decoration: none;
+  box-shadow: 0 14px 28px rgba(5, 4, 11, 0.35);
+}
+
+.app-nav__pill:hover {
+  transform: translateY(-1px);
+}
+
+.app-nav__pill--primary {
+  background: linear-gradient(120deg, var(--accent-cyan), var(--accent-indigo));
+  color: #05040b;
+  box-shadow: 0 18px 40px rgba(99, 102, 241, 0.28);
+}
+
+.app-nav__pill--primary:hover {
+  box-shadow: 0 22px 48px rgba(99, 102, 241, 0.36);
+}
+
+.app-nav__pill--outline {
+  background: transparent;
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.app-nav__pill--outline:hover {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.app-nav__pill--ghost {
+  background: rgba(15, 23, 42, 0.55);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.app-nav__pill--ghost:hover {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.app-nav__pill.is-active {
+  border-color: rgba(34, 211, 238, 0.6);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+}
+
+@media (max-width: 720px) {
+  .app-nav {
+    width: 100%;
     justify-content: center;
-    padding: .5rem 1rem;
-    border-radius: 9999px;
-    font-weight: 600;
-    box-shadow: 0 4px 10px rgba(0,0,0,.15);
-    transition: transform .15s ease, background .15s ease;
+    flex-wrap: wrap;
   }
-  .navbar .pill.primary { background: #22d3ee; color: #000; }
-  .navbar .pill.primary:hover { background: #67e8f9; transform: translateY(-2px); }
-  .navbar .pill.base { background: #374151; color: #fff; }
-  .navbar .pill.base:hover { background: #4b5563; transform: translateY(-2px); }
-  .navbar .pill.accent { background: #ec4899; color: #000; }
-  .navbar .pill.accent:hover { background: #f472b6; transform: translateY(-2px); }
-  
+
+  .app-nav__pill {
+    flex: 1 1 calc(50% - 0.75rem);
+    justify-content: center;
+  }
+}

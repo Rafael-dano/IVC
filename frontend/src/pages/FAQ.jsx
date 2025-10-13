@@ -1,46 +1,41 @@
-// src/pages/FAQ.jsx
-import Header from '../components/Header.jsx';
-import Footer from '../components/Footer.jsx';
-import "../styles/legacy.css";
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
 import { useTranslation } from "react-i18next";
 
 export default function FAQ() {
   const { t } = useTranslation();
 
-  return (
-    <div className="page-faq">
-      <Header />
-      <main className="max-w-3xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-2">{t("faq.title")}</h1>
-        <p className="mb-6 text-gray-700">{t("faq.sub")}</p>
+  const faqs = [
+    { question: t("faq.q1"), answer: t("faq.a1") },
+    { question: t("faq.q2"), answer: t("faq.a2") },
+    { question: t("faq.q3"), answer: t("faq.a3") },
+    { question: t("faq.q4"), answer: t("faq.a4") },
+    { question: t("faq.q5"), answer: t("faq.a5") },
+  ];
 
-        <div className="space-y-4">
-          <div className="bg-white p-5 rounded shadow">
-            <h3 className="text-xl font-semibold mb-1">{t("faq.q1")}</h3>
-            <p>{t("faq.a1")}</p>
-          </div>
-          <div className="bg-white p-5 rounded shadow">
-            <h3 className="text-xl font-semibold mb-1">{t("faq.q2")}</h3>
-            <p>{t("faq.a2")}</p>
-          </div>
-          <div className="bg-white p-5 rounded shadow">
-            <h3 className="text-xl font-semibold mb-1">{t("faq.q3")}</h3>
-            <p>{t("faq.a3")}</p>
-          </div>
-          <div className="bg-white p-5 rounded shadow">
-            <h3 className="text-xl font-semibold mb-1">{t("faq.q4")}</h3>
-            <p>{t("faq.a4")}</p>
-          </div>
-          <div className="bg-white p-5 rounded shadow">
-            <h3 className="text-xl font-semibold mb-1">{t("faq.q5")}</h3>
-            <p>{t("faq.a5")}</p>
-          </div>
+  return (
+    <div className="page-shell">
+      <Header />
+      <main className="page-content page-content--narrow section-stack">
+        <header className="page-intro">
+          <h1 className="page-title">{t("faq.title")}</h1>
+          <p className="page-subtitle">{t("faq.sub")}</p>
+        </header>
+
+        <div className="section-stack">
+          {faqs.map((item, idx) => (
+            <article key={idx} className="surface-card surface-card--subtle faq-card">
+              <h3 className="section-heading">{item.question}</h3>
+              <p className="muted-text">{item.answer}</p>
+            </article>
+          ))}
         </div>
 
-        <a
-          href="/help"
-          className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        ><strong>← {t("help.backToHelp")}</strong></a>
+        <div>
+          <a href="/help" className="link-cta">
+            ← {t("help.backToHelp")}
+          </a>
+        </div>
       </main>
       <Footer />
     </div>

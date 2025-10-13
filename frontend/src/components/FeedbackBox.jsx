@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { httpJson } from "../api/http.js";
 import { supabase } from "../api/supabaseClient";
+import "./FeedbackBox.css";
 
 export default function FeedbackBox() {
   const [category, setCategory] = useState("idea");
@@ -28,36 +29,64 @@ export default function FeedbackBox() {
     }
   }
 
+  const disabled = status.loading || message.trim().length < 5;
+  const statusClass = status.msg
+    ? status.msg.trim().startsWith("✅")
+      ? "status-success"
+      : "status-error"
+    : "";
+
   return (
-    <section className="bg-white rounded-xl shadow p-6 space-y-4">
-      <h3 className="text-lg font-semibold">Share Feedback</h3>
-      <div className="flex gap-3">
-        <select className="border rounded px-2 py-1" value={category} onChange={(e)=>setCategory(e.target.value)}>
+    <section className="surface-card surface-card--subtle feedback-card">
+      <header className="feedback-card__header">
+        <h3 className="feedback-card__title">Share Feedback</h3>
+        <p className="feedback-card__subtitle">
+          Tell us what’s working, what’s missing, or what to build next.
+        </p>
+      </header>
+
+      <div className="feedback-card__controls">
+        <select
+          className="select-control feedback-card__select"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
           <option value="idea">Idea</option>
           <option value="bug">Bug</option>
           <option value="praise">Praise</option>
           <option value="other">Other</option>
         </select>
-        <select className="border rounded px-2 py-1" value={rating} onChange={(e)=>setRating(Number(e.target.value))}>
-          {[5,4,3,2,1].map(n => <option key={n} value={n}>{n}★</option>)}
+        <select
+          className="select-control feedback-card__select"
+          value={rating}
+          onChange={(e) => setRating(Number(e.target.value))}
+        >
+          {[5, 4, 3, 2, 1].map((n) => (
+            <option key={n} value={n}>
+              {n}★
+            </option>
+          ))}
         </select>
       </div>
+
       <textarea
-        className="w-full border rounded p-2"
+        className="textarea-control"
         rows={4}
         placeholder="Tell us what’s working or what you want next…"
         value={message}
-        onChange={(e)=>setMessage(e.target.value)}
+        onChange={(e) => setMessage(e.target.value)}
       />
-      <div className="flex items-center gap-3">
+      
+      <div className="feedback-card__actions">
         <button
+          type="button"
           onClick={submit}
-          disabled={status.loading || message.trim().length < 5}
-          className={`px-4 py-2 rounded text-white ${status.loading ? "bg-gray-400" : "bg-purple-600 hover:bg-purple-700"}`}
+          disabled={disabled}
+          className={`button-primary feedback-card__submit ${status.loading ? "is-loading" : ""}`}
         >
           {status.loading ? "Sending…" : "Send feedback"}
         </button>
-        {status.msg && <span className="text-sm">{status.msg}</span>}
+        {status.msg && <span className={`feedback-card__status ${statusClass}`}>{status.msg}</span>}
       </div>
     </section>
   );

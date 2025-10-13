@@ -1,47 +1,58 @@
 // src/pages/Help.jsx
-import Header from '../components/Header.jsx';
-import Footer from '../components/Footer.jsx';
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
 import { useTranslation } from "react-i18next";
 import FeedbackBox from "../components/FeedbackBox.jsx";
 
 export default function Help() {
   const { t } = useTranslation();
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans">
+    <div className="page-shell">
       <Header />
-      <main className="max-w-3xl mx-auto p-6 space-y-6">
-        <section className="bg-gray-800 p-5 rounded shadow">
-          <h2 className="text-2xl font-semibold text-cyan-400 mb-2">{t("help.getStartedTitle")}</h2>
-          <p>
-            {t("help.getStartedDesc")}{" "}
-            <a href="/quick-start" className="text-cyan-300 hover:underline"><strong>{t("help.quickStart")}</strong></a>.
+      <main className="page-content page-content--narrow section-stack">
+        <header className="page-intro">
+          <h1 className="page-title">{t("help.getStartedTitle")}</h1>
+          <p className="page-subtitle">
+            {t("help.getStartedDesc")} {t("help.quickStart")}.
+            {" "}
+            {t("help.faqDesc")} {t("help.faqLink")}.
+          </p>
+        </header>
+
+        <section className="surface-card">
+          <h2 className="section-heading text-accent-cyan">{t("help.quickStart")}</h2>
+          <p className="muted-text">
+            {t("help.getStartedDesc")} {" "}
+            <a href="/quick-start" className="link-cta">{t("help.quickStart")}</a>.
           </p>
         </section>
 
-        <section className="bg-gray-800 p-5 rounded shadow">
-          <h2 className="text-2xl font-semibold text-orange-500 mb-2">{t("help.faqTitle")}</h2>
-          <p>
-            {t("help.faqDesc")}{" "}
-            <a href="/faq" className="text-cyan-300 hover:underline"><strong>{t("help.faqLink")}</strong></a>.
+        <section className="surface-card">
+          <h2 className="section-heading text-accent-amber">{t("help.faqTitle")}</h2>
+          <p className="muted-text">
+            {t("help.faqDesc")} {" "}
+            <a href="/faq" className="link-cta">{t("help.faqLink")}</a>.
           </p>
         </section>
 
-        <section className="bg-gray-800 p-5 rounded shadow">
-          <h2 className="text-2xl font-semibold text-purple-400 mb-2">{t("help.contactTitle")}</h2>
-          <p>
-            {t("help.contactDesc")}{" "}
-            <a href="mailto:IVContent.com@gmail.com" className="text-cyan-300 hover:underline"><strong>IVContent.com@gmail.com</strong></a>.
+        <section className="surface-card">
+          <h2 className="section-heading text-accent-pink">{t("help.contactTitle")}</h2>
+          <p className="muted-text">
+            {t("help.contactDesc")} {" "}
+            <a href="mailto:IVContent.com@gmail.com" className="link-cta">IVContent.com@gmail.com</a>.
           </p>
         </section>
 
-        <section className="bg-gray-800 p-5 rounded shadow">
-          <h2 className="text-2xl font-semibold text-orange-500 mb-2">{t("help.settingsTitle")}</h2>
-          <p>
-            {t("help.settingsDesc")}{" "}
-            <a href="/settings" className="text-cyan-300 hover:underline"><strong>{t("help.settingsLink")}</strong></a>.
+        <section className="surface-card">
+          <h2 className="section-heading text-accent-indigo">{t("help.settingsTitle")}</h2>
+          <p className="muted-text">
+            {t("help.settingsDesc")} {" "}
+            <a href="/settings" className="link-cta">{t("help.settingsLink")}</a>.
           </p>
         </section>
-        <section><FeedbackBox /></section>
+     
+        <FeedbackBox />
       </main>
       <Footer />
     </div>

@@ -1,0 +1,14 @@
+.company-block {
+    display: grid;
+    gap: 0.8rem;
+  }
+  
+  .company-block__title {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  
+  .company-block__note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../api/supabaseClient";
 import { httpJson } from "../api/http.js";
+import "./EmailPrefsSection.css";
 
 export default function EmailPrefsSection() {
   const [loading, setLoading] = useState(true);
@@ -49,28 +50,31 @@ export default function EmailPrefsSection() {
 
   useEffect(() => { fetchPrefs(); }, []);
 
+  const busy = loading || saving;
+  const statusClass = message
+    ? message.trim().startsWith("✅")
+      ? "status-success"
+      : "status-error"
+    : "";
+
   return (
-    <section className="bg-white rounded-xl shadow p-6 space-y-3">
-      <h3 className="text-lg font-semibold">Email Preferences</h3>
-      <p className="text-sm text-gray-600">
-        Choose whether you want to receive product updates, tips, and occasional newsletters. Transactional
-        emails (receipts, security notices) may still be sent.
+    <section className="surface-card surface-card--subtle email-prefs">
+    <header className="email-prefs__header">
+      <h3>Email Preferences</h3>
+      <p className="muted-text">
+        Choose whether you want to receive product updates, tips, and occasional newsletters. Transactional emails (receipts,
+        security notices) may still be sent.
       </p>
+    </header>
 
-      {message && <div className="text-sm">{message}</div>}
+    {message && <div className={`email-prefs__status ${statusClass}`}>{message}</div>}
 
-      <div className="flex items-center justify-between">
-        <label className="text-gray-800 font-medium">Receive product updates & newsletters</label>
+    <div className="email-prefs__row">
+      <span className="muted-text">Receive product updates & newsletters</span>
         <button
-          disabled={loading || saving}
+          disabled={busy}
           onClick={() => savePrefs(!optIn)}
-          className={`px-4 py-2 rounded-md text-white transition ${
-            (loading || saving)
-              ? "bg-gray-300 cursor-not-allowed"
-              : optIn
-              ? "bg-gray-700 hover:bg-gray-800"
-              : "bg-purple-600 hover:bg-purple-700"
-          }`}
+          className={`button-secondary email-prefs__toggle ${busy ? "is-loading" : ""}`}
           title={optIn ? "Click to unsubscribe" : "Click to subscribe"}
         >
           {loading ? "Loading…" : saving ? "Saving…" : optIn ? "Unsubscribe" : "Subscribe"}

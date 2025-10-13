@@ -1,5 +1,4 @@
-// src/pages/LTD.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import "./LTD.css";
@@ -82,69 +81,66 @@ export default function LTD() {
   };
 
   return (
-    <div className="ltd-page">
+    <div className="page-shell">
       <Header />
-      <main className="text-center p-6 space-y-8">
-        <header className="space-y-2">
-          <h1 className="text-4xl font-bold text-purple-700">{t("ltd.title")}</h1>
-          <p className="text-lg text-gray-700">
-            {t("ltd.sub")}
-          </p>
+      <main className="page-content section-stack">
+        <header className="page-intro page-intro--centered">
+          <h1 className="page-title">{t("ltd.title")}</h1>
+          <p className="page-subtitle page-subtitle--centered">{t("ltd.sub")}</p>
+          <a href="/beta" className="button-primary ltd-hero-cta">{t("ltd.joinBeta")}</a>
         </header>
 
-        <section>
-          <a href="/beta" className="ltd-button">{t("ltd.joinBeta")}</a>
-        </section>
+        {err && (
+          <div className="status-pill status-error">{t("ltd.errPrefix")} {err}</div>
+        )}
 
-        {err && <p className="text-sm text-red-600">{t("ltd.errPrefix")} {err}</p>}
-
-        <section className="ltd-pricing-grid">
-          {TIERS.map((tTier) => {
-            const spotKey = tTier.spotKey || tTier.key;
+        <section className="ltd-grid">
+          {TIERS.map((tier) => {
+            const spotKey = tier.spotKey || tier.key;
             const remaining = spots[spotKey];
             const soldOut = typeof remaining === "number" && remaining <= 0;
 
             return (
               <button
-                key={tTier.key}
-                className={`ltd-button ${soldOut ? "ltd-button--disabled" : ""}`}
-                onClick={() => onBuy(tTier)}
+                key={tier.key}
+                className={`ltd-offer ${soldOut ? "is-disabled" : ""}`}
+                onClick={() => onBuy(tier)}
                 disabled={soldOut || loading}
                 title={soldOut ? t("ltd.soldOut") : undefined}
               >
-                <div className="ltd-button-title">{tTier.label}</div>
-                <div className="ltd-button-sub">
-                  {loading ? (
-                    <span className="ltd-shimmer">{t("ltd.loadingSpots")}</span>
-                  ) : typeof remaining === "number" ? (
-                    soldOut ? t("ltd.soldOut") : t("ltd.spotsLeft", { count: remaining })
-                  ) : (
-                    " "
-                  )}
-                </div>
+                <span className="ltd-offer__title">{tier.label}</span>
+                <span className="ltd-offer__meta">
+                  {loading
+                    ? t("ltd.loadingSpots")
+                    : typeof remaining === "number"
+                      ? soldOut
+                        ? t("ltd.soldOut")
+                        : t("ltd.spotsLeft", { count: remaining })
+                      : " "}
+                </span>
               </button>
             );
           })}
         </section>
 
         <section>
-          <button className="ltd-button" onClick={onSubscribe}>
+          <button className="button-secondary ltd-hero-cta" onClick={onSubscribe}>
             {t("ltd.goPro")}
           </button>
         </section>
 
-        <section className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-2">{t("ltd.videoTitle")}</h2>
-          <div className="mb-6">
-          <iframe
-            loading="lazy"
-            className="w-full h-96 rounded-md"
-            src="https://www.youtube.com/embed/VIDEO_ID"  // change with real video 
-            title="IVContent Quick Start"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
+        <section className="surface-card">
+          <h2 className="section-heading text-accent-indigo">{t("ltd.videoTitle")}</h2>
+          <div className="video-frame">
+            <iframe
+              loading="lazy"
+              className="video-frame__media"
+              src="https://www.youtube.com/embed/VIDEO_ID"
+              title="IVContent Quick Start"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
           </div>
         </section>
       </main>

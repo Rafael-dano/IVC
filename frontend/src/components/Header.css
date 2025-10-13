@@ -1,0 +1,103 @@
+.app-header {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(5, 4, 11, 0.82);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 18px 40px rgba(5, 4, 11, 0.45);
+  }
+  
+  .app-header__inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.1rem clamp(1.2rem, 4vw, 2.6rem);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+  
+  .app-header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 1.1rem;
+  }
+  
+  .app-header__brand:hover .app-header__mark {
+    background: linear-gradient(120deg, var(--accent-cyan), var(--accent-indigo));
+    color: #05040b;
+  }
+  
+  .app-header__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 0.95rem;
+    background: rgba(148, 163, 184, 0.12);
+    color: var(--accent-cyan);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    transition: background 0.18s ease, color 0.18s ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  
+  .app-header__name {
+    font-size: 1.1rem;
+  }
+  
+  .app-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .language-select {
+    min-width: 7.5rem;
+    background: rgba(10, 17, 32, 0.78);
+    border-color: rgba(148, 163, 184, 0.25);
+    padding-right: 2.5rem;
+  }
+  
+  .language-select option {
+    color: #0f172a;
+  }
+  
+  .app-header__account {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+  
+  .app-header__plan {
+    border-color: rgba(34, 211, 238, 0.45);
+    color: var(--accent-cyan);
+    background: rgba(34, 211, 238, 0.12);
+    letter-spacing: 0.08em;
+  }
+  
+  @media (max-width: 720px) {
+    .app-header__inner {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 1rem clamp(1rem, 5vw, 1.6rem);
+    }
+  
+    .app-header__actions {
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+  
+    .app-header__brand {
+      justify-content: center;
+    }
+  }

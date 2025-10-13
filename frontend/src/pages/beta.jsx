@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import "./beta.css";
@@ -138,9 +138,9 @@ export default function Beta() {
         );
         setOk(true);
         return;
-    } catch (e) {
-      // activation failed; fall through to status check
-    }
+      } catch (e) {
+        // activation failed; fall through to status check
+      }
 
       // If not approved yet, show status
       const stBody = await httpJson("/api/beta/status", {
@@ -155,76 +155,50 @@ export default function Beta() {
       posthog.capture("beta_activate_failed");
       setError(e.message || "Something went wrong");
     }
-  }  
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 font-sans">
+    <div className="page-shell">
       <Header />
-      <main className="max-w-2xl mx-auto p-6">
-        <header className="beta-hero">
-          <h1 className="text-4xl font-bold text-purple-700">{t("beta.title")}</h1>
-          <p className="text-lg text-gray-700">
-            {t("beta.sub")}
-          </p>
+      <main className="page-content page-content--narrow section-stack">
+        <header className="page-intro">
+          <h1 className="page-title">{t("beta.title")}</h1>
+          <p className="page-subtitle">{t("beta.sub")}</p>
         </header>
 
         {!ok ? (
-          <form onSubmit={onSubmit} className="bg-white rounded-xl shadow p-6 space-y-4">
-            <div className="text-sm text-gray-500">
+           <form onSubmit={onSubmit} className="surface-card beta-card form-stack">
+            <div className="beta-meta">
               {t("beta.source")}: <code>{source}</code>
             </div>
 
-            <p className="text-sm text-gray-600 bg-purple-50 border border-purple-100 rounded-md px-3 py-2">
-              {t("beta.agreementNotice")}
-            </p>
+            <p className="beta-note">{t("beta.agreementNotice")}</p>
 
-            {error && <div className="text-sm text-red-600">{error}</div>}
+            {error && <div className="beta-status status-error">{error}</div>}
 
             <button
               type="submit"
               disabled={submitting}
-              className={`w-full rounded-md px-4 py-2 text-white transition
-                ${submitting ? "bg-purple-300 cursor-not-allowed" : "bg-purple-600 hover:bg-purple-700"}`}
+              className={`button-primary beta-cta ${submitting ? "is-loading" : ""}`}
             >
               {submitting ? t("beta.submitting") : t("beta.joinCta")}
             </button>
-
-            <div className="text-xs text-gray-500">
-              {t("beta.privacyNote")}
-            </div>
+           
+            <div className="beta-footnote">{t("beta.privacyNote")}</div>
           </form>
         ) : (
-          <div className="bg-white rounded-xl shadow p-6 text-center space-y-4">
-            <div className="text-2xl">🎉</div>
-            <h2 className="text-xl font-semibold">{t("beta.inTitle")}</h2>
-            <p className="text-gray-700">{nextMessage || t("beta.agreementDefault")}</p>
-
-            <button
-              type="button"
-              onClick={handleAgreementRetry}
-              className="w-full rounded-md px-4 py-2 text-white bg-purple-600 hover:bg-purple-700 transition"
-            >
-              {t("beta.joinCta")}
+          <div className="surface-card beta-card">
+          <div className="beta-celebrate" aria-hidden>🎉</div>
+          <h2 className="section-heading">{t("beta.inTitle")}</h2>
+          <p className="muted-text">{nextMessage || t("beta.agreementDefault")}</p>
+          <div className="button-row">
+            <button type="button" className="button-secondary" onClick={handleAgreementRetry}>
+              {t("beta.openForm") || "Open form again"}
             </button>
-
-            <button
-              type="button"
-              onClick={checkOrActivate}
-              className="w-full rounded-md px-4 py-2 text-white bg-green-600 hover:bg-green-700 transition"
-            >
-              {t("beta.activateCta")}
+            <button type="button" className="button-ghost" onClick={checkOrActivate}>
+              {t("beta.activateCta") || "Activate access"}
             </button>
-            
-            <p className="text-sm text-gray-500">{t("beta.agreementReminder")}</p>
-
-            {error && <div className="text-sm text-red-600">{error}</div>}
-
-            <a
-              href="/ltd"
-              className="inline-block mt-2 px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
-            >
-              ← {t("beta.backToLTD")}
-            </a>
+          </div>
           </div>
         )}
       </main>

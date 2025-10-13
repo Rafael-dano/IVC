@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import EmailPrefsSection from "../components/EmailPrefsSection";
 import CompanyBlock from "../components/CompanyBlock";
 import { revokeAnalytics } from "../analytics/consent";
+import Header from "../components/Header.jsx";
+import Footer from "../components/Footer.jsx";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -65,7 +67,6 @@ export default function Settings() {
     const q = new URLSearchParams(window.location.search);
     if (q.get("unsub") === "success") {
       setUnsubbed(true);
-      // optional: clean the URL
       const url = new URL(window.location.href);
       url.searchParams.delete("unsub");
       window.history.replaceState({}, "", url.toString());
@@ -143,44 +144,36 @@ export default function Settings() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="max-w-xl mx-auto py-10">
-        <p className="opacity-80">{t("settings.loading")}</p>
-      </div>
-    );
-  }
-
-  if (!hasAuth) {
-    return (
-      <div className="max-w-xl mx-auto py-10 space-y-4">
-        <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
-        <p className="opacity-80">{t("settings.notSignedIn")}</p>
-        <a
-          href="/login"
-          className="inline-block px-4 py-2 bg-cyan-500 text-black rounded hover:bg-cyan-600"
-        >
-          {t("settings.goToLogin")}
-        </a>
-      </div>
-    );
-  }
-
   const planKey = (account?.user?.plan || "FREE").toLowerCase();
   const hasStripeCustomer = !!account?.user?.stripe_customer_id;
 
-  return (
-    <div className="settings-page">
-      <div className="settings-container">
-        <h1 className="settings-title">{t("settings.title")}</h1>
+  let mainContent;
 
+  if (loading) {
+    mainContent = (
+      <section className="surface-card surface-card--subtle">
+        <p className="muted-text">{t("settings.loading")}</p>
+      </section>
+    );
+  } else if (!hasAuth) {
+    mainContent = (
+      <section className="surface-card">
+        <p className="muted-text">{t("settings.notSignedIn")}</p>
+        <a href="/login" className="button-primary">
+          {t("settings.goToLogin")}
+        </a>
+      </section>
+    );
+ } else {
+    mainContent = (
+      <div className="section-stack settings-stack">
         {account && (
-          <div className="settings-card">
+         <div className="surface-card settings-card">
             <div className="settings-card__row">
               <span className={`badge badge--${planKey}`}>{account.user.plan}</span>
               {hasStripeCustomer && (
                 <button
-                  className="btn btn--ghost"
+                  className={`button-ghost ${portalBusy ? "is-loading" : ""}`}
                   onClick={handleOpenPortal}
                   disabled={portalBusy}
                   title={t("settings.manageBillingTitle")}
@@ -190,121 +183,118 @@ export default function Settings() {
               )}
             </div>
 
-            <div className="settings-card__row">
-              <div className="settings-meta">
+            {account?.usage && (
+              <div className="settings-card__row settings-card__row--metrics">
                 <div>
-                  <strong>{t("settings.monthlyUsage")}:</strong>{" "}
-                  {account.usage.remaining} / {account.usage.month_tokens_limit} {t("settings.tokensLeft")}
-                </div>
-                {account.user.renews_at && (
-                  <div>
-                    <strong>{t("settings.renews")}:</strong>{" "}
-                    {new Date(account.user.renews_at).toLocaleDateString()}
+                <div className="settings-meta">
+                    <strong>{t("settings.monthlyUsage")}:</strong>{" "}
+                    {account.usage.remaining} / {account.usage.month_tokens_limit} {t("settings.tokensLeft")}
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {account?.usage && (
-          <div className="settings-card">
-            <div className="settings-card__row">
-              <strong>{t("settings.transcriptionMinutes")}</strong>
-            </div>
-
-            {(() => {
-              const used = account.usage.transcription_minutes_used ?? 0;
-              const limit = account.usage.transcription_minutes_limit ?? 0;
-              const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
-              return (
-                <div className="settings-card__row" style={{flexDirection: "column", gap: "8px"}}>
-                  <div style={{display: "flex", justifyContent: "space-between", width: "100%"}}>
-                    <span>{used} / {limit} {t("settings.minUsed")}</span>
-                    <span>{pct}%</span>
-                  </div>
-                  <div style={{width: "100%", height: 10, background: "rgba(255,255,255,0.1)", borderRadius: 6}}>
-                    <div style={{
-                      width: `${pct}%`,
-                      height: "100%",
-                      background: pct > 90 ? "#ef4444" : pct > 70 ? "#f59e0b" : "#22c55e",
-                      borderRadius: 6
-                    }} />
-                  </div>
-                  {limit === 0 && (
-                    <p className="opacity-80 text-sm">
-                      {t("settings.noTranscriptionMinutes")}
-                    </p>
+                  {account.user.renews_at && (
+                    <div className="settings-meta">
+                      <strong>{t("settings.renews")}:</strong>{" "}
+                      {new Date(account.user.renews_at).toLocaleDateString()}
+                    </div>
                   )}
                 </div>
-              );
-            })()}
+              
+                {(() => {
+                  const used = account.usage.transcription_minutes_used ?? 0;
+                  const limit = account.usage.transcription_minutes_limit ?? 0;
+                  const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+                  return (
+                    <div className="settings-meter">
+                      <div className="settings-meter__labels">
+                        <span>{used} / {limit} {t("settings.minUsed")}</span>
+                        <span>{pct}%</span>
+                      </div>
+                      <div className="settings-meter__bar">
+                        <span
+                          className={`settings-meter__fill ${pct > 90 ? "is-critical" : pct > 70 ? "is-warning" : "is-ok"}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      {limit === 0 && (
+                        <p className="muted-text settings-small-note">{t("settings.noTranscriptionMinutes")}</p>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
           </div>
         )}
 
-        <section className="settings-section">
+        <section className="surface-card settings-section">
           <label>{t("settings.displayName")}</label>
           <input
-            className="settings-input"
+            className="input-control"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder={t("settings.displayNamePH")}
           />
-          <button onClick={saveDisplayName} className="settings-btn primary">
+          <button onClick={saveDisplayName} className="button-primary">
             {t("settings.save")}
           </button>
         </section>
 
-        <section className="settings-section">
+        <section className="surface-card settings-section">
           <label>{t("settings.email")}</label>
           <input
-            className="settings-input"
+            className="input-control"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="me@example.com"
             type="email"
           />
-          <button onClick={changeEmail} className="settings-btn primary">
+          <button onClick={changeEmail} className="button-primary">
             {t("settings.changeEmail")}
           </button>
-          <p className="settings-footer-note">
-            {t("settings.confirmationNote")}
-          </p>
+          <p className="settings-footer-note">{t("settings.confirmationNote")}</p>
         </section>
 
-        <section className="settings-section flex gap-3">
-          <button onClick={logout} className="settings-btn secondary">
+        <section className="surface-card settings-section settings-actions">
+          <button onClick={logout} className="button-secondary">
             {t("settings.logout")}
           </button>
           <button
             onClick={handleDeleteAccount}
-            className="settings-btn danger"
+            className="button-danger"
             disabled={deleteBusy}
           >
             {deleteBusy ? t("settings.deleting") : t("settings.delete")}
           </button>
         </section>
-      </div>
 
-      <a
-        href="/help"
-        className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        <strong>← {t("settings.backToHelp")}</strong>
-      </a>
-      {unsubbed && (
-        <div className="mb-4 rounded-md bg-green-50 border border-green-200 text-green-800 px-4 py-2 text-sm">
-          ✅ You’ve been unsubscribed from marketing emails. You can re-subscribe below anytime.
-        </div>
-      )}
-      <EmailPrefsSection />
-      <CompanyBlock />  
-      <button
-          className="settings-btn secondary"
+        {unsubbed && (
+          <div className="surface-card surface-card--subtle status-success">
+            ✅ You’ve been unsubscribed from marketing emails. You can re-subscribe below anytime.
+          </div>
+        )}
+
+        <EmailPrefsSection />
+        <CompanyBlock />
+
+        <button
+          className="button-secondary"
           onClick={() => { revokeAnalytics(); alert("Analytics disabled. Reload to apply."); }}
         >
           Disable analytics / reset consent
         </button>
+        </div>
+    );
+  }
+
+  return (
+    <div className="page-shell">
+      <Header />
+      <main className="page-content page-content--narrow section-stack settings-page">
+        <header className="page-intro">
+          <h1 className="page-title">{t("settings.title")}</h1>
+        </header>
+        {mainContent}
+      </main>
+      <Footer />
     </div>
   );
 }

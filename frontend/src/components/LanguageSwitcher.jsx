@@ -32,7 +32,7 @@ export default function LanguageSwitcher() {
 
   return (
     <select
-      className="px-2 py-1 rounded bg-white/10 border border-white/20"
+      className="select-control language-select"
       value={code}
       onChange={(e) => change(e.target.value)}
       title="Language"

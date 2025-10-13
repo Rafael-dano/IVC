@@ -1,0 +1,33 @@
+.email-prefs {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .email-prefs__header h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  
+  .email-prefs__status {
+    font-size: 0.9rem;
+  }
+  
+  .email-prefs__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .email-prefs__toggle.is-loading {
+    opacity: 0.7;
+    cursor: progress;
+  }
+  
+  @media (max-width: 600px) {
+    .email-prefs__row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }

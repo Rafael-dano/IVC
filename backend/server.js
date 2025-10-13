@@ -1193,7 +1193,7 @@ app.delete("/api/account", requireUser, async (req, res) => {
     const userId = req.user.id;
     const userEmail = req.user.email || null;
 
-    // Fetch profile once so we can clean up related integrations
+    // 1) Profile fetch (Stripe integration)
     const { data: profile, error: profileErr } = await supabaseAdmin
       .from("profiles")
       .select("stripe_customer_id")
@@ -1206,10 +1206,12 @@ app.delete("/api/account", requireUser, async (req, res) => {
 
     const stripeCustomerId = profile?.stripe_customer_id || null;
 
+    // 2) Cancel any active/trial/past_due subscriptions
     if (stripeCustomerId) {
       try {
         const statusesToCancel = new Set(["active", "trialing", "past_due", "unpaid"]);
         let startingAfter = undefined;
+
         while (true) {
           const list = await stripe.subscriptions.list({
             customer: stripeCustomerId,
@@ -1221,9 +1223,7 @@ app.delete("/api/account", requireUser, async (req, res) => {
           for (const sub of list.data || []) {
             if (statusesToCancel.has(sub.status)) {
               await stripe.subscriptions.cancel(sub.id, {
-                cancellation_details: {
-                  comment: "User deleted their account from settings",
-                },
+                cancellation_details: { comment: "User deleted their account from settings" },
               });
             }
           }
@@ -1238,68 +1238,83 @@ app.delete("/api/account", requireUser, async (req, res) => {
       }
     }
 
-    const tablesToWipe = [
-      "transcripts",
-      "transcript_usage",
-      "usage_events",
-      "feedback",
-      "email_reminders",
-      "user_usage",
-    ];
+    // 3) Centralized DB purge (preferred)
+    let purgeSummary = null;
+    try {
+      const { data: summary, error: rpcErr } = await supabaseAdmin.rpc("purge_my_account");
+      if (rpcErr) throw rpcErr;
+      purgeSummary = summary || null;
+    } catch (rpcErr) {
+      console.warn("purge_my_account RPC failed or missing. Falling back to manual deletes:", rpcErr?.message || rpcErr);
 
-    for (const table of tablesToWipe) {
-      try {
-        const { error } = await supabaseAdmin.from(table).delete().eq("user_id", userId);
-        if (error) {
-          console.warn(`/api/account delete ${table} error:`, error.message || error);
+      // --- Fallback manual wipes (your original list) ---
+      const tablesToWipe = [
+        "transcripts",
+        "transcript_usage",
+        "usage_events",
+        "feedback",
+        "email_reminders",
+        "user_usage",
+      ];
+
+      for (const table of tablesToWipe) {
+        try {
+          const { error } = await supabaseAdmin.from(table).delete().eq("user_id", userId);
+          if (error) {
+            console.warn(`/api/account delete ${table} error:`, error.message || error);
+          }
+        } catch (e) {
+          console.warn(`/api/account delete ${table} exception:`, e?.message || e);
         }
-      } catch (e) {
-        console.warn(`/api/account delete ${table} exception:`, e?.message || e);
       }
-    }
 
-    if (userEmail) {
+      // remove beta_signups by email (case-insensitive)
+      if (userEmail) {
+        try {
+          const { error } = await supabaseAdmin
+            .from("beta_signups")
+            .delete()
+            .eq("email", userEmail.toLowerCase());
+          if (error) {
+            console.warn("/api/account delete beta_signups error:", error.message || error);
+          }
+        } catch (e) {
+          console.warn("/api/account delete beta_signups exception:", e?.message || e);
+        }
+      }
+
+      // delete profile row last (before auth)
       try {
-        const { error } = await supabaseAdmin
-          .from("beta_signups")
+        const { error: profileDeleteErr } = await supabaseAdmin
+          .from("profiles")
           .delete()
-          .eq("email", userEmail.toLowerCase());
-        if (error) {
-          console.warn("/api/account delete beta_signups error:", error.message || error);
+          .eq("id", userId);
+        if (profileDeleteErr) {
+          console.warn("/api/account delete profile error:", profileDeleteErr.message || profileDeleteErr);
         }
       } catch (e) {
-        console.warn("/api/account delete beta_signups exception:", e?.message || e);
+        console.warn("/api/account delete profile exception:", e?.message || e);
       }
     }
 
-    const { error: profileDeleteErr } = await supabaseAdmin
-      .from("profiles")
-      .delete()
-      .eq("id", userId);
-
-    if (profileDeleteErr) {
-      console.warn("/api/account delete profile error:", profileDeleteErr.message || profileDeleteErr);
-    }
-
+    // 4) Delete auth user (always last)
     const { error: authDeleteErr } = await supabaseAdmin.auth.admin.deleteUser(userId);
-
     if (authDeleteErr) {
       console.error("/api/account auth delete error:", authDeleteErr);
       return res.status(500).json({ error: "Failed to delete authentication user" });
     }
 
+    // 5) Analytics
     ph?.capture({
       distinctId: userId,
       event: "account_deleted",
-      properties: {
-        hasStripeCustomer: !!stripeCustomerId,
-      },
+      properties: { hasStripeCustomer: !!stripeCustomerId },
     });
 
-    res.json({ ok: true });
+    return res.json({ ok: true, summary: purgeSummary });
   } catch (e) {
     console.error("/api/account delete error:", e);
-    res.status(500).json({ error: "Failed to delete account" });
+    return res.status(500).json({ error: "Failed to delete account" });
   }
 });
 
