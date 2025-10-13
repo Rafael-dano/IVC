@@ -4,7 +4,7 @@ import { openBillingPortal } from "../api/account.js";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { isPaid } from "../utils/plan.js";
-import "./Headers.css";
+import "./Header.css";
 
 export default function Header() {
   const { t } = useTranslation();
