@@ -12,6 +12,12 @@ export function cleanOrigin(v) {
   }
 }
 
+function ensureProtocol(origin) {
+  if (!origin) return "";
+  if (/^https?:\/\//i.test(origin)) return origin;
+  return `https://${origin}`;
+}
+
 /** Build allowlist from env (comma-separated) */
 const LIST_VARS = [process.env.CORS_ALLOWLIST, process.env.SITE_URLS].filter(Boolean);
 
@@ -30,7 +36,7 @@ function addAllowlistEntry(raw) {
   const normalized = cleanOrigin(ensureProtocol(raw.trim()));
   if (!normalized) return;
 
-  // Support wildcard patterns like "https://ivc-*.vercel.app"
+  // Support wildcard patterns like "https://ivc-*.vercel.app" or "*.vercel.app"
   if (normalized.includes("*")) {
     WILDCARD_PATTERNS.add(normalized);
     try {
@@ -63,12 +69,6 @@ const STATIC_ORIGINS = [
   process.env.VERCEL_URL,
 ];
 
-function ensureProtocol(origin) {
-  if (!origin) return "";
-  if (/^https?:\/\//i.test(origin)) return origin;
-  return `https://${origin}`;
-}
-
 STATIC_ORIGINS.forEach(addAllowlistEntry);
 
 /** Optional: allow any *.vercel.app previews if explicitly enabled */
@@ -84,6 +84,7 @@ const EXTRA_SUFFIX_SET = new Set(
     .filter(Boolean)
 );
 
+// Auto-add .vercel.app if your SITE_URL itself is on vercel (handy for preview-heavy setups)
 try {
   const siteUrl = process.env.SITE_URL || "";
   if (siteUrl) {
@@ -97,7 +98,7 @@ try {
 const EXTRA_SUFFIXES = Array.from(EXTRA_SUFFIX_SET);
 
 function hostMatchesSuffixes(host) {
-  return EXTRA_SUFFIXES.some(sfx => host.endsWith(sfx));
+  return EXTRA_SUFFIXES.some((sfx) => host.endsWith(sfx));
 }
 
 /** True if the Origin header should be allowed */
@@ -120,10 +121,12 @@ export function isOriginAllowed(origin) {
 const corsMw = cors({
   origin(origin, cb) {
     if (isOriginAllowed(origin)) return cb(null, true);
+    // helpful one-liner in logs to see what was blocked
+    console.error(`CORS blocked for origin: ${origin}`);
     cb(new Error(`CORS blocked for origin: ${origin}`), false);
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  // ⬇️ omit allowedHeaders so cors reflects Access-Control-Request-Headers dynamically
+  // Reflect request headers automatically
   credentials: true,
   maxAge: 86400,
   optionsSuccessStatus: 204,
@@ -133,5 +136,11 @@ export default corsMw;
 
 /** For your /__cors debug route */
 export function getAllowlist() {
-  return [...EXACT_ALLOWLIST, ...WILDCARD_PATTERNS];
+  return [...EXACT_ALLOWLIST, ...WILDCARD_PATTERNS, ...EXTRA_SUFFIXES, ...(ALLOW_ANY_VERCEL_APP ? ["<any *.vercel.app>"] : [])];
 }
+
+// Boot-time visibility (shows exactly what the server is using)
+console.log("[CORS] Exact:", [...EXACT_ALLOWLIST]);
+console.log("[CORS] Wildcards:", [...WILDCARD_PATTERNS]);
+console.log("[CORS] Suffixes:", EXTRA_SUFFIXES);
+console.log("[CORS] Allow any *.vercel.app:", ALLOW_ANY_VERCEL_APP);
