@@ -29,6 +29,8 @@ const STATIC_ORIGINS = [
   process.env.VITE_SITE_URL,
   process.env.PUBLIC_SITE_URL,
   process.env.RENDER_EXTERNAL_URL,
+  process.env.NEXT_PUBLIC_SITE_URL,
+  process.env.VERCEL_BRANCH_URL,
 ];
 
 for (const origin of STATIC_ORIGINS.map((v) => cleanOrigin(v)).filter(Boolean)) {
