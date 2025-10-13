@@ -9,6 +9,7 @@ import "./Header.css";
 export default function Header() {
   const { t } = useTranslation();
   const { loading, account } = useAccount();
+  const homeHref = account ? "/app" : "/";
   const planKey = (account?.user?.plan || "FREE").toUpperCase();
   const isPaidPlan = isPaid(planKey);
 
@@ -18,7 +19,7 @@ export default function Header() {
   return (
     <header className="app-header">
       <div className="app-header__inner">
-        <a href="/" className="app-header__brand" aria-label="IVContent home">
+        <a href={homeHref} className="app-header__brand" aria-label="IVContent home">
           <span className="app-header__mark">IV</span>
           <span className="app-header__name">Content</span>
         </a>

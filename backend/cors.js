@@ -13,17 +13,27 @@ export function cleanOrigin(v) {
 }
 
 /** Build allowlist from env (comma-separated) */
-const raw =
-  process.env.CORS_ALLOWLIST ||
-  process.env.SITE_URLS || 
-  "";
+const LIST_VARS = [process.env.CORS_ALLOWLIST, process.env.SITE_URLS].filter(Boolean);
 
 const ALLOWLIST = new Set(
-  raw
+  LIST_VARS
+  .join(",")
     .split(",")
     .map((s) => cleanOrigin(s.trim()))
     .filter(Boolean)
 );
+
+const STATIC_ORIGINS = [
+  process.env.SITE_URL,
+  process.env.FRONTEND_URL,
+  process.env.VITE_SITE_URL,
+  process.env.PUBLIC_SITE_URL,
+  process.env.RENDER_EXTERNAL_URL,
+];
+
+for (const origin of STATIC_ORIGINS.map((v) => cleanOrigin(v)).filter(Boolean)) {
+  ALLOWLIST.add(origin);
+}
 
 /** Optional: allow any *.vercel.app previews if explicitly enabled */
 const ALLOW_ANY_VERCEL_APP =
@@ -31,10 +41,24 @@ const ALLOW_ANY_VERCEL_APP =
   process.env.CORS_ALLOW_ANY_VERCEL_APP === "1";
 
 /** Optional: allow any host that ends with these suffixes (comma-separated), e.g. ".vercel.app" */
-const EXTRA_SUFFIXES = (process.env.CORS_ALLOW_SUFFIXES || "")
-  .split(",")
-  .map(s => s.trim())
-  .filter(Boolean);
+const EXTRA_SUFFIX_SET = new Set(
+  (process.env.CORS_ALLOW_SUFFIXES || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+);
+
+try {
+  const siteUrl = process.env.SITE_URL || "";
+  if (siteUrl) {
+    const { hostname } = new URL(siteUrl);
+    if (hostname.endsWith(".vercel.app")) {
+      EXTRA_SUFFIX_SET.add(".vercel.app");
+    }
+  }
+} catch {}
+
+const EXTRA_SUFFIXES = Array.from(EXTRA_SUFFIX_SET);
 
 function hostMatchesSuffixes(host) {
   return EXTRA_SUFFIXES.some(sfx => host.endsWith(sfx));

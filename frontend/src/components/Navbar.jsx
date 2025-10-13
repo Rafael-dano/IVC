@@ -1,17 +1,19 @@
 import "./Navbar.css";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
-const links = [
-  { to: "/app", key: "tool", variant: "primary" },
-  { to: "/ltd", key: "ltd", variant: "outline" },
-  { to: "/help", key: "help", variant: "ghost" },
-  { to: "/login", key: "login", variant: "ghost" },
-  { to: "/signup", key: "signup", variant: "primary" },
-];
+import { useAccount } from "../hooks/useAccount.js";
 
 export default function Navbar() {
   const { t } = useTranslation();
+  const { account } = useAccount();
+
+  const links = [
+    { to: account ? "/app" : "/", key: "tool", variant: "primary" },
+    { to: "/ltd", key: "ltd", variant: "outline" },
+    { to: "/help", key: "help", variant: "ghost" },
+    { to: "/login", key: "login", variant: "ghost" },
+    { to: "/signup", key: "signup", variant: "primary" },
+  ];
   
   return (
     <nav className="app-nav">

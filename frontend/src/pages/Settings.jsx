@@ -8,6 +8,7 @@ import CompanyBlock from "../components/CompanyBlock";
 import { revokeAnalytics } from "../analytics/consent";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
+import { isPaid } from "../utils/plan.js";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -144,8 +145,9 @@ export default function Settings() {
     }
   }
 
-  const planKey = (account?.user?.plan || "FREE").toLowerCase();
-  const hasStripeCustomer = !!account?.user?.stripe_customer_id;
+  const planUpper = (account?.user?.plan || "FREE").toUpperCase();
+  const planKey = planUpper.toLowerCase();
+  const canManageBilling = isPaid(planUpper);
 
   let mainContent;
 
@@ -164,14 +166,14 @@ export default function Settings() {
         </a>
       </section>
     );
- } else {
+  } else {
     mainContent = (
       <div className="section-stack settings-stack">
         {account && (
-         <div className="surface-card settings-card">
+          <div className="surface-card settings-card">
             <div className="settings-card__row">
               <span className={`badge badge--${planKey}`}>{account.user.plan}</span>
-              {hasStripeCustomer && (
+              {canManageBilling && (
                 <button
                   className={`button-ghost ${portalBusy ? "is-loading" : ""}`}
                   onClick={handleOpenPortal}

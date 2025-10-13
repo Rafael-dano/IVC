@@ -1,14 +1,37 @@
 // src/pages/Landingpage.jsx
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Landingpage.css";
 import Seo from "../components/Seo";
 import LanguageSwitcher from "../components/LanguageSwitcher.jsx";
 import Footer from "../components/Footer.jsx";
+import { supabase } from "../api/supabaseClient.js";
 
 export default function LandingPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const [isAuthed, setIsAuthed] = useState(false);
+
+  useEffect(() => {
+    let unsub;
+
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setIsAuthed(!!data?.session);
+      } catch {
+        setIsAuthed(false);
+      }
+
+      unsub = supabase.auth
+        .onAuthStateChange((_event, session) => {
+          setIsAuthed(!!session);
+        })
+        .data?.subscription;
+    })();
+
+    return () => unsub?.unsubscribe?.();
+  }, []);
 
   const heroBullets = [
     t("landing.heroBullet1"),
@@ -171,6 +194,18 @@ export default function LandingPage() {
           <div className="landing-nav-links">
             <Link to="/quick-start">Quickstart</Link>
             <Link to="/faq">FAQ</Link>
+            <Link
+              to={
+                isAuthed
+                  ? "/app"
+                  : {
+                      pathname: "/login",
+                      state: { from: "/app" },
+                    }
+              }
+            >
+              {t("nav.tool", "Tool")}
+            </Link>
           </div>
           <LanguageSwitcher />
           <div className="landing-nav-auth">
