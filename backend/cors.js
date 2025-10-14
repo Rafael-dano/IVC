@@ -103,13 +103,17 @@ function hostMatchesSuffixes(host) {
 
 /** True if the Origin header should be allowed */
 export function isOriginAllowed(origin) {
-  if (!origin) return true; // server-to-server, curl, health checks, etc.
+  if (!origin) return true;
   const o = cleanOrigin(origin);
   if (EXACT_ALLOWLIST.has(o)) return true;
   if (WILDCARD_REGEXES.some((re) => re.test(o))) return true;
 
   try {
     const { hostname } = new URL(o);
+
+    // 🔥 HOT-FIX: always allow any *.vercel.app previews
+    if (hostname.endsWith(".vercel.app")) return true;
+
     if (ALLOW_ANY_VERCEL_APP && hostname.endsWith(".vercel.app")) return true;
     if (EXTRA_SUFFIXES.length && hostMatchesSuffixes(hostname)) return true;
   } catch {}
