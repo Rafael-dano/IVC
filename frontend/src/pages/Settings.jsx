@@ -9,6 +9,7 @@ import { revokeAnalytics } from "../analytics/consent";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import { isPaid } from "../utils/plan.js";
+import { maybeTrackPurchaseFromStorage } from "../analytics/gtag";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -65,11 +66,23 @@ export default function Settings() {
   }, []);
 
   useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    if (q.get("unsub") === "success") {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    let replaced = false;
+
+    if (params.get("checkout") === "success") {
+      maybeTrackPurchaseFromStorage();
+      params.delete("checkout");
+      replaced = true;
+    }
+
+    if (params.get("unsub") === "success") {
       setUnsubbed(true);
-      const url = new URL(window.location.href);
-      url.searchParams.delete("unsub");
+      params.delete("unsub");
+      replaced = true;
+    }
+
+    if (replaced) {
       window.history.replaceState({}, "", url.toString());
     }
   }, []);

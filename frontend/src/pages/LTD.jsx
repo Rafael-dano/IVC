@@ -6,30 +6,55 @@ import { httpJson } from "../api/http.js";
 import { useTranslation } from "react-i18next";
 import { startLTDCheckout, startProCheckout } from "../api/checkout";
 import { openAnnualCheckout, openAnnualPromo } from "../api/account.js";
+import { trackBeginCheckout, trackSelectPromotion } from "../analytics/gtag";
 
 const TIERS = [
   {
     key: "ANNUAL_PROMO_99",
     spotKey: "ANNUAL_99",
     label: "First 99 spots at $99 per year, for life",
-    checkout: () => openAnnualPromo("annual_99"),
+    analytics: {
+      itemCategory: "membership",
+      itemName: "Pro Annual Promo $99",
+      value: 99,
+      currency: "USD",
+    },
+    checkout: (tracking) => openAnnualPromo("annual_99", tracking),
   },
   {
     key: "ANNUAL_PROMO_149",
     spotKey: "ANNUAL_149",
     label: "Next 149 spots at $149 per year, for life",
-    checkout: () => openAnnualPromo("annual_149"),
+    analytics: {
+      itemCategory: "membership",
+      itemName: "Pro Annual Promo $149",
+      value: 149,
+      currency: "USD",
+    },
+    checkout: (tracking) => openAnnualPromo("annual_149", tracking),
   },
   {
     key: "LTD_400",
     spotKey: "LTD_400",
     label: "Lifetime access 50 spots at $400",
-    checkout: () => startLTDCheckout("LTD_400"),
+    analytics: {
+      itemCategory: "membership",
+      itemName: "Lifetime Deal $400",
+      value: 400,
+      currency: "USD",
+    },
+    checkout: (tracking) => startLTDCheckout("LTD_400", tracking),
   },
   {
     key: "ANNUAL",
     label: "$160 for Annual membership",
-    checkout: () => openAnnualCheckout(),
+    analytics: {
+      itemCategory: "membership",
+      itemName: "Pro Annual",
+      value: 160,
+      currency: "USD",
+    },
+    checkout: (tracking) => openAnnualCheckout(undefined, tracking),
   },
 ];
 
@@ -66,15 +91,34 @@ export default function LTD() {
       if (typeof tier.checkout !== "function") {
         throw new Error("Checkout unavailable");
       }
-      await tier.checkout();
+      const analytics = tier.analytics || {
+        itemCategory: "membership",
+        itemName: tier.label,
+      };
+      trackBeginCheckout(analytics);
+      if (tier.key === "LTD_400") {
+        trackSelectPromotion({
+          promotion_name: "LTD $400 (50 spots)",
+          creative_name: "LTD Landing Hero",
+          location_id: "ltd_page",
+        });
+      }
+      await tier.checkout(analytics);
     } catch (e) {
       alert(e.message || t("ltd.checkoutFailed"));
     }
   };
 
   const onSubscribe = async () => {
+    const analytics = {
+      itemCategory: "membership",
+      itemName: "Pro Monthly",
+      value: 15,
+      currency: "USD",
+    };
     try {
-      await startProCheckout();
+      trackBeginCheckout(analytics);
+      await startProCheckout(analytics);
     } catch (e) {
       alert(e.message || t("ltd.checkoutFailed"));
     }

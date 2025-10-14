@@ -11,6 +11,19 @@ import { ensureAnalyticsInitIfConsented, getAnalyticsConsent } from "./analytics
 import { supabase } from "./api/supabaseClient";
 import CookieConsent from "./components/CookieConsent";
 
+const bingVerification = import.meta?.env?.VITE_BING_VERIFICATION;
+if (typeof document !== "undefined" && bingVerification) {
+  const existing = document.querySelector('meta[name="msvalidate.01"]');
+  if (existing) {
+    existing.setAttribute("content", bingVerification);
+  } else {
+    const meta = document.createElement("meta");
+    meta.name = "msvalidate.01";
+    meta.content = bingVerification;
+    document.head.appendChild(meta);
+  }
+}
+
 // ---- Gate Sentry on consent ----
 function hasAnalyticsConsent() {
   try {

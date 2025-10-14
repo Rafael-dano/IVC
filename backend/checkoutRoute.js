@@ -142,7 +142,7 @@ router.post("/api/checkout/pro", requireUser, async (req, res) => {
       ...(email && !customerId ? { customer_email: email } : {}),
       metadata: { user_id: req.user.id, plan: "PRO" },
     });
-    res.json({ url: session.url });
+    res.json({ url: session.url, session_id: session.id });
   } catch (e) {
     console.error("/api/checkout/pro error", e);
     res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });
@@ -167,7 +167,7 @@ router.post("/api/checkout/annual", requireUser, async (req, res) => {
       ...(email && !customerId ? { customer_email: email } : {}),
       metadata: { user_id: req.user.id, plan: "ANNUAL" },
     });
-    res.json({ url: session.url });
+    res.json({ url: session.url, session_id: session.id });
   } catch (e) {
     console.error("/api/checkout/annual error", e);
     res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });
@@ -193,7 +193,7 @@ async function handleAnnualPromoCheckout(req, res) {
       ...(email && !customerId ? { customer_email: email } : {}),
       metadata: { user_id: req.user.id, plan: "ANNUAL", ...(code ? { code } : {}) },
     });
-    res.json({ url: session.url });
+    res.json({ url: session.url, session_id: session.id });
   } catch (e) {
     console.error("/api/checkout/annual-promo error", e);
     res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });
@@ -220,7 +220,7 @@ router.post("/api/checkout/lifetime-400", requireUser, async (req, res) => {
       ...(email && !customerId ? { customer_email: email } : {}),
       metadata: { user_id: req.user.id, tier: "LTD_400" },
     }, { allowRedirects: true });
-    res.json({ url: session.url });
+    res.json({ url: session.url, session_id: session.id });
   } catch (e) {
     console.error("/api/checkout/lifetime-400 error", e);
     res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });
@@ -248,7 +248,7 @@ router.post("/api/checkout/ltd", requireUser, async (req, res) => {
       metadata: { user_id: req.user.id, tier: tierRaw },
     }, { allowRedirects: true });
 
-    res.json({ url: session.url });
+    res.json({ url: session.url, session_id: session.id });
   } catch (e) {
     console.error("/api/checkout/ltd error", e);
     res.status(400).json({ error: e?.raw?.message || e?.message || "Checkout failed" });

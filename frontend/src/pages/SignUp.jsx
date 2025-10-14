@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";
 import "./Auth.css";
 import { useTranslation } from "react-i18next";
+import { trackSignUp } from "../analytics/gtag";
 
 export default function SignUp() {
   const { t } = useTranslation();
@@ -96,6 +97,7 @@ export default function SignUp() {
 
       sessionStorage.removeItem("signupForm");
       sessionStorage.removeItem("signupAgreedToTerms");
+      trackSignUp("supabase");
       setLoading(false);
       alert(t("auth.signup.checkEmail"));
       navigate("/login");
