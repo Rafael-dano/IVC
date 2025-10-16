@@ -13,7 +13,10 @@ function cancelUrl()  { return `${SITE_ORIGIN}/ltd?checkout=cancelled`; }
 function applyTax(obj) {
   if (!TAX_ENABLED) return obj;
   const automatic = { automatic_tax: { enabled: true } };
-  const update = { customer_update: { ...(obj.customer_update || {}), address: "auto" } };
+  const hasCustomer = Boolean(obj?.customer);
+  const update = hasCustomer
+    ? { customer_update: { ...(obj.customer_update || {}), address: "auto" } }
+    : {};
   return { ...obj, ...automatic, ...update };
 }
 
