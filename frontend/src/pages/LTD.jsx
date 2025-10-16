@@ -6,7 +6,8 @@ import { httpJson } from "../api/http.js";
 import { useTranslation } from "react-i18next";
 import { startLTDCheckout, startProCheckout } from "../api/checkout";
 import { openAnnualCheckout, openAnnualPromo } from "../api/account.js";
-import { trackBeginCheckout, trackSelectPromotion } from "../analytics/gtag";
+import { trackSelectPromotion } from "../analytics/gtag";
+import { sendEvent } from "../analytics/ga";
 
 const TIERS = [
   {
@@ -14,8 +15,10 @@ const TIERS = [
     spotKey: "ANNUAL_99",
     label: "First 99 spots at $99 per year, for life",
     analytics: {
-      itemCategory: "membership",
-      itemName: "Pro Annual Promo $99",
+      priceTier: "annual_promo_99",
+      region: "global",
+      offerType: "annual",
+      amount: 99,
       value: 99,
       currency: "USD",
     },
@@ -26,8 +29,10 @@ const TIERS = [
     spotKey: "ANNUAL_149",
     label: "Next 149 spots at $149 per year, for life",
     analytics: {
-      itemCategory: "membership",
-      itemName: "Pro Annual Promo $149",
+      priceTier: "annual_promo_149",
+      region: "global",
+      offerType: "annual",
+      amount: 149,
       value: 149,
       currency: "USD",
     },
@@ -38,8 +43,10 @@ const TIERS = [
     spotKey: "LTD_400",
     label: "Lifetime access 50 spots at $400",
     analytics: {
-      itemCategory: "membership",
-      itemName: "Lifetime Deal $400",
+      priceTier: "ltd_400",
+      region: "global",
+      offerType: "ltd",
+      amount: 400,
       value: 400,
       currency: "USD",
     },
@@ -49,8 +56,10 @@ const TIERS = [
     key: "ANNUAL",
     label: "$160 for Annual membership",
     analytics: {
-      itemCategory: "membership",
-      itemName: "Pro Annual",
+      priceTier: "annual_standard",
+      region: "global",
+      offerType: "annual",
+      amount: 160,
       value: 160,
       currency: "USD",
     },
@@ -91,11 +100,24 @@ export default function LTD() {
       if (typeof tier.checkout !== "function") {
         throw new Error("Checkout unavailable");
       }
-      const analytics = tier.analytics || {
-        itemCategory: "membership",
-        itemName: tier.label,
-      };
-      trackBeginCheckout(analytics);
+      const analytics = tier.analytics || {};
+      const priceTier = analytics.priceTier || tier.key.toLowerCase();
+      const region = analytics.region || "unknown";
+      const offerType =
+        analytics.offerType || (tier.key.startsWith("LTD") ? "ltd" : "annual");
+      sendEvent("ltd_click", {
+        variant: tier.key,
+        location: "ltd_page",
+      });
+      sendEvent("begin_checkout", {
+        price_tier: priceTier,
+        region,
+        offer_type: offerType,
+        ...(typeof analytics.amount === "number"
+          ? { amount: analytics.amount, value: analytics.amount }
+          : {}),
+        ...(analytics.currency ? { currency: analytics.currency } : {}),
+      });
       if (tier.key === "LTD_400") {
         trackSelectPromotion({
           promotion_name: "LTD $400 (50 spots)",
@@ -111,13 +133,26 @@ export default function LTD() {
 
   const onSubscribe = async () => {
     const analytics = {
-      itemCategory: "membership",
-      itemName: "Pro Monthly",
+      priceTier: "pro_monthly",
+      region: "global",
+      offerType: "pro_monthly",
+      amount: 15,
       value: 15,
       currency: "USD",
     };
     try {
-      trackBeginCheckout(analytics);
+      sendEvent("ltd_click", {
+        variant: "pro_monthly",
+        location: "ltd_page",
+      });
+      sendEvent("begin_checkout", {
+        price_tier: analytics.priceTier,
+        region: analytics.region || "unknown",
+        offer_type: analytics.offerType,
+        amount: analytics.amount,
+        value: analytics.amount,
+        currency: analytics.currency,
+      });
       await startProCheckout(analytics);
     } catch (e) {
       alert(e.message || t("ltd.checkoutFailed"));

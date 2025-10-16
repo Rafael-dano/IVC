@@ -1,3 +1,5 @@
+import { sendEvent } from "./ga";
+
 const CHECKOUT_STORAGE_KEY = "ivc:pending-checkout";
 const CHECKOUT_MAX_AGE_MS = 1000 * 60 * 60 * 24; // 24 hours
 
@@ -6,13 +8,7 @@ function now() {
 }
 
 function safeCall(eventName, params) {
-  try {
-    window.gtag?.("event", eventName, params);
-  } catch (err) {
-    if (import.meta?.env?.DEV) {
-      console.debug("gtag event failed", eventName, err);
-    }
-  }
+  sendEvent(eventName, params);
 }
 
 function safeStore(record) {
@@ -49,7 +45,7 @@ function safeClear() {
   }
 }
 
-export function trackSignUp(method = "supabase") {
+export function trackSignUp(method = "email") {
   safeCall("sign_up", { method });
 }
 
@@ -66,39 +62,46 @@ export function trackSelectPromotion({
 }
 
 export function trackBeginCheckout({
-  itemCategory = "membership",
-  itemName = "Membership",
-  value,
+  priceTier,
+  region,
+  offerType,
+  amount,
   currency = "USD",
 } = {}) {
-  const amount = typeof value === "number" ? value : Number(value) || undefined;
+  const resolvedPriceTier = priceTier || "unknown";
+  const resolvedRegion = region || "unknown";
+  const resolvedOfferType = offerType || "unknown";
   safeCall("begin_checkout", {
-    item_category: itemCategory,
-    item_name: itemName,
-    ...(amount ? { price: amount, value: amount } : {}),
-    currency,
+    price_tier: resolvedPriceTier,
+    region: resolvedRegion,
+    offer_type: resolvedOfferType,
+    ...(typeof amount === "number"
+      ? { amount, value: amount, currency }
+      : {}),
+    ...(!amount && currency ? { currency } : {}),
   });
 }
 
 export function registerCheckoutSession({
   sessionId,
-  itemCategory = "membership",
-  itemName = "Membership",
+  priceTier,
+  region,
+  offerType,
+  amount,
   value,
   currency = "USD",
 } = {}) {
   if (!sessionId) return;
-  const amount = typeof value === "number" ? value : Number(value) || undefined;
+  const rawAmount = amount ?? value;
+  const numericAmount =
+    typeof rawAmount === "number" ? rawAmount : Number(rawAmount) || undefined;
   const record = {
     transaction_id: sessionId,
-    value: amount,
+    priceTier: priceTier || "unknown",
+    region: region || "unknown",
+    offerType: offerType || "unknown",
+    amount: numericAmount,
     currency,
-    items: [
-      {
-        ...(itemName ? { item_name: itemName } : {}),
-        ...(itemCategory ? { item_category: itemCategory } : {}),
-      },
-    ],
     timestamp: now(),
   };
   safeStore(record);
@@ -117,17 +120,28 @@ export function consumePendingCheckout() {
 
 export function trackPurchase({
   transaction_id,
+  priceTier,
+  region,
+  offerType,
+  amount,
   value,
   currency = "USD",
-  items,
 } = {}) {
+  const rawAmount = amount ?? value;
+  const numericAmount =
+    typeof rawAmount === "number" ? rawAmount : Number(rawAmount) || undefined;
+  const resolvedPriceTier = priceTier || "unknown";
+  const resolvedRegion = region || "unknown";
+  const resolvedOfferType = offerType || "unknown";
   const payload = {
     ...(transaction_id ? { transaction_id } : {}),
-    ...(typeof value === "number" ? { value } : {}),
-    currency,
-    ...(Array.isArray(items) && items.length > 0
-      ? { items }
+    price_tier: resolvedPriceTier,
+    region: resolvedRegion,
+    offer_type: resolvedOfferType,
+    ...(typeof numericAmount === "number"
+      ? { amount: numericAmount, value: numericAmount }
       : {}),
+      currency,
   };
   safeCall("purchase", payload);
 }

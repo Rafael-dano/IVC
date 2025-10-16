@@ -97,7 +97,7 @@ export default function SignUp() {
 
       sessionStorage.removeItem("signupForm");
       sessionStorage.removeItem("signupAgreedToTerms");
-      trackSignUp("supabase");
+      trackSignUp();
       setLoading(false);
       alert(t("auth.signup.checkEmail"));
       navigate("/login");
