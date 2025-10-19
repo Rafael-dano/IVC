@@ -188,24 +188,24 @@
     "betaVideoLabel": "Beta video",
     "betaSpotlights": {
       "spot1": {
-        "name": "Maya Chen",
-        "role": "Founder, Creator Lab",
+        "name": "Maya Chan",
+        "role": "Founder, Lab content",
         "summary": "Turned a 45-minute webinar into 8 platform-ready posts in under 20 minutes.",
         "result": "Saved her team half a day of editing per campaign.",
         "quote": "“IVContent cut our editing time by 70%. It's like having a strategist and copywriter on standby.”",
         "videoTitle": "Webinar to social sprint"
       },
       "spot2": {
-        "name": "Andre Walker",
-        "role": "Marketing Lead, PodLab",
+        "name": "Andres Walton",
+        "role": "Marketing Lead, Labpoode",
         "summary": "Repurposed podcast interviews into newsletters, reels, and SEO blogs automatically.",
         "result": "Doubled weekly output without hiring another freelancer.",
         "quote": "“The multilingual support is unreal. We ship English and Spanish recaps with one click.”",
         "videoTitle": "Podcast to newsletter remix"
       },
       "spot3": {
-        "name": "Sasha Patel",
-        "role": "Agency Strategist",
+        "name": "Sasha Ratel",
+        "role": "A Strategist",
         "summary": "Built a client content calendar with 30 days of social copy in one afternoon.",
         "result": "Clients now approve campaigns 3× faster with ready-to-post drafts.",
         "quote": "“Our clients feel like we have a full creative department behind the scenes.”",
@@ -219,17 +219,17 @@
       "r1": {
         "quote": "“IVContent is the first tool that actually keeps our voice consistent across formats.”",
         "name": "Jordan Reeves",
-        "role": "Content Director, FlowStudios"
+        "role": "Content Director, Flows stew"
       },
       "r2": {
         "quote": "“I deliver more assets per client without burning out. The scripts are scary-good.”",
         "name": "Priya Desai",
-        "role": "Founder, Repurpose Boutique"
+        "role": "Founder, Repurpose IT"
       },
       "r3": {
         "quote": "“Our editors use it as a starting point for every campaign. It’s our unfair advantage.”",
         "name": "Liam Carter",
-        "role": "Head of Growth, LaunchHouse"
+        "role": "Head of Growth, Launchlogs"
       }
     },
     "pricingLabel": "Pricing",
