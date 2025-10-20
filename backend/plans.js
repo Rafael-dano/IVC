@@ -50,7 +50,13 @@ if (isBeta && PLANS?.FREE) {
 // treat PRO, ANNUAL, and any LTD_* as paid
 export function isPaidPlan(plan) {
   const p = String(plan || "").toUpperCase();
-  return p === "PRO" || p === "ANNUAL" || p.startsWith("ANNUAL_") || p.startsWith("LTD_");
+  return (
+    p === "PRO" ||
+    p === "ANNUAL" ||
+    p.startsWith("ANNUAL_") ||
+    p.startsWith("LTD_") ||
+    p.startsWith("LTD")
+  );
 }
 
 export default PLANS;

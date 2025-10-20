@@ -2,7 +2,7 @@
 import { supabaseAdmin } from "../api/supabaseClient.js";
 import { isPaidPlan } from "../plans.js";
 
-const PLAN_LIMITS = {
+export const PLAN_LIMITS = {
   FREE: 50,
   PRO: 1500,
   ANNUAL_99: 1500,
@@ -10,6 +10,18 @@ const PLAN_LIMITS = {
   ANNUAL: 1500,
   LTD_400: 1500,
 };
+
+export function normalizePlanKey(plan) {
+  if (!plan) return "FREE";
+
+  const normalized = String(plan)
+    .trim()
+    .toUpperCase();
+
+  if (!normalized) return "FREE";
+
+  return normalized.replace(/^([A-Z]+)(\d+)$/, "$1_$2");
+}
 
 async function ensureProfileRow(user) {
   try {
@@ -58,7 +70,7 @@ async function ensureBetaLifecycle(userId, userEmail) {
       .eq("id", userId)
       .maybeSingle();
 
-    const plan = String(profile?.plan || "FREE").toUpperCase();
+    const plan = normalizePlanKey(profile?.plan);
     const nowIso = new Date().toISOString();
 
     if (isPaidPlan(plan)) return;
@@ -137,7 +149,7 @@ export async function enforceLimits(req, res, next) {
       console.error("enforceLimits profile error:", profErr.message);
       return res.status(500).json({ error: "Failed to load plan" });
     }
-    const plan = profile?.plan || "FREE";
+    const plan = normalizePlanKey(profile?.plan);
     const monthlyLimit = PLAN_LIMITS[plan] ?? PLAN_LIMITS.FREE;
 
     const now = new Date();
