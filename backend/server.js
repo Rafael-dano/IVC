@@ -851,10 +851,10 @@ app.post("/api/email/welcome", requireUser, async (req, res) => {
       siteUrl: (process.env.SITE_URL || "").replace(/\/+$/, "")
     });
 
-    await supabaseAdmin
-      .from("profiles")
-      .update({ welcome_sent_at: new Date().toISOString() })
-      .eq("id", userId);
+    await supabaseAdmin.rpc("mark_welcome_sent", {
+      p_queue_id: queueId,   // populate from your queue insert
+      p_user_id: userId
+    });
 
     res.json({ ok: true });
   } catch (e) {

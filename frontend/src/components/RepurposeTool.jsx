@@ -185,13 +185,28 @@ export default function RepurposeTool() {
   
       // B) TEXT-ONLY / CAROUSEL FLOWS (no file)
       if (isCarouselFlow) {
-        const prompt = `Create a carousel with 5 slides about: ${inputText || "any engaging topic"}. Respond in ${languageHint()}.`;
+        const topic = inputText?.trim() || "any engaging topic";
+        const prompt = [
+          `You are a social media strategist. Create an engaging LinkedIn carousel with exactly 5 slides about "${topic}".`,
+          "Return ONLY valid JSON (no markdown fences) representing an array of 5 objects.",
+          "Each object must have a short \"title\" (max 8 words) and a persuasive \"content\" string with 2-3 short sentences separated by new lines.",
+          `Write the copy in ${languageHint()}.`
+        ].join(" ");
+
         const aiResponse = await generateContent(user.id, prompt);
-        const slides = aiResponse.split("\n\n").map((chunk, i) => ({
-          title: `Slide ${i + 1}`,
-          content: chunk.trim(),
-        }));
-        setRepurposedText(slides);
+        const slides = parseCarouselResponse(aiResponse);
+        const hasContent = slides.some(slide => (slide.content || "").trim().length > 0);
+
+        if (!slides.length || !hasContent) {
+          setRepurposedText([
+            {
+              title: "Slide 1",
+              content: (aiResponse || "").trim() || "⚠️ No content generated.",
+            }
+          ]);
+        } else {
+          setRepurposedText(slides);
+        }
         setIsCarousel(true);
         return;
       }
@@ -286,6 +301,83 @@ export default function RepurposeTool() {
       alert("Couldn’t create the PDF.");
       console.error(e);
     }
+  }
+
+  function normalizeSlides(slides) {
+    return slides
+      .map((slide, idx) => {
+        const rawTitle = typeof slide?.title === "string" ? slide.title.trim() : "";
+        const rawContent = typeof slide?.content === "string" ? slide.content.trim() : "";
+        return {
+          title: rawTitle || `Slide ${idx + 1}`,
+          content: rawContent,
+        };
+      })
+      .filter(slide => slide.title || slide.content)
+      .slice(0, 5);
+  }
+
+  function parseCarouselResponse(raw) {
+    if (!raw) return [];
+    const trimmed = String(raw).trim();
+
+    const tryParseJson = (text) => {
+      try {
+        const parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) {
+          return normalizeSlides(parsed);
+        }
+      } catch {
+        // ignore JSON parse failures
+      }
+      return [];
+    };
+
+    let slides = tryParseJson(trimmed);
+    if (slides.length) return slides;
+
+    const fencedMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (fencedMatch) {
+      slides = tryParseJson(fencedMatch[1]);
+      if (slides.length) return slides;
+    }
+
+    const blockMatches = trimmed.match(/Slide\s*\d+\s*[:\-–]?.*?(?=Slide\s*\d+\s*[:\-–]?|$)/gis);
+    if (blockMatches && blockMatches.length) {
+      slides = blockMatches.map((chunk) => {
+        const cleaned = chunk.trim();
+        const lines = cleaned.split(/\n+/);
+        const firstLine = lines.shift() || "";
+        const titleMatch = firstLine.match(/^Slide\s*\d+\s*[:\-–]?\s*(.*)$/i);
+        const title = titleMatch ? titleMatch[1].trim() : firstLine.trim();
+        const content = lines.join("\n").trim() || cleaned.replace(/^Slide\s*\d+\s*[:\-–]?\s*/i, "").trim();
+        return { title, content };
+      });
+      slides = normalizeSlides(slides);
+      if (slides.length) return slides;
+    }
+
+    let sections = trimmed.split(/\n\s*\n+/).map(chunk => chunk.trim()).filter(Boolean);
+    if (sections.length <= 1) {
+      sections = trimmed.split(/(?=\bSlide\s*\d+\b)/i).map(chunk => chunk.trim()).filter(Boolean);
+    }
+    if (!sections.length) return [];
+
+    slides = sections.map((chunk, idx) => {
+      const lines = chunk.split(/\n+/);
+      let title = lines[0]?.replace(/^[-•*]\s*/, "").trim() || `Slide ${idx + 1}`;
+      let content = lines.slice(1).join("\n").trim();
+
+      const labelMatch = chunk.match(/^Slide\s*\d+\s*[:\-–]?\s*(.*)$/i);
+      if (labelMatch) {
+        title = labelMatch[1].trim() || title;
+        content = chunk.replace(/^Slide\s*\d+\s*[:\-–]?\s*/i, "").trim();
+      }
+
+      return { title, content };
+    });
+
+    return normalizeSlides(slides);
   }
 
   // Progress-aware upload helper (uses XMLHttpRequest so we get onprogress)
