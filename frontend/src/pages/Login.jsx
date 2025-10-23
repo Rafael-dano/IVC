@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";
-import { httpJson } from "../api/http.js";
 import "./Auth.css";
 import { useTranslation } from "react-i18next";
 
@@ -40,25 +39,6 @@ export default function Login() {
     }
   }
 
-  async function sendWelcomeOnce(sessionFromSignIn = null) {
-    try {
-      let session = sessionFromSignIn;
-      if (!session) {
-        const { data: sessionData } = await supabase.auth.getSession();
-        session = sessionData?.session || null;
-      }
-      const token = session?.access_token;
-      if (!token) return;
-      // fire-and-forget; server dedupes via welcome_sent_at
-      httpJson("/api/email/welcome", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }).catch(() => {});
-    } catch {}
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -70,8 +50,6 @@ export default function Login() {
       if (error) throw error;
 
       ensureProfile(signInData?.user);
-      // kick off welcome email (non-blocking)
-      sendWelcomeOnce(signInData?.session || null);
 
       setLoading(false);
       navigate(from);

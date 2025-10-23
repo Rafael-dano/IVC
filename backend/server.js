@@ -34,6 +34,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const execFileAsync = promisify(execFile);
 const jwt = jwtPkg.default ?? jwtPkg;
 const feedbackLimiter = rateLimit({ windowMs: 60_000, limit: 5 });
+const welcomeSignupLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 const fp = (s) => (s ? createHash("sha256").update(String(s)).digest("hex").slice(0, 8) : "none");
 
 if (!process.env.UNSUBSCRIBE_JWT_SECRET) {
@@ -825,46 +831,105 @@ app.get("/__ph/test", (_req, res) => {
   res.json({ ok: true });
 });
 
-// One-time welcome email after first login
-app.post("/api/email/welcome", requireUser, async (req, res) => {
+// One-time welcome email triggered alongside signup confirmation
+app.post("/api/email/welcome-signup", welcomeSignupLimiter, async (req, res) => {
   try {
-    const userId = req.user.id;
-    const firstName =
-      (req.user.user_metadata?.full_name ||
-        req.user.user_metadata?.name ||
-        req.user.user_metadata?.display_name ||
-        "").toString().trim().split(" ")[0] || "";
+    const { email, name } = req.body || {};
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return res.status(400).json({ error: "Valid email required" });
+    }
 
-    // Avoid duplicates
-    const { data: prof } = await supabaseAdmin
+    const cleanEmail = String(email).trim().toLowerCase();
+    const preferredName = (name || "").toString().trim();
+
+    const { data: userList, error: userErr } = await supabaseAdmin.auth.admin.listUsers({
+      email: cleanEmail,
+      perPage: 1,
+    });
+
+    if (userErr) {
+      console.error("welcome-signup listUsers error:", userErr.message || userErr);
+      return res.status(500).json({ error: "Unable to look up user" });
+    }
+
+    const user = (userList?.users || []).find(
+      (u) => (u.email || "").toLowerCase() === cleanEmail
+    );
+
+    if (!user) {
+      return res.json({ ok: true, skipped: true, reason: "user_not_found" });
+    }
+
+    const userId = user.id;
+    const displaySource =
+      preferredName ||
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.user_metadata?.display_name ||
+      "";
+    const normalizedDisplay = displaySource ? displaySource.toString().trim() : "";
+
+    const firstName = firstNameOf(normalizedDisplay);
+
+    const { data: prof, error: profErr } = await supabaseAdmin
       .from("profiles")
-      .select("welcome_sent_at, email")
+      .select("id, email, welcome_sent_at")
       .eq("id", userId)
       .maybeSingle();
 
-    if (prof?.welcome_sent_at) return res.json({ ok: true, skipped: true });
+      if (profErr) {
+        console.error("welcome-signup profile error:", profErr.message || profErr);
+        return res.status(500).json({ error: "Profile lookup failed" });
+      }
 
-    const to = prof?.email || req.user.email;
-    const siteUrl = (process.env.SITE_URL || "").replace(/\/+$/, "");
+      if (!prof) {
+        try {
+          await supabaseAdmin.from("profiles").insert({
+            id: userId,
+            email: cleanEmail,
+            display_name: normalizedDisplay || null,
+            plan: "FREE",
+          });
+        } catch (insertErr) {
+          if (insertErr?.code !== "23505") {
+            console.error("welcome-signup profile insert error:", insertErr.message || insertErr);
+            return res.status(500).json({ error: "Failed to ensure profile" });
+          }
+        }
+      } else if (!prof.email && cleanEmail) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ email: cleanEmail })
+          .eq("id", userId);
+      }
+  
+      if (prof?.welcome_sent_at) {
+        return res.json({ ok: true, skipped: true });
+      }
 
     const sentAt = new Date().toISOString();
-    const { error: stampError } = await supabaseAdmin
+    const { data: stampedRows, error: stampError } = await supabaseAdmin
       .from("profiles")
       .update({ welcome_sent_at: sentAt })
-      .eq("id", userId);
+      .eq("id", userId)
+      .is("welcome_sent_at", null)
+      .select("id");
 
-      if (stampError) throw stampError;
+      if (stampError) {
+        console.error("welcome-signup stamp error:", stampError.message || stampError);
+        return res.status(500).json({ error: "Failed to stamp welcome" });
+      }
 
-      const delayMs = 5 * 60 * 1000;
-      setTimeout(() => {
-        sendWelcomeEmail({ to, firstName, siteUrl }).catch((err) =>
-          console.error("delayed welcome failed", err?.message || err)
-        );
-      }, delayMs);
+      if (!Array.isArray(stampedRows) || stampedRows.length === 0) {
+        return res.json({ ok: true, skipped: true });
+      }
   
-      res.json({ ok: true, scheduledInMs: delayMs });
+      const siteUrl = (process.env.SITE_URL || "").replace(/\/+$/, "");
+      await sendWelcomeEmail({ to: cleanEmail, firstName, siteUrl });
+  
+      res.json({ ok: true, sentAt });
   } catch (e) {
-    console.error("/api/email/welcome error:", e);
+    console.error("/api/email/welcome-signup error:", e);
     res.status(500).json({ error: "Failed to send welcome email" });
   }
 });

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";
+import { httpJson } from "../api/http.js";
 import "./Auth.css";
 import { useTranslation } from "react-i18next";
 import { trackSignUp } from "../analytics/gtag";
@@ -85,6 +86,18 @@ export default function SignUp() {
       });
       if (resendError) {
         console.warn("Failed to queue confirmation email:", resendError.message || resendError);
+      }
+
+      try {
+        await httpJson("/api/email/welcome-signup", {
+          method: "POST",
+          body: JSON.stringify({ email: form.email, name: form.name }),
+        });
+      } catch (welcomeErr) {
+        console.warn(
+          "Failed to queue welcome email:",
+          welcomeErr?.message || welcomeErr
+        );
       }
 
       if (data.session) {
