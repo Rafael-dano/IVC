@@ -845,18 +845,24 @@ app.post("/api/email/welcome", requireUser, async (req, res) => {
     if (prof?.welcome_sent_at) return res.json({ ok: true, skipped: true });
 
     const to = prof?.email || req.user.email;
-    await sendWelcomeEmail({
-      to,
-      firstName,
-      siteUrl: (process.env.SITE_URL || "").replace(/\/+$/, "")
-    });
+    const siteUrl = (process.env.SITE_URL || "").replace(/\/+$/, "");
 
-    await supabaseAdmin.rpc("mark_welcome_sent", {
-      p_queue_id: queueId,   // populate from your queue insert
-      p_user_id: userId
-    });
+    const sentAt = new Date().toISOString();
+    const { error: stampError } = await supabaseAdmin
+      .from("profiles")
+      .update({ welcome_sent_at: sentAt })
+      .eq("id", userId);
 
-    res.json({ ok: true });
+      if (stampError) throw stampError;
+
+      const delayMs = 5 * 60 * 1000;
+      setTimeout(() => {
+        sendWelcomeEmail({ to, firstName, siteUrl }).catch((err) =>
+          console.error("delayed welcome failed", err?.message || err)
+        );
+      }, delayMs);
+  
+      res.json({ ok: true, scheduledInMs: delayMs });
   } catch (e) {
     console.error("/api/email/welcome error:", e);
     res.status(500).json({ error: "Failed to send welcome email" });
