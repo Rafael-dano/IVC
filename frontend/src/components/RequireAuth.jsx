@@ -1,4 +1,3 @@
-// src/components/RequireAuth.jsx
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";

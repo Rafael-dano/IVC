@@ -1,4 +1,3 @@
-// frontend/src/api/billing.js
 import { supabase } from "../api/supabaseClient.js";
 import { httpJson } from "./http.js";
 

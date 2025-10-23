@@ -1,4 +1,3 @@
-// src/main.jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -24,7 +23,6 @@ if (typeof document !== "undefined" && bingVerification) {
   }
 }
 
-// ---- Gate Sentry on consent ----
 function hasAnalyticsConsent() {
   try {
     const v = getAnalyticsConsent?.();

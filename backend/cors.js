@@ -1,4 +1,3 @@
-// cors.js
 import cors from "cors";
 
 /** Normalize an origin and strip trailing slashes */

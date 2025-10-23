@@ -1,4 +1,3 @@
-// frontend/src/analytics/posthog.js
 import posthog from "posthog-js";
 
 export function initPosthog() {

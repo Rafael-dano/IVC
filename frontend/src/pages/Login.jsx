@@ -1,4 +1,3 @@
-// frontend/src/pages/Login.jsx
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../api/supabaseClient.js";

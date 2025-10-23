@@ -1,9 +1,7 @@
-// frontend/src/analytics/consent.js
 import { initPosthog, identifyFromSupabase } from "./posthog";
 
 const KEY = "consent.analytics"; // "granted" | "denied"
 
-// --- utils ---
 export function getAnalyticsConsent() {
   return localStorage.getItem(KEY);
 }
@@ -48,7 +46,6 @@ function loadClarityOnce(projectId) {
   })(window, document, "clarity", "script", import.meta?.env?.VITE_CLARITY_ID || ""); // set VITE_CLARITY_ID
 }
 
-// --- public API you already use ---
 export function ensureAnalyticsInitIfConsented(supabase) {
   try {
     if (getAnalyticsConsent() === "granted") {

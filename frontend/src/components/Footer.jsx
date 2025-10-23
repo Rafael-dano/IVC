@@ -1,4 +1,3 @@
-// src/components/Footer.jsx
 import { useTranslation } from "react-i18next";
 import "./Footer.css";
 

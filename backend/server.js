@@ -131,7 +131,6 @@ function requireTasksSecret(req, res, next) {
   next();
 }
 
-/* 1) Stripe Webhook (raw body) — must be BEFORE express.json() */
 app.post(
   "/webhooks/stripe",
   express.raw({ type: "application/json" }),
@@ -395,7 +394,6 @@ app.use((req, _res, next) => {
   next();
 });
 
-/* 2) Standard middleware (safe AFTER webhook) */
 app.use(corsMw);
 app.options(/.*/, corsMw);  
 app.use(morgan("dev"));
@@ -463,7 +461,7 @@ app.post("/api/beta/signup", betaLimiter, async (req, res) => {
   }
 });
 
-// 1) Google Form webhook (unauthed, secret-protected)
+// Google Form webhook (unauthed, secret-protected)
 //    Calls this after form submit. Grants/queues beta against profile if exists.
 app.post("/api/beta/confirm-google", express.json(), async (req, res) => {
   try {
@@ -524,9 +522,8 @@ app.post("/api/beta/confirm-google", express.json(), async (req, res) => {
   }
 });
 
-// 2) Self-activation for logged-in users (idempotent)
-//    If they’re approved (beta_signups.approved = true) but still FREE, grant 30 days.
-//    If already BETA_FREE, return existing expiry; don’t touch paid plans.
+// Self-activation for logged-in users (idempotent)
+// If they’re approved (beta_signups.approved = true) but still FREE, grant 30 days. If already BETA_FREE, return existing expiry; don’t touch paid plans.
 app.post("/api/beta/activate", requireUser, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -577,7 +574,6 @@ app.post("/api/beta/activate", requireUser, async (req, res) => {
   }
 });
 
-/* - this is where i am gonna put the video to summary route!! - */
 const upload = multer({
   dest: path.join(process.cwd(), "uploads"),
   limits: {
@@ -620,8 +616,6 @@ app.get("/api/beta/status", requireUser, async (req, res) => {
     res.status(500).json({ error: "Status failed" });
   }
 });
-
-// Upload & Transcribe (with plan enforcement + extension fix + MOV transcode)
 
 app.post(
   "/api/video/transcribe",
@@ -934,7 +928,7 @@ app.post("/api/email/welcome-signup", welcomeSignupLimiter, async (req, res) => 
   }
 });
 
-// --- Email smoke test  
+// Email smoke test  
 app.post("/__mail/test", express.json(), async (req, res) => {
   try {
     const secret = req.headers["x-debug-secret"];
@@ -1147,8 +1141,7 @@ app.post("/tasks/reminders/monthly", requireTasksSecret, async (req, res) => {
 /* Health + Echo */
 app.get("/", (_req, res) => res.send("✅ Backend is working!"));
 app.post("/api/echo", (req, res) => res.json({ ok: true, received: req.body }));
-
-// Healthcheck  
+  
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, env: process.env.NODE_ENV || "development", time: new Date().toISOString() });
 });
@@ -1178,7 +1171,7 @@ app.get("/api/ltd-spots", async (_req, res) => {
   }
 });
 
-/* Account: /api/me  (plan + usage)*/
+/* Account: (plan + usage)*/
 app.get("/api/me", requireUser, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -1264,7 +1257,7 @@ app.delete("/api/account", requireUser, async (req, res) => {
     const userId = req.user.id;
     const userEmail = req.user.email || null;
 
-    // 1) Profile fetch (Stripe integration)
+    // Profile fetch (Stripe integration)
     const { data: profile, error: profileErr } = await supabaseAdmin
       .from("profiles")
       .select("stripe_customer_id")
@@ -1277,7 +1270,7 @@ app.delete("/api/account", requireUser, async (req, res) => {
 
     const stripeCustomerId = profile?.stripe_customer_id || null;
 
-    // 2) Cancel any active/trial/past_due subscriptions
+    // Cancel any active/trial/past_due subscriptions
     if (stripeCustomerId) {
       try {
         const statusesToCancel = new Set(["active", "trialing", "past_due", "unpaid"]);
@@ -1309,7 +1302,7 @@ app.delete("/api/account", requireUser, async (req, res) => {
       }
     }
 
-    // 3) Centralized DB purge (preferred)
+    // Centralized DB purge (preferred)
     let purgeSummary = null;
     try {
       const { data: summary, error: rpcErr } = await supabaseAdmin.rpc("purge_my_account");
@@ -1318,7 +1311,7 @@ app.delete("/api/account", requireUser, async (req, res) => {
     } catch (rpcErr) {
       console.warn("purge_my_account RPC failed or missing. Falling back to manual deletes:", rpcErr?.message || rpcErr);
 
-      // --- Fallback manual wipes (your original list) ---
+      // Fallback manual wipes
       const tablesToWipe = [
         "transcripts",
         "transcript_usage",
@@ -1368,14 +1361,14 @@ app.delete("/api/account", requireUser, async (req, res) => {
       }
     }
 
-    // 4) Delete auth user (always last)
+    // Delete auth user (always last)
     const { error: authDeleteErr } = await supabaseAdmin.auth.admin.deleteUser(userId);
     if (authDeleteErr) {
       console.error("/api/account auth delete error:", authDeleteErr);
       return res.status(500).json({ error: "Failed to delete authentication user" });
     }
 
-    // 5) Analytics
+    // Analytics
     ph?.capture({
       distinctId: userId,
       event: "account_deleted",
@@ -1597,8 +1590,6 @@ if (process.env.SENTRY_DSN_BACKEND) {
     app.use(Sentry.Handlers.errorHandler());   // v7
   }
 }
-
-/* JSON 404 + error handler */
 
 // 404 for anything not matched above
 app.use((req, res, _next) => {

@@ -156,27 +156,27 @@ export default function RepurposeTool() {
         let prompt;
         if (format === "video-summary") {
           prompt = `
-  You are a precise assistant. Using the video transcript below, produce:
-  1) 5–7 key takeaways (bullets)
-  2) One short paragraph summary (3–5 sentences)
-  3) Action items as checkboxes when applicable
-  4) Materials/tools list when applicable
-  Respond in ${languageHint()}.
+                    You are a precise assistant. Using the video transcript below, produce:
+                    1) 5–7 key takeaways (bullets)
+                    2) One short paragraph summary (3–5 sentences)
+                    3) Action items as checkboxes when applicable
+                    4) Materials/tools list when applicable
+                    Respond in ${languageHint()}.
   
-  Transcript:
-  ${transcript}`.trim();
-        } else {
-          prompt = `
-  You are a creator coach. Using the transcript, write a 45–60 second vertical video script:
-  - Hook in first line
-  - 3–4 punchy points
-  - Clear CTA in the last line
-  - Conversational, energetic tone
-  Respond in ${languageHint()}.
+                    Transcript:
+                    ${transcript}`.trim();
+          } else {
+            prompt = `
+                    You are a creator coach. Using the transcript, write a 45–60 second vertical video script:
+                    - Hook in first line
+                    - 3–4 punchy points
+                    - Clear CTA in the last line
+                    - Conversational, energetic tone
+                    Respond in ${languageHint()}.
   
-  Transcript:
-  ${transcript}`.trim();
-        }
+                    Transcript:
+                  ${transcript}`.trim();
+                }
   
         const aiResponse = await generateContent(user.id, prompt);
         setRepurposedText(aiResponse);

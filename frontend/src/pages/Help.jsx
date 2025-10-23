@@ -1,4 +1,3 @@
-// src/pages/Help.jsx
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import { useTranslation } from "react-i18next";

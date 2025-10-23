@@ -1,4 +1,3 @@
-
 import { supabaseAdmin } from "../api/supabaseClient.js";
 import { isPaidPlan } from "../plans.js";
 

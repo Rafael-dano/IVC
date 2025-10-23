@@ -2,7 +2,6 @@ import { supabase } from "./supabaseClient.js";
 import { httpJson } from "./http.js";
 
 /**
- * Back-compat signature: (userId, prompt)
  * - We IGNORE userId; backend derives user from the Supabase access token.
  */
 export async function generateContent(_userId, prompt, format = "repurpose") {

@@ -10,13 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <title>IVContent</title>
 
-  <!-- GA4 base (loads but does nothing until consent is granted) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YBEEV2BTJY"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
 
-    // Default: no tracking until the user opts in (Consent Mode)
     gtag('consent', 'default', {
       ad_storage: 'denied',
       analytics_storage: 'denied',
@@ -28,7 +26,6 @@
 
     gtag('js', new Date());
 
-    // IMPORTANT: The ID here must match the one in the script src above
     gtag('config', 'G-YBEEV2BTJY', {
       anonymize_ip: true,
       transport_type: 'beacon'
