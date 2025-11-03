@@ -10,7 +10,7 @@ export default function CompanyBlock() {
         San Antonio, Texas, USA
       </p>
       <p className="muted-text">
-        For Support or Privacy: <a className="link-cta" href="mailto:ivcontent.com@gamil.com">ivcontent.com@gamil.com</a>
+        For Support or Privacy: <a className="link-cta" href="mailto:ivcontent.com@gamil.com">ivcontent.com@gmail.com</a>
       </p>
       <p className="company-block__note">
         For legal policies, see the links in the footer (Terms &amp; Privacy).
