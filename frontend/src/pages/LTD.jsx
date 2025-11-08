@@ -211,15 +211,7 @@ export default function LTD() {
         <section className="surface-card">
           <h2 className="section-heading text-accent-indigo">{t("ltd.videoTitle")}</h2>
           <div className="video-frame">
-            <iframe
-              loading="lazy"
-              className="video-frame__media"
-              src="https://youtu.be/xOdU0U_vLjA?si=4OXWYKrv8X9-dvvd"
-              title="IVContent Quick Start"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/xOdU0U_vLjA?si=4OXWYKrv8X9-dvvd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           </div>
         </section>
       </main>
