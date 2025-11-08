@@ -29,7 +29,7 @@ export default function QuickStart() {
             <iframe
               loading="lazy"
               className="video-frame__media"
-              src="https://www.youtube.com/embed/VIDEO_ID"
+              src="https://youtu.be/xOdU0U_vLjA?si=4OXWYKrv8X9-dvvd"
               title="IVContent Quick Start"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
