@@ -1516,6 +1516,31 @@ app.post("/api/billing/portal", requireUser, async (req, res) => {
   }
 });
 
+app.get("/api/vault", requireUser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const limit = Math.min(Number(req.query.limit) || 50, 200);
+
+    const { data, error } = await supabaseAdmin
+      .from("content_items")
+      .select("id, title, format, created_at, input_text, output_text, meta")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error("/api/vault error:", error);
+      return res.status(500).json({ error: "Failed to load vault" });
+    }
+
+    res.json({ ok: true, items: data || [] });
+  } catch (e) {
+    console.error("/api/vault exception:", e);
+    res.status(500).json({ error: "Unexpected error" });
+  }
+});
+
 app.post("/api/generate", requireUser, enforceLimits, async (req, res) => {
   try {
     const userId = req.user.id;

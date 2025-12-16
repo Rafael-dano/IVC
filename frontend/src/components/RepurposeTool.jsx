@@ -7,10 +7,10 @@ import "./Repurpose.css";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
 import LANGS from "../i18nLangs";
+import { listVaultItems } from "../api/vault.js";
 
 export default function RepurposeTool() {
   const { t } = useTranslation();
-
   const [inputText, setInputText] = useState('');
   const [repurposedText, setRepurposedText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,6 +24,10 @@ export default function RepurposeTool() {
   const [isCarousel, setIsCarousel] = useState(false);
   const outputRef = useRef(null);
   const [uploadPct, setUploadPct] = useState(0);
+  const [mbOpen, setMbOpen] = useState(false);
+  const [mbLoading, setMbLoading] = useState(false);
+  const [mbItems, setMbItems] = useState([]);
+  const [mbError, setMbError] = useState("");
 
   // transcript language (for local video transcription). Default to UI language.
   const [transcriptLang, setTranscriptLang] = useState(i18n.language || "en");
@@ -194,6 +198,7 @@ export default function RepurposeTool() {
                 
                 if (saveToVault && resp.contentItemId) {
                   setSavedNotice(`Saved ✅ (Vault ID: ${resp.contentItemId})`);
+                  await refreshMemoryBank();
                 } else if (saveToVault) {
                   setSavedNotice("Saved toggle was on, but it did not save (check backend logs).");
                 } else {
@@ -224,6 +229,7 @@ export default function RepurposeTool() {
         
         if (saveToVault && resp.contentItemId) {
           setSavedNotice(`Saved ✅ (Vault ID: ${resp.contentItemId})`);
+          await refreshMemoryBank();
         } else if (saveToVault) {
           setSavedNotice("Saved toggle was on, but it did not save (check backend logs).");
         } else {
@@ -271,6 +277,7 @@ export default function RepurposeTool() {
       
       if (saveToVault && resp.contentItemId) {
         setSavedNotice(`Saved ✅ (Vault ID: ${resp.contentItemId})`);
+        await refreshMemoryBank();
       } else if (saveToVault) {
         setSavedNotice("Saved toggle was on, but it did not save (check backend logs).");
       } else {
@@ -464,6 +471,54 @@ async function uploadVideoWithProgress({ file, lang = "en", token, onProgress })
   });
 }
 
+async function refreshMemoryBank() {
+  try {
+    setMbError("");
+    setMbLoading(true);
+    const resp = await listVaultItems(20);
+    setMbItems(resp.items || []);
+  } catch (e) {
+    console.error(e);
+    setMbError("Could not load Memory Bank.");
+  } finally {
+    setMbLoading(false);
+  }
+}
+
+function loadMemoryItem(item) {
+  // Load input + format
+  setInputText(item.input_text || "");
+  setFormat(item.format || "blog-post");
+  setVaultTitle(item.title || "");
+  setSavedNotice(`Loaded ✅ (${item.id})`);
+
+  // If this was a carousel, show it as carousel UI
+  const isCarouselSaved =
+    item?.meta?.type === "carousel" || item?.format === "carousel-generator";
+
+  if (isCarouselSaved) {
+    const slides = parseCarouselResponse(item.output_text || "");
+    setRepurposedText(slides.length ? slides : (item.output_text || ""));
+    setIsCarousel(Array.isArray(slides) && slides.length > 0);
+  } else {
+    setIsCarousel(false);
+    setRepurposedText(item.output_text || "");
+  }
+
+  // close dropdown
+  setMbOpen(false);
+
+  // jump to output
+  setTimeout(() => {
+    outputRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 50);
+}
+
+useEffect(() => {
+  refreshMemoryBank();
+}, []);
+
+
   return (
     <div className={`repurpose-page min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} font-sans`}>
       <header className="w-full px-6 py-4 flex items-center justify-between bg-gray-800 text-white shadow-md">
@@ -630,8 +685,51 @@ async function uploadVideoWithProgress({ file, lang = "en", token, onProgress })
             </div>
           </div>
 
+
           {/* Output Section */}
           <div className="w-full lg:w-1/2" ref={outputRef}>
+          <div className="mb-3">
+  <button
+    className="btn-secondary w-full flex items-center justify-between"
+    onClick={async () => {
+      const next = !mbOpen;
+      setMbOpen(next);
+      if (next) await refreshMemoryBank();
+    }}    
+  >
+    <span>🧠 Memory Bank</span>
+    <span>{mbOpen ? "▲" : "▼"}</span>
+  </button>
+
+  {mbOpen && (
+    <div className="mt-2 rounded-lg border border-white/10 bg-black/20 p-2 max-h-80 overflow-auto">
+      {mbLoading && <div className="text-sm opacity-80">Loading…</div>}
+      {mbError && <div className="text-sm text-red-300">{mbError}</div>}
+
+      {!mbLoading && !mbError && mbItems.length === 0 && (
+        <div className="text-sm opacity-80">No saved items yet.</div>
+      )}
+
+      {!mbLoading && !mbError && mbItems.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => loadMemoryItem(item)}
+          className="w-full text-left p-2 rounded hover:bg-white/10"
+        >
+          <div className="text-sm font-semibold">
+            {item.title || item.format || "Untitled"}
+          </div>
+          <div className="text-xs opacity-70">
+            {new Date(item.created_at).toLocaleString()}
+          </div>
+          <div className="text-xs opacity-70 truncate">
+            {(item.input_text || "").slice(0, 80)}
+          </div>
+        </button>
+      ))}
+    </div>
+  )}
+</div>
             {(loading || uploading) && (
               <p className="status-line text-xl font-semibold animate-pulse">
                 {uploading ? "Uploading & transcribing…" : "Repurposing your content..."}
