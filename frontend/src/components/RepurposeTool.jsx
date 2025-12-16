@@ -17,6 +17,9 @@ export default function RepurposeTool() {
   const [uploading, setUploading] = useState(false);
   const [videoFile, setVideoFile] = useState(null);
   const [format, setFormat] = useState('blog-post');
+  const [saveToVault, setSaveToVault] = useState(true);
+  const [vaultTitle, setVaultTitle] = useState("");
+  const [savedNotice, setSavedNotice] = useState("");
   const [darkMode] = useState(true);
   const [isCarousel, setIsCarousel] = useState(false);
   const outputRef = useRef(null);
@@ -83,6 +86,7 @@ export default function RepurposeTool() {
 
   async function handleRepurpose() {
     setLoading(true);
+    setSavedNotice("");
     setRepurposedText("");
     setIsCarousel(false);
   
@@ -178,8 +182,23 @@ export default function RepurposeTool() {
                   ${transcript}`.trim();
                 }
   
-        const aiResponse = await generateContent(user.id, prompt);
-        setRepurposedText(aiResponse);
+                const resp = await generateContent(user.id, prompt, format, {
+                  saveToVault,
+                  title: vaultTitle || null,
+                  projectId: null,
+                  meta: { ui_lang: i18n.language || "en" }
+                });
+                
+                const aiText = resp.result || resp.output || "";
+                setRepurposedText(aiText);
+                
+                if (saveToVault && resp.contentItemId) {
+                  setSavedNotice(`Saved ✅ (Vault ID: ${resp.contentItemId})`);
+                } else if (saveToVault) {
+                  setSavedNotice("Saved toggle was on, but it did not save (check backend logs).");
+                } else {
+                  setSavedNotice("");
+                }                
         return;
       }
   
@@ -193,8 +212,24 @@ export default function RepurposeTool() {
           `Write the copy in ${languageHint()}.`
         ].join(" ");
 
-        const aiResponse = await generateContent(user.id, prompt);
+        const resp = await generateContent(user.id, prompt, format, {
+          saveToVault,
+          title: vaultTitle || null,
+          projectId: null,
+          meta: { ui_lang: i18n.language || "en", type: "carousel" }
+        });
+        
+        const aiResponse = resp.result || resp.output || "";
         const slides = parseCarouselResponse(aiResponse);
+        
+        if (saveToVault && resp.contentItemId) {
+          setSavedNotice(`Saved ✅ (Vault ID: ${resp.contentItemId})`);
+        } else if (saveToVault) {
+          setSavedNotice("Saved toggle was on, but it did not save (check backend logs).");
+        } else {
+          setSavedNotice("");
+        }
+        
         const hasContent = slides.some(slide => (slide.content || "").trim().length > 0);
 
         if (!slides.length || !hasContent) {
@@ -224,8 +259,23 @@ export default function RepurposeTool() {
         prompt = `Repurpose this text into ${format} format. Respond in ${languageHint()}.\n\n${inputText}`;
       }
   
-      const aiResponse = await generateContent(user.id, prompt);
-      setRepurposedText(aiResponse);
+      const resp = await generateContent(user.id, prompt, format, {
+        saveToVault,
+        title: vaultTitle || null,
+        projectId: null,
+        meta: { ui_lang: i18n.language || "en" }
+      });
+      
+      const aiText = resp.result || resp.output || "";
+      setRepurposedText(aiText);
+      
+      if (saveToVault && resp.contentItemId) {
+        setSavedNotice(`Saved ✅ (Vault ID: ${resp.contentItemId})`);
+      } else if (saveToVault) {
+        setSavedNotice("Saved toggle was on, but it did not save (check backend logs).");
+      } else {
+        setSavedNotice("");
+      }
     } catch (err) {
       console.error(err);
       if (String(err.message || "").includes("Usage limit")) {
@@ -521,6 +571,32 @@ async function uploadVideoWithProgress({ file, lang = "en", token, onProgress })
               <option value="script-to-vocal">AI Vocals (Coming Soon)</option>
             </select>
 
+            <div className="mt-3 flex flex-col sm:flex-row gap-2 sm:items-center">
+              <label className="flex items-center gap-2 text-sm opacity-90">
+                <input
+                  type="checkbox"
+                  checked={saveToVault}
+                  onChange={(e) => setSaveToVault(e.target.checked)}
+                />
+                Save to Vault
+              </label>
+
+              <input
+                type="text"
+                value={vaultTitle}
+                onChange={(e) => setVaultTitle(e.target.value)}
+                placeholder="Optional title (e.g., 'Pinterest Caption')"
+                className="repurpose-textarea !h-auto !min-h-0 !py-2"
+                style={{ maxWidth: 420 }}
+              />
+            </div>
+
+            {savedNotice && (
+              <div className="mt-2 text-sm opacity-90">
+                {savedNotice}
+              </div>
+            )}
+
             <div className="mt-4 flex flex-col sm:flex-row gap-2">
               <button
                 className="btn-primary btn-block md:btn-block-md"
@@ -545,6 +621,8 @@ async function uploadVideoWithProgress({ file, lang = "en", token, onProgress })
                   setRepurposedText('');
                   setIsCarousel(false);
                   setVideoFile(null);
+                  setSavedNotice("");
+                  setVaultTitle("");
                 }}
               >
                 {t("repurpose.btnClear")}

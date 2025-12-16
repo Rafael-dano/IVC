@@ -1519,7 +1519,16 @@ app.post("/api/billing/portal", requireUser, async (req, res) => {
 app.post("/api/generate", requireUser, enforceLimits, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { prompt, format } = req.body;
+
+    const {
+      prompt,
+      format = "repurpose",
+      saveToVault = false,
+      title = null,
+      projectId = null,
+      meta = {},
+    } = req.body || {};
+
     if (!prompt || typeof prompt !== "string") {
       return res.status(400).json({ error: "Prompt is required (string)" });
     }
@@ -1539,7 +1548,7 @@ app.post("/api/generate", requireUser, enforceLimits, async (req, res) => {
     await supabaseAdmin.from("usage_events").insert({
       user_id: userId,
       tokens_used: tokensUsed,
-      prompt: (format || "repurpose").slice(0, 60),
+      prompt: String(format || "repurpose").slice(0, 60),
     });
 
     // legacy counter best-effort
@@ -1559,15 +1568,51 @@ app.post("/api/generate", requireUser, enforceLimits, async (req, res) => {
         );
     } catch {}
 
-    return res.json({ result: text });
+    // ✅ Save to Vault (optional)
+    let contentItemId = null;
+    if (saveToVault) {
+      const mergedMeta = {
+        ...(meta || {}),
+        plan: req.plan,
+        month_tokens_used: req.month_tokens_used,
+        month_tokens_limit: req.month_tokens_limit,
+        created_from: "api_generate",
+      };
+
+      const { data, error } = await supabaseAdmin
+        .from("content_items")
+        .insert([
+          {
+            user_id: userId,
+            project_id: projectId,
+            title,
+            input_text: prompt,
+            output_text: text,
+            format,
+            model: "gpt-4o-mini",
+            meta: mergedMeta,
+          },
+        ])
+        .select("id")
+        .single();
+
+      if (error) {
+        console.error("❌ Vault save failed:", error);
+      } else {
+        contentItemId = data.id;
+      }
+    }
+
+    return res.json({
+      success: true,
+      result: text,
+      output: text,
+      contentItemId,
+    });
   } catch (err) {
     console.error("❌ /api/generate error:", err);
     return res.status(500).json({ error: "Generation failed" });
   }
-});
-
-app.get("/__boom", (_req, _res) => {
-  throw new Error("Test error: Sentry backend");
 });
 
 /* Routes debugger*/

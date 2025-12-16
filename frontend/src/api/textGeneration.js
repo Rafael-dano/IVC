@@ -2,9 +2,17 @@ import { supabase } from "./supabaseClient.js";
 import { httpJson } from "./http.js";
 
 /**
- * - We IGNORE userId; backend derives user from the Supabase access token.
+ * Backend derives user from Supabase access token.
+ * Returns: { result, output, contentItemId, ... }
  */
-export async function generateContent(_userId, prompt, format = "repurpose") {
+export async function generateContent(
+  _userId,
+  prompt,
+  format = "repurpose",
+  options = {}
+) {
+  const { saveToVault = false, title = null, projectId = null, meta = {} } = options;
+
   // require a session
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Please log in to use this feature.");
@@ -14,8 +22,16 @@ export async function generateContent(_userId, prompt, format = "repurpose") {
     headers: {
       "Authorization": `Bearer ${session.access_token}`,
     },
-    body: JSON.stringify({ prompt, format }),
+    body: JSON.stringify({
+      prompt,
+      format,
+      saveToVault,
+      title,
+      projectId,
+      meta,
+    }),
   });
-  
-  return data.result;
+
+  // Return the full payload so UI can read contentItemId
+  return data;
 }
