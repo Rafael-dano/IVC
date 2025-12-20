@@ -1518,9 +1518,38 @@ app.post("/api/billing/portal", requireUser, async (req, res) => {
 
 app.get("/api/vault", requireUser, async (req, res) => {
   try {
+    
     const userId = req.user.id;
 
-    const limit = Math.min(Number(req.query.limit) || 50, 200);
+    // plan-based limit
+    const { data: prof, error: pErr } = await supabaseAdmin
+      .from("profiles")
+      .select("plan")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (pErr) console.warn("/api/vault plan lookup error:", pErr);
+
+    const plan = String(prof?.plan || "FREE").toUpperCase();
+
+    // adjust numbers to what you want
+    const MAX_BY_PLAN = {
+      FREE: 5,
+      BETA_FREE: 20,
+      PRO: 100,
+      ANNUAL: 200,
+      LTD_400: 1000,
+    };
+
+    const requestedRaw = Number(req.query.limit);
+const requested = Math.min(
+  Number.isFinite(requestedRaw) && requestedRaw > 0 ? requestedRaw : 50,
+  1000
+);
+
+    const maxAllowed = MAX_BY_PLAN[plan] ?? 5;
+
+    const limit = Math.min(requested, maxAllowed);
 
     const { data, error } = await supabaseAdmin
       .from("content_items")
@@ -1534,7 +1563,7 @@ app.get("/api/vault", requireUser, async (req, res) => {
       return res.status(500).json({ error: "Failed to load vault" });
     }
 
-    res.json({ ok: true, items: data || [] });
+    res.json({ ok: true, plan, limit, items: data || [] });
   } catch (e) {
     console.error("/api/vault exception:", e);
     res.status(500).json({ error: "Unexpected error" });

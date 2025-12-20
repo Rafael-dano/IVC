@@ -710,23 +710,47 @@ useEffect(() => {
         <div className="text-sm opacity-80">No saved items yet.</div>
       )}
 
-      {!mbLoading && !mbError && mbItems.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => loadMemoryItem(item)}
-          className="w-full text-left p-2 rounded hover:bg-white/10"
-        >
-          <div className="text-sm font-semibold">
-            {item.title || item.format || "Untitled"}
-          </div>
-          <div className="text-xs opacity-70">
-            {new Date(item.created_at).toLocaleString()}
-          </div>
-          <div className="text-xs opacity-70 truncate">
-            {(item.input_text || "").slice(0, 80)}
-          </div>
-        </button>
-      ))}
+{!mbLoading && !mbError && mbItems.map((item) => (
+  <div
+    key={item.id}
+    className="w-full p-2 rounded hover:bg-white/10 flex items-start justify-between gap-2"
+  >
+    {/* Left side: click to LOAD */}
+    <button
+      type="button"
+      onClick={() => loadMemoryItem(item)}
+      className="flex-1 text-left"
+    >
+      <div className="text-sm font-semibold">
+        {item.title || item.format || "Untitled"}
+      </div>
+      <div className="text-xs opacity-70">
+        {new Date(item.created_at).toLocaleString()}
+      </div>
+      <div className="text-xs opacity-70 truncate">
+        {(item.input_text || "").slice(0, 80)}
+      </div>
+    </button>
+
+    {/* Right side: LOAD + RUN */}
+    <button
+      type="button"
+      className="btn-primary !px-3 !py-1 !text-xs whitespace-nowrap"
+      onClick={() => {
+        loadMemoryItem(item);
+
+        // give state a split second to apply, then run
+        setTimeout(() => {
+          handleRepurpose();
+        }, 75);
+      }}
+      title="Load this memory and run repurpose"
+    >
+      ⚡ Run
+    </button>
+  </div>
+))}
+
     </div>
   )}
 </div>
