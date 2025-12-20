@@ -3,11 +3,14 @@ import { generateContent } from '../api/textGeneration.js';
 import { supabase } from '../api/supabaseClient.js';
 import { apiUrl } from "../api/http.js";
 import { jsPDF } from "jspdf";
+import * as htmlToImage from "html-to-image";
+import JSZip from "jszip";
 import "./Repurpose.css";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
 import LANGS from "../i18nLangs";
 import { listVaultItems } from "../api/vault.js";
+
 
 export default function RepurposeTool() {
   const { t } = useTranslation();
@@ -23,6 +26,7 @@ export default function RepurposeTool() {
   const [darkMode] = useState(true);
   const [isCarousel, setIsCarousel] = useState(false);
   const outputRef = useRef(null);
+  const slideRefs = useRef([]);
   const [uploadPct, setUploadPct] = useState(0);
   const [mbOpen, setMbOpen] = useState(false);
   const [mbLoading, setMbLoading] = useState(false);
@@ -238,6 +242,8 @@ export default function RepurposeTool() {
         
         const hasContent = slides.some(slide => (slide.content || "").trim().length > 0);
 
+        slideRefs.current = [];
+
         if (!slides.length || !hasContent) {
           setRepurposedText([
             {
@@ -317,6 +323,48 @@ export default function RepurposeTool() {
       navigator.clipboard.writeText(textVersion).then(() => alert("✅ Carousel copied to clipboard!"));
     }
   }
+
+  async function downloadCarouselAsImages() {
+    try {
+      if (!isCarousel || !Array.isArray(repurposedText) || repurposedText.length === 0) {
+        alert("No carousel slides to download.");
+        return;
+      }
+  
+      const zip = new JSZip();
+      const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+  
+      // wait a moment so fonts/styles are applied
+      await new Promise((r) => setTimeout(r, 150));
+  
+      for (let i = 0; i < repurposedText.length; i++) {
+        const node = slideRefs.current[i];
+        if (!node) continue;
+  
+        const dataUrl = await htmlToImage.toPng(node, {
+          pixelRatio: 2, // sharper images
+          cacheBust: true,
+        });
+  
+        const base64 = dataUrl.split(",")[1];
+        zip.file(`slide-${i + 1}.png`, base64, { base64: true });
+      }
+  
+      const blob = await zip.generateAsync({ type: "blob" });
+  
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ivcontent-carousel-${ts}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+      alert("Couldn’t generate carousel images. Check console for details.");
+    }
+  }  
 
   function downloadTxtInline(text, filename = "repurposed.txt") {
     try {
@@ -766,19 +814,23 @@ useEffect(() => {
                   <>
                     <div className="carousel-row">
                       {repurposedText.map((slide, index) => (
-                        <div key={index} className="carousel-card">
+                        <div
+                        key={index}
+                        className="carousel-card"
+                        ref={(el) => (slideRefs.current[index] = el)}
+                      >                      
                           <h3>{slide.title}</h3>
                           <p>{slide.content}</p>
                         </div>
                       ))}
                     </div>
                     <div className="mt-4 flex gap-3 justify-end">
-                      <button
-                        className="btn-green"
-                        onClick={() => alert('Mock download started — images would be generated here!')}
-                      >
-                        📥 Download Carousel as Images
-                      </button>
+                    <button
+                      className="btn-green"
+                      onClick={downloadCarouselAsImages}
+                    >
+                      📥 Download Carousel as Images
+                    </button>
                     </div>
                   </>
                 ) : (
