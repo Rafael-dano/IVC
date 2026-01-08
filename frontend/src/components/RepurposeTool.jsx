@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
 import LANGS from "../i18nLangs";
 import { listVaultItems } from "../api/vault.js";
+import PostModal from "../components/PostModal";
 
 
 export default function RepurposeTool() {
@@ -32,6 +33,8 @@ export default function RepurposeTool() {
   const [mbLoading, setMbLoading] = useState(false);
   const [mbItems, setMbItems] = useState([]);
   const [mbError, setMbError] = useState("");
+  const [postOpen, setPostOpen] = useState(false);
+
 
   // transcript language (for local video transcription). Default to UI language.
   const [transcriptLang, setTranscriptLang] = useState(i18n.language || "en");
@@ -862,6 +865,12 @@ useEffect(() => {
                       <button onClick={copyToClipboard} className="btn-neutral">
                         📋 {t("repurpose.btnCopy")}
                       </button>
+                      <button
+                        className="btn-secondary"
+                        onClick={() => setPostOpen(true)}
+                      >
+                        📤 Post to Social
+                      </button>
                     </div>
                   </>
                 )}
@@ -872,6 +881,15 @@ useEffect(() => {
 
         <div className="h-12" />
       </main>
+      <PostModal
+        open={postOpen}
+        onClose={() => setPostOpen(false)}
+        defaultCaption={
+          typeof repurposedText === "string"
+            ? repurposedText
+            : repurposedText.map(s => `${s.title}\n${s.content}`).join("\n\n")
+          }
+      />
     </div>
   );
 }

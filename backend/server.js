@@ -1669,6 +1669,42 @@ app.post("/api/generate", requireUser, enforceLimits, async (req, res) => {
   }
 });
 
+app.post("/api/social/draft", requireUser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const {
+      platform,
+      caption,
+      media = [],
+      scheduledFor = null,
+    } = req.body;
+
+    if (!platform || !caption) {
+      return res.status(400).json({ error: "Missing platform or caption" });
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("social_posts")
+      .insert({
+        user_id: userId,
+        platform,
+        caption,
+        media,
+        scheduled_for: scheduledFor,
+        status: scheduledFor ? "SCHEDULED" : "DRAFT",
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({ ok: true, post: data });
+  } catch (e) {
+    console.error("/api/social/draft", e);
+    res.status(500).json({ error: "Failed to create post draft" });
+  }
+});
+
 /* Routes debugger*/
 app.get("/__routes", (_req, res) => {
   const routes =
